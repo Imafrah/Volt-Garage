@@ -1,0 +1,690 @@
+ImCharge Prototype — Complete Master Prompt for Google Build AI
+PART 1: PROJECT OVERVIEW
+Project Name
+ImCharge — EV Charging Marketplace Platform
+
+Vision
+A two-sided marketplace connecting EV drivers with charging locations: existing company-owned stations (via partner APIs) and private host charging points (home, shop, office, parking).
+
+Core Features (MVP)
+Driver app — find, reserve, and pay for charging
+Host app — list charging points and manage bookings
+Reservation engine — 30-minute holds, real-time availability
+Two payment models — commission (company stations) + metered billing (private hosts)
+Maps integration — location-based search and navigation
+Meter verification — for private host charging sessions
+Technology Stack
+Backend: Google Cloud Run (containerized Node.js/Python)
+Database: Firestore (real-time, document-based)
+AI/ML: Vertex AI (recommendations, availability prediction)
+Maps: Google Maps API (search, routing, geolocation)
+Auth: Firebase Authentication
+Payments: Stripe (or local payment gateway)
+Frontend: React (web) + React Native (mobile)
+PART 2: DETAILED BUILD PROMPT FOR GOOGLE BUILD AI
+PROJECT SPECIFICATION: ImCharge EV Charging Marketplace
+
+=== SYSTEM ARCHITECTURE ===
+
+1. BACKEND SERVICES (Google Cloud Run)
+   - API Gateway (Express.js or FastAPI)
+     * Authentication & authorization
+     * Rate limiting & quota management
+     * Request validation & logging
+   
+   - Reservation Service
+     * State machine: available → reserved → confirmed → charging → completed
+     * 30-minute hold logic with auto-release
+     * Conflict detection & double-booking prevention
+     * Proximity validation (5 km radius)
+   
+   - Charging Service
+     * Company station integration (partner APIs)
+     * Private host meter reading management
+     * Real-time availability sync
+     * Charging session tracking
+   
+   - Payment Service
+     * Commission calculation (company stations)
+     * Metered billing (private hosts)
+     * Invoice generation
+     * Settlement & payout logic
+   
+   - User Service
+     * Driver profile & vehicle info
+     * Host profile & charging equipment details
+     * Rating & review system
+     * KYC/identity verification
+
+2. DATABASE SCHEMA (Firestore)
+   
+   Collections:
+   
+   a) users
+      - uid (string, primary key)
+      - type (enum: driver | host)
+      - email, phone, name
+      - profilePicture (URL)
+      - createdAt, updatedAt
+      - kycStatus (enum: pending | verified | rejected)
+      - rating (number: 1–5)
+      - reviewCount (number)
+   
+   b) drivers
+      - uid (FK to users)
+      - vehicles (array of objects)
+        * make, model, year, licensePlate
+        * batteryCapacity (kWh)
+        * connectorType (array: Type1, Type2, CCS, CHAdeMO)
+      - paymentMethods (array)
+      - savedLocations (array)
+   
+   c) hosts
+      - uid (FK to users)
+      - chargingPointType (enum: existing_station | private_host)
+      - location (geopoint: lat, lon)
+      - address (string)
+      - availability (object: weekday/weekend hours)
+      - equipment (for private hosts)
+        * brand, model, power (kW)
+        * connectorType (array)
+        * meterSerialNumber (string)
+      - bankAccount (for payouts)
+   
+   d) chargingPoints
+      - id (string, primary key)
+      - hostUid (FK to hosts)
+      - type (enum: existing_station | private_host)
+      - location (geopoint)
+      - name (string)
+      - description (text)
+      - connectors (array of objects)
+        * id, type, power (kW), status (available | occupied | maintenance)
+      - pricePerKwh (number, for private hosts)
+      - rating, reviewCount
+      - photos (array of URLs)
+      - createdAt, updatedAt
+   
+   e) reservations
+      - id (string, primary key)
+      - driverId (FK to drivers)
+      - chargingPointId (FK to chargingPoints)
+      - connectorId (string)
+      - status (enum: reserved | confirmed | charging | completed | cancelled)
+      - reservedAt (timestamp)
+      - expiresAt (timestamp: +30 minutes)
+      - confirmedAt (timestamp)
+      - startedAt (timestamp)
+      - completedAt (timestamp)
+      - qrCodeToken (string, for verification)
+      - notes (string)
+   
+   f) chargingSessions
+      - id (string, primary key)
+      - reservationId (FK to reservations)
+      - driverId, hostId
+      - chargingPointId
+      - startTime (timestamp)
+      - endTime (timestamp)
+      - energyDelivered (kWh, for private hosts)
+      - meterReadingStart, meterReadingEnd (for private hosts)
+      - amount (number: total charge)
+      - commission (number, for company stations)
+      - status (enum: in_progress | completed | disputed)
+   
+   g) payments
+      - id (string, primary key)
+      - sessionId (FK to chargingSessions)
+      - driverId, hostId
+      - amount (number)
+      - type (enum: charge | commission | payout)
+      - status (enum: pending | completed | failed | refunded)
+      - stripeTransactionId (string)
+      - createdAt, completedAt
+   
+   h) partnerIntegrations
+      - id (string, primary key)
+      - partnerName (string: Ionity, ChargePoint, etc.)
+      - apiEndpoint (string)
+      - apiKey (encrypted)
+      - lastSyncTime (timestamp)
+      - syncInterval (number: minutes)
+      - status (enum: active | inactive | error)
+
+3. CORE WORKFLOWS
+
+   A. DRIVER FLOW
+      1. Sign up → Firebase Auth
+      2. Add vehicle details (battery, connectors)
+      3. Search nearby charging points
+         - Query Firestore for chargingPoints within radius
+         - Filter by connector type, availability, price
+         - Use Google Maps API for distance & routing
+      4. View point details & reviews
+      5. Reserve charging point
+         - Create reservation doc with status: "reserved"
+         - Set expiresAt = now + 30 minutes
+         - Generate QR code token
+      6. Navigate to location (Google Maps)
+      7. Arrive at location
+         - Scan QR code or enter connector ID
+         - Update reservation status: "confirmed"
+      8. Start charging
+         - For company stations: partner API triggers charging
+         - For private hosts: driver plugs in, host verifies
+         - Create chargingSession doc
+      9. Charging completes
+         - For private hosts: meter reading captured (photo or IoT)
+         - Calculate kWh consumed
+         - Create payment record
+      10. Rate & review host/point
+
+   B. HOST FLOW (Existing Station)
+      1. Sign up → Firebase Auth
+      2. Select "Existing charging station"
+      3. Enter partner company & station ID
+      4. Verify ownership (email from company account)
+      5. Configure commission split with ImCharge
+      6. Sync availability from partner API
+      7. Monitor reservations in real-time
+      8. Receive commission payouts weekly/monthly
+
+   C. HOST FLOW (Private Host)
+      1. Sign up → Firebase Auth
+      2. Select "Private charging point"
+      3. Enter location (address, geopoint)
+      4. Upload photos of location
+      5. Add charging equipment details
+         - Brand, model, power (kW)
+         - Connector types
+         - Meter serial number
+      6. KYC verification (identity + address)
+      7. Set pricing (€/kWh)
+      8. Set availability hours
+      9. For each reservation:
+         - Verify driver arrival (QR code scan)
+         - Allow driver to plug in
+         - Capture meter reading at start & end (photo or app)
+         - Confirm session completion
+      10. Receive payment after meter verification
+      11. Payout to bank account
+
+4. RESERVATION STATE MACHINE
+
+   States:
+   - available: Charging point ready to book
+   - reserved: Driver holds slot for 30 min (expiresAt = now + 30 min)
+   - confirmed: Driver arrived, QR scanned, reservation locked
+   - charging: Charging session active
+   - completed: Session finished, payment processed
+   - cancelled: Reservation expired or user cancelled
+
+   Transitions:
+   available → reserved (on create_reservation)
+   reserved → confirmed (on qr_scan or connector_id_verified)
+   reserved → available (on expiry or cancel_reservation)
+   confirmed → charging (on charging_started)
+   charging → completed (on charging_ended + payment_confirmed)
+   charging → disputed (on meter_reading_mismatch or payment_failure)
+   [any] → cancelled (on user_cancellation)
+
+5. PAYMENT FLOW
+
+   A. Company Station (Commission Model)
+      1. Driver reserves & charges
+      2. Partner API confirms session & kWh
+      3. Partner charges driver (outside ImCharge)
+      4. Partner reports transaction to ImCharge
+      5. ImCharge calculates commission (e.g., 15%)
+      6. ImCharge invoices partner or receives commission
+      7. Host receives payout from partner (not ImCharge)
+
+   B. Private Host (Metered Billing Model)
+      1. Driver reserves & confirms arrival
+      2. Host verifies driver & meter reading (start)
+      3. Driver charges
+      4. Host captures meter reading (end)
+      5. ImCharge calculates kWh: (end - start) / 1000
+      6. ImCharge calculates amount: kWh × pricePerKwh
+      7. ImCharge charges driver via Stripe
+      8. ImCharge retains commission (e.g., 20%)
+      9. ImCharge pays host: amount × (1 - 0.20)
+      10. Payout processed weekly/monthly
+
+6. GOOGLE CLOUD SERVICES INTEGRATION
+
+   A. Firestore
+      - Real-time database for all collections
+      - Indexes on: location (geopoint), status, userId, timestamp
+      - Security rules: authenticated users only, row-level access control
+   
+   B. Cloud Run
+      - Containerize each service (Reservation, Charging, Payment, User)
+      - Auto-scale based on traffic
+      - Environment variables for API keys, database URLs
+      - Health checks & monitoring
+   
+   C. Vertex AI
+      - Recommendation engine: suggest nearby charging points
+      - Availability prediction: forecast occupancy
+      - Fraud detection: flag suspicious bookings/meter readings
+      - Churn prediction: identify at-risk hosts
+   
+   D. Google Maps API
+      - Places API: search charging locations
+      - Distance Matrix API: calculate distance & ETA
+      - Geocoding API: convert address ↔ coordinates
+      - Static Maps: embed maps in app
+   
+   E. Cloud Functions
+      - Scheduled: sync partner APIs every 5 minutes
+      - Scheduled: process payouts weekly
+      - Triggered: send notifications on reservation status change
+      - Triggered: calculate commissions after session completion
+   
+   F. Cloud Logging & Monitoring
+      - Log all API calls, errors, and state transitions
+      - Monitor latency, error rates, quota usage
+      - Alert on anomalies (e.g., 50+ failed payments)
+   
+   G. Secret Manager
+      - Store API keys, database credentials, encryption keys
+      - Rotate keys automatically
+
+7. FRONTEND REQUIREMENTS
+
+   A. Driver App (React Native)
+      - Screens: Sign up, Home (map + list), Charging point details, Reservation, Payment, History, Profile, Reviews
+      - Features: Real-time availability, QR scanner, navigation, in-app chat with host, rating
+   
+   B. Host App (React Native)
+      - Screens: Sign up, Dashboard (reservations + earnings), Charging point settings, Meter reading, Payout settings, Reviews
+      - Features: Real-time notifications, meter photo upload, availability calendar, earnings chart
+   
+   C. Admin Dashboard (React)
+      - Monitor all reservations, payments, disputes
+      - Manage partner integrations
+      - View analytics & KPIs
+      - Handle refunds & escalations
+
+8. SECURITY & COMPLIANCE
+
+   - Firebase Authentication: email + phone verification
+   - KYC: identity document upload + verification (third-party service)
+   - PCI-DSS: Stripe handles payment card data
+   - Data encryption: Firestore + TLS in transit
+   - Rate limiting: 100 requests/min per user
+   - GDPR: data deletion, consent management
+   - Fraud detection: Vertex AI + manual review for high-value transactions
+
+9. TESTING & DEPLOYMENT
+
+   - Unit tests: Jest (backend), React Testing Library (frontend)
+   - Integration tests: Firestore emulator, Cloud Run local testing
+   - E2E tests: Cypress (web), Detox (mobile)
+   - Staging environment: separate GCP project
+   - CI/CD: Cloud Build (automated tests + deployment)
+   - Rollback: versioned Cloud Run images, database backups
+
+10. LAUNCH CHECKLIST
+
+    - [ ] Database schema finalized & indexed
+    - [ ] Reservation state machine tested
+    - [ ] Payment integration (Stripe) live
+    - [ ] Partner API integrations (at least 2)
+    - [ ] Driver app (iOS + Android) released
+    - [ ] Host app (iOS + Android) released
+    - [ ] Admin dashboard live
+    - [ ] KYC verification process live
+    - [ ] Monitoring & alerting configured
+    - [ ] Legal: T&Cs, privacy policy, insurance
+    - [ ] Beta launch: 100 drivers + 20 hosts
+    - [ ] Feedback loop & iteration
+
+=== IMPLEMENTATION PRIORITY ===
+
+Phase 1 (Weeks 1–4):
+- Firebase setup & Firestore schema
+- API Gateway & basic CRUD endpoints
+- Driver & Host sign-up
+- Google Maps integration
+
+Phase 2 (Weeks 5–8):
+- Reservation engine & state machine
+- Charging point listing & search
+- Payment service (Stripe)
+- Private host meter reading flow
+
+Phase 3 (Weeks 9–12):
+- Partner API integrations (2 companies)
+- Driver & Host mobile apps (MVP)
+- Admin dashboard
+- Testing & bug fixes
+
+Phase 4 (Weeks 13+):
+- Vertex AI recommendations
+- Advanced analytics
+- Scaling & optimization
+- Public launch
+
+=== DELIVERABLES ===
+
+1. API Documentation (OpenAPI/Swagger)
+2. Database schema diagram
+3. Reservation state machine diagram
+4. Payment flow diagrams
+5. Mobile app screenshots & flows
+6. Admin dashboard mockups
+7. Deployment guide (Cloud Run, Firestore, Cloud Build)
+8. Testing report (coverage >80%)
+9. Security audit report
+10. Launch readiness checklist
+PART 3: STEP-BY-STEP GOOGLE BUILD AI COMMANDS
+Step 1: Initialize Project
+Create a new Google Cloud project named "imcharge-prototype"
+Enable APIs: Firestore, Cloud Run, Cloud Functions, Maps API, Vertex AI
+Create service accounts for backend services
+Step 2: Set Up Firestore
+Create Firestore database in native mode
+Define collections: users, drivers, hosts, chargingPoints, reservations, chargingSessions, payments, partnerIntegrations
+Create indexes for: location (geopoint), status, userId, timestamp
+Set security rules for authenticated access
+Step 3: Build Backend Services
+Create Node.js/Python service for:
+- API Gateway (authentication, routing, validation)
+- Reservation Service (state machine, hold logic)
+- Charging Service (partner API sync, availability)
+- Payment Service (commission, metered billing, Stripe integration)
+- User Service (profiles, KYC, ratings)
+
+Deploy each as a containerized Cloud Run service
+Set environment variables for API keys, database URLs
+Configure auto-scaling (min: 1, max: 10 instances)
+Step 4: Integrate Google Maps
+Enable Google Maps API (Places, Distance Matrix, Geocoding)
+Create API key with restrictions (Android, iOS, web)
+Implement location search (chargingPoints within radius)
+Implement routing (driver to charging point)
+Step 5: Set Up Firebase Authentication
+Enable email/password authentication
+Enable phone number authentication (SMS)
+Configure sign-up & sign-in flows
+Set up email verification
+Step 6: Integrate Stripe
+Create Stripe account
+Set up webhook endpoints for payment events
+Implement charge creation (driver) & payout (host)
+Test payment flow in sandbox mode
+Step 7: Build Reservation Engine
+Implement state machine (available → reserved → confirmed → charging → completed)
+Implement 30-minute hold with auto-expiry
+Implement QR code generation & verification
+Implement proximity validation (5 km radius)
+Implement conflict detection (double-booking prevention)
+Step 8: Build Meter Reading Flow (Private Hosts)
+Implement photo upload for meter readings (start & end)
+Implement OCR to extract meter values (optional: Vertex AI Vision API)
+Implement calculation: kWh = (end - start) / 1000
+Implement dispute resolution (manual review)
+Step 9: Integrate Partner APIs
+For each partner (Ionity, ChargePoint, etc.):
+- Document API spec & authentication
+- Implement sync service (fetch availability every 5 min)
+- Map partner connector types to ImCharge standard
+- Implement error handling & retry logic
+- Test with sandbox credentials
+Step 10: Set Up Cloud Functions
+Create scheduled function: sync partner APIs (every 5 min)
+Create scheduled function: process payouts (weekly)
+Create triggered function: send notifications on reservation status change
+Create triggered function: calculate commissions after session completion
+Step 11: Implement Vertex AI
+Train recommendation model: suggest nearby charging points based on driver history
+Train availability prediction model: forecast occupancy by time of day
+Implement fraud detection: flag suspicious meter readings
+Implement churn prediction: identify at-risk hosts
+Step 12: Build Mobile Apps (React Native)
+Driver app:
+- Sign up, home (map + list), charging point details, reservation, payment, history, profile, reviews
+- Real-time availability, QR scanner, navigation, in-app chat, rating
+
+Host app:
+- Sign up, dashboard (reservations + earnings), charging point settings, meter reading, payout settings, reviews
+- Real-time notifications, meter photo upload, availability calendar, earnings chart
+Step 13: Build Admin Dashboard (React)
+Monitor all reservations, payments, disputes
+Manage partner integrations
+View analytics & KPIs (bookings, revenue, churn, NPS)
+Handle refunds & escalations
+Step 14: Set Up Monitoring & Logging
+Enable Cloud Logging for all services
+Create dashboards for: API latency, error rates, quota usage, payment success rate
+Set up alerts for: >5% error rate, payment failures, API quota exceeded
+Step 15: Deploy & Test
+Deploy backend services to Cloud Run
+Deploy frontend apps (App Store, Google Play, web)
+Run integration tests (Firestore emulator)
+Run E2E tests (Cypress, Detox)
+Perform load testing (100 concurrent users)
+PART 4: KEY CONFIGURATION FILES
+A. Firestore Security Rules
+
+JavaScript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Users can read/write their own profile
+    match /users/{uid} {
+      allow read, write: if request.auth.uid == uid;
+    }
+    
+    // Drivers can read/write their own record
+    match /drivers/{uid} {
+      allow read, write: if request.auth.uid == uid;
+    }
+    
+    // Hosts can read/write their own record
+    match /hosts/{uid} {
+      allow read, write: if request.auth.uid == uid;
+    }
+    
+    // Anyone can read charging points
+    match /chargingPoints/{pointId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth.uid == resource.data.hostUid;
+    }
+    
+    // Drivers can create reservations, read their own
+    match /reservations/{resId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth.uid == resource.data.driverId || request.auth.uid == resource.data.hostId;
+      allow update: if request.auth.uid == resource.data.driverId || request.auth.uid == resource.data.hostId;
+    }
+    
+    // Charging sessions (read-only for drivers/hosts)
+    match /chargingSessions/{sessionId} {
+      allow read: if request.auth.uid == resource.data.driverId || request.auth.uid == resource.data.hostId;
+    }
+    
+    // Payments (read-only for drivers/hosts)
+    match /payments/{paymentId} {
+      allow read: if request.auth.uid == resource.data.driverId || request.auth.uid == resource.data.hostId;
+    }
+  }
+}
+B. Cloud Run Environment Variables
+
+cURL
+FIRESTORE_PROJECT_ID=imcharge-prototype
+GOOGLE_MAPS_API_KEY=xxx
+STRIPE_SECRET_KEY=xxx
+STRIPE_WEBHOOK_SECRET=xxx
+PARTNER_IONITY_API_KEY=xxx
+PARTNER_CHARGEPOINT_API_KEY=xxx
+JWT_SECRET=xxx
+ENVIRONMENT=production
+LOG_LEVEL=info
+C. Docker Compose (Local Development)
+
+yaml
+version: '3.8'
+services:
+  firestore-emulator:
+    image: google/cloud-sdk:emulators
+    ports:
+      - "8080:8080"
+    environment:
+      - FIRESTORE_EMULATOR_HOST=localhost:8080
+
+  api-gateway:
+    build: ./backend/api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - FIRESTORE_EMULATOR_HOST=firestore-emulator:8080
+    depends_on:
+      - firestore-emulator
+
+  reservation-service:
+    build: ./backend/reservation-service
+    ports:
+      - "3001:3001"
+    environment:
+      - FIRESTORE_EMULATOR_HOST=firestore-emulator:8080
+    depends_on:
+      - firestore-emulator
+
+  payment-service:
+    build: ./backend/payment-service
+    ports:
+      - "3002:3002"
+    environment:
+      - FIRESTORE_EMULATOR_HOST=firestore-emulator:8080
+      - STRIPE_SECRET_KEY=sk_test_xxx
+    depends_on:
+      - firestore-emulator
+PART 5: SAMPLE API ENDPOINTS
+POST   /api/v1/auth/signup                    → Register driver or host
+POST   /api/v1/auth/signin                    → Login
+POST   /api/v1/auth/verify-email              → Verify email
+POST   /api/v1/auth/verify-phone              → Verify phone (SMS)
+
+GET    /api/v1/drivers/{driverId}             → Get driver profile
+PUT    /api/v1/drivers/{driverId}             → Update driver profile
+POST   /api/v1/drivers/{driverId}/vehicles    → Add vehicle
+
+GET    /api/v1/hosts/{hostId}                 → Get host profile
+PUT    /api/v1/hosts/{hostId}                 → Update host profile
+
+GET    /api/v1/charging-points                → List charging points (with filters)
+GET    /api/v1/charging-points/{pointId}      → Get charging point details
+POST   /api/v1/charging-points                → Create charging point (host)
+PUT    /api/v1/charging-points/{pointId}      → Update charging point (host)
+
+GET    /api/v1/charging-points/search?lat=X&lon=Y&radius=10km
+       → Search nearby charging points
+
+POST   /api/v1/reservations                   → Create reservation
+GET    /api/v1/reservations/{resId}           → Get reservation details
+PUT    /api/v1/reservations/{resId}/confirm   → Confirm reservation (QR scan)
+PUT    /api/v1/reservations/{resId}/cancel    → Cancel reservation
+GET    /api/v1/reservations?driverId=X        → List driver's reservations
+
+POST   /api/v1/charging-sessions              → Start charging session
+GET    /api/v1/charging-sessions/{sessionId}  → Get session details
+PUT    /api/v1/charging-sessions/{sessionId}/end
+       → End charging session (capture meter reading)
+
+POST   /api/v1/payments                       → Create payment (Stripe)
+GET    /api/v1/payments/{paymentId}           → Get payment details
+POST   /api/v1/payments/{paymentId}/refund    → Refund payment
+
+POST   /api/v1/meter-readings                 → Upload meter reading (photo)
+GET    /api/v1/meter-readings/{readingId}     → Get meter reading details
+
+GET    /api/v1/reviews?pointId=X              → Get reviews for charging point
+POST   /api/v1/reviews                        → Create review
+
+GET    /api/v1/admin/analytics                → Get analytics (admin only)
+GET    /api/v1/admin/disputes                 → List disputes (admin only)
+PART 6: TESTING SCENARIOS
+1. DRIVER HAPPY PATH
+   - Sign up as driver
+   - Add vehicle (Tesla Model 3, Type 2 connector)
+   - Search nearby charging points
+   - View details & reviews
+   - Reserve charging point (30-min hold)
+   - Navigate to location
+   - Scan QR code to confirm
+   - Start charging
+   - End charging (system calculates kWh)
+   - Pay via Stripe
+   - Rate host
+   ✓ Verify reservation state transitions
+   ✓ Verify payment processed
+   ✓ Verify host received payout
+
+2. HOST (PRIVATE) HAPPY PATH
+   - Sign up as host
+   - Select "Private charging point"
+   - Add location, equipment, meter serial
+   - KYC verification
+   - Set pricing (€0.30/kWh)
+   - Receive driver reservation
+   - Verify driver arrival (QR scan)
+   - Capture meter reading (start)
+   - Driver charges
+   - Capture meter reading (end)
+   - Confirm session completion
+   - Receive payout
+   ✓ Verify meter reading OCR
+   ✓ Verify kWh calculation
+   ✓ Verify payment split (80% host, 20% ImCharge)
+
+3. HOST (EXISTING STATION) HAPPY PATH
+   - Sign up as host
+   - Select "Existing charging station"
+   - Link to Ionity account
+   - Verify ownership
+   - Configure commission (15%)
+   - Monitor reservations
+   - Receive commission payouts
+   ✓ Verify API sync (every 5 min)
+   ✓ Verify commission calculation
+
+4. EDGE CASES
+   - Driver cancels reservation (within 30 min)
+   - Driver doesn't arrive within 30 min (auto-cancel)
+   - Meter reading mismatch (dispute)
+   - Payment failure (retry logic)
+   - Partner API down (fallback)
+   - Concurrent reservations (conflict detection)
+PART 7: SUCCESS METRICS (KPIs)
+1. DRIVER METRICS
+   - Signups: 100+ in beta
+   - Active drivers: >50 weekly
+   - Bookings per driver: >2/week
+   - Completion rate: >90%
+   - NPS: >50
+
+2. HOST METRICS
+   - Signups: 20+ in beta
+   - Active hosts: >15 weekly
+   - Utilization rate: >60%
+   - Payout per host: >€100/week
+   - Churn rate: <5%
+
+3. PLATFORM METRICS
+   - Total bookings: >500/week
+   - Revenue: >€2,000/week
+   - Gross margin: >30%
+   - API latency: <200ms (p95)
+   - Uptime: >99.5%
+   - Payment success rate: >98%
+
+4. QUALITY METRICS
+   - Bug reports: <5/week
+   - Test coverage: >80%
+   - Security incidents: 0
+   - Fraud rate: <1%

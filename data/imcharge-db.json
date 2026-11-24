@@ -1,0 +1,639 @@
+{
+  "drivers": [
+    {
+      "uid": "drv-elena",
+      "name": "Elena Weber",
+      "email": "elena.weber@imcharge.io",
+      "phone": "+49 170 4829104",
+      "rating": 4.9,
+      "reviewCount": 24,
+      "defaultLocation": {
+        "lat": 48.137154,
+        "lon": 11.576124
+      },
+      "paymentMethodLabel": "Visa •••• 4821 (Stripe)",
+      "vehicles": [
+        {
+          "id": "veh-model3",
+          "make": "Tesla",
+          "model": "Model 3 Long Range",
+          "year": 2024,
+          "licensePlate": "M-EC 402E",
+          "batteryCapacity": 75,
+          "connectorType": [
+            "Type2",
+            "CCS"
+          ]
+        },
+        {
+          "id": "veh-id4",
+          "make": "Volkswagen",
+          "model": "ID.4 Pro",
+          "year": 2023,
+          "licensePlate": "M-VW 881E",
+          "batteryCapacity": 77,
+          "connectorType": [
+            "Type2",
+            "CCS"
+          ]
+        }
+      ]
+    },
+    {
+      "uid": "drv-markus",
+      "name": "Markus Lindner",
+      "email": "markus.lindner@imcharge.io",
+      "phone": "+49 172 8841209",
+      "rating": 4.8,
+      "reviewCount": 11,
+      "defaultLocation": {
+        "lat": 48.1412,
+        "lon": 11.5794
+      },
+      "paymentMethodLabel": "Mastercard •••• 7734 (Stripe)",
+      "vehicles": [
+        {
+          "id": "veh-polestar2",
+          "make": "Polestar",
+          "model": "Polestar 2 Long Range",
+          "year": 2024,
+          "licensePlate": "M-PS 209E",
+          "batteryCapacity": 82,
+          "connectorType": [
+            "Type2",
+            "CCS"
+          ]
+        }
+      ]
+    }
+  ],
+  "hosts": [
+    {
+      "uid": "host-lukas",
+      "name": "Lukas Brenner",
+      "email": "lukas.brenner@munich-homes.de",
+      "phone": "+49 171 9928311",
+      "chargingPointType": "private_host",
+      "kycStatus": "verified",
+      "rating": 4.9,
+      "reviewCount": 19,
+      "commissionRate": 0.2,
+      "bankAccountIban": "DE89 3704 0044 0532 0130 00",
+      "equipment": {
+        "brand": "Easee",
+        "model": "Home 22kW",
+        "powerKw": 22,
+        "connectorType": [
+          "Type2"
+        ],
+        "meterSerialNumber": "SM-400-20230501A4"
+      },
+      "availability": {
+        "weekdays": "07:00 – 22:00",
+        "weekends": "08:00 – 23:00"
+      }
+    },
+    {
+      "uid": "host-studio",
+      "name": "Albion Works Studio",
+      "email": "ops@albionworks-munich.de",
+      "phone": "+49 89 41209800",
+      "chargingPointType": "private_host",
+      "kycStatus": "verified",
+      "rating": 4.7,
+      "reviewCount": 14,
+      "commissionRate": 0.2,
+      "bankAccountIban": "DE44 7001 0080 0912 4411 02",
+      "equipment": {
+        "brand": "ABL",
+        "model": "eM4 Twin Pedestal",
+        "powerKw": 22,
+        "connectorType": [
+          "Type2"
+        ],
+        "meterSerialNumber": "ABL-992014-M"
+      },
+      "availability": {
+        "weekdays": "06:30 – 21:00",
+        "weekends": "09:00 – 20:00"
+      }
+    },
+    {
+      "uid": "host-ionity",
+      "name": "Ionity GmbH Munich Hub",
+      "email": "fleet-ops@ionity.eu",
+      "phone": "+49 89 21548000",
+      "chargingPointType": "existing_station",
+      "kycStatus": "verified",
+      "rating": 4.8,
+      "reviewCount": 62,
+      "partnerNetwork": "Ionity",
+      "partnerStationId": "ION-MUC-014",
+      "commissionRate": 0.15,
+      "bankAccountIban": "DE12 5001 0517 5407 3249 31",
+      "availability": {
+        "weekdays": "24/7",
+        "weekends": "24/7"
+      }
+    },
+    {
+      "uid": "host-chargepoint",
+      "name": "ChargePoint Bavaria Fleet",
+      "email": "partner-eu@chargepoint.com",
+      "phone": "+49 89 90403210",
+      "chargingPointType": "existing_station",
+      "kycStatus": "verified",
+      "rating": 4.6,
+      "reviewCount": 41,
+      "partnerNetwork": "ChargePoint",
+      "partnerStationId": "CP-BY-902",
+      "commissionRate": 0.15,
+      "bankAccountIban": "DE71 2004 1133 0491 8820 00",
+      "availability": {
+        "weekdays": "24/7",
+        "weekends": "24/7"
+      }
+    }
+  ],
+  "chargingPoints": [
+    {
+      "id": "cp-schwabing-wallbox",
+      "hostUid": "host-lukas",
+      "hostName": "Lukas Brenner",
+      "type": "private_host",
+      "location": {
+        "lat": 48.1618,
+        "lon": 11.5861
+      },
+      "address": "Leopoldstraße 84, 80802 München",
+      "name": "Schwabing Residence Wallbox",
+      "description": "Private covered driveway with MID-certified digital smart meter (SM-400). Step-free access and instant QR arrival check-in.",
+      "connectors": [
+        {
+          "id": "c-sw-1",
+          "type": "Type2",
+          "powerKw": 22,
+          "status": "available"
+        },
+        {
+          "id": "c-sw-2",
+          "type": "Type2",
+          "powerKw": 11,
+          "status": "available"
+        }
+      ],
+      "pricePerKwh": 18,
+      "commissionRate": 0.2,
+      "rating": 4.9,
+      "reviewCount": 2,
+      "photos": [
+        "/src/assets/images/private_home_wallbox_1795443222640.jpg",
+        "/src/assets/images/digital_smart_meter_1795443225372.jpg"
+      ],
+      "availabilityHours": "07:00 – 22:00 daily",
+      "kycVerified": true,
+      "meterSerialNumber": "SM-400-20230501A4",
+      "createdAt": "2026-11-14T05:10:08.749Z",
+      "updatedAt": "2026-11-24T04:10:08.749Z"
+    },
+    {
+      "id": "cp-albion-courtyard",
+      "hostUid": "host-studio",
+      "hostName": "Albion Works Studio",
+      "type": "private_host",
+      "location": {
+        "lat": 48.1445,
+        "lon": 11.5608
+      },
+      "address": "Brienner Straße 45, 80333 München",
+      "name": "Maxvorstadt Studio Courtyard",
+      "description": "Dedicated EV bay inside gated brick studio courtyard. Ideal for half-day charging while working nearby; cafe on site.",
+      "connectors": [
+        {
+          "id": "c-al-1",
+          "type": "Type2",
+          "powerKw": 22,
+          "status": "available"
+        },
+        {
+          "id": "c-al-2",
+          "type": "Type1",
+          "powerKw": 7.4,
+          "status": "reserved"
+        }
+      ],
+      "pricePerKwh": 20,
+      "commissionRate": 0.2,
+      "rating": 4.7,
+      "reviewCount": 1,
+      "photos": [
+        "/src/assets/images/private_office_charger_1795443224418.jpg",
+        "/src/assets/images/digital_smart_meter_1795443225372.jpg"
+      ],
+      "availabilityHours": "06:30 – 21:00 Mon–Sat",
+      "kycVerified": true,
+      "meterSerialNumber": "ABL-992014-M",
+      "createdAt": "2026-11-15T21:10:08.749Z",
+      "updatedAt": "2026-11-24T04:40:08.749Z"
+    },
+    {
+      "id": "cp-ionity-ostbahnhof",
+      "hostUid": "host-ionity",
+      "hostName": "Ionity GmbH Munich Hub",
+      "type": "existing_station",
+      "partnerName": "Ionity",
+      "location": {
+        "lat": 48.1274,
+        "lon": 11.6047
+      },
+      "address": "Friedenstraße 18, 81671 München",
+      "name": "Ionity Munich East Ultra-Rapid Hub",
+      "description": "Four 350 kW high-power CCS dispensers under timber canopy. Direct partner API sync every 5 minutes; automated start on QR scan.",
+      "connectors": [
+        {
+          "id": "c-io-1",
+          "type": "CCS",
+          "powerKw": 350,
+          "status": "available"
+        },
+        {
+          "id": "c-io-2",
+          "type": "CCS",
+          "powerKw": 350,
+          "status": "occupied"
+        },
+        {
+          "id": "c-io-3",
+          "type": "CCS",
+          "powerKw": 350,
+          "status": "available"
+        },
+        {
+          "id": "c-io-4",
+          "type": "CHAdeMO",
+          "powerKw": 50,
+          "status": "available"
+        }
+      ],
+      "pricePerKwh": 28,
+      "commissionRate": 0.15,
+      "rating": 4.8,
+      "reviewCount": 2,
+      "photos": [
+        "/src/assets/images/company_fast_hub_1795443225006.jpg"
+      ],
+      "availabilityHours": "24/7 Open Access",
+      "kycVerified": true,
+      "createdAt": "2026-11-04T05:10:08.749Z",
+      "updatedAt": "2026-11-24T05:05:08.749Z"
+    },
+    {
+      "id": "cp-chargepoint-olympia",
+      "hostUid": "host-chargepoint",
+      "hostName": "ChargePoint Bavaria Fleet",
+      "type": "existing_station",
+      "partnerName": "ChargePoint",
+      "location": {
+        "lat": 48.1748,
+        "lon": 11.5529
+      },
+      "address": "Spiridon-Louis-Ring 21, 80809 München",
+      "name": "ChargePoint Olympiapark Express",
+      "description": "Partner fast-charging plaza adjacent to Olympiapark North entrance. Live occupancy telemetry via ChargePoint OCPP gateway.",
+      "connectors": [
+        {
+          "id": "c-cp-1",
+          "type": "CCS",
+          "powerKw": 150,
+          "status": "available"
+        },
+        {
+          "id": "c-cp-2",
+          "type": "Type2",
+          "powerKw": 22,
+          "status": "available"
+        }
+      ],
+      "pricePerKwh": 24,
+      "commissionRate": 0.15,
+      "rating": 4.6,
+      "reviewCount": 1,
+      "photos": [
+        "/src/assets/images/company_fast_hub_1795443225006.jpg"
+      ],
+      "availabilityHours": "24/7 Open Access",
+      "kycVerified": true,
+      "createdAt": "2026-11-10T07:50:08.749Z",
+      "updatedAt": "2026-11-24T04:58:08.749Z"
+    },
+    {
+      "id": "cp-garching-outer",
+      "hostUid": "host-ionity",
+      "hostName": "Ionity GmbH Munich Hub",
+      "type": "existing_station",
+      "partnerName": "Ionity",
+      "location": {
+        "lat": 48.2489,
+        "lon": 11.651
+      },
+      "address": "Lichtenbergstraße 8, 85748 Garching",
+      "name": "Ionity A9 Garching Corridor",
+      "description": "Highway corridor fast-charging park north of Munich ring road. Outside the 10 km downtown booking geofence.",
+      "connectors": [
+        {
+          "id": "c-ga-1",
+          "type": "CCS",
+          "powerKw": 350,
+          "status": "available"
+        },
+        {
+          "id": "c-ga-2",
+          "type": "CCS",
+          "powerKw": 350,
+          "status": "available"
+        }
+      ],
+      "pricePerKwh": 28,
+      "commissionRate": 0.15,
+      "rating": 4.7,
+      "reviewCount": 1,
+      "photos": [
+        "/src/assets/images/company_fast_hub_1795443225006.jpg"
+      ],
+      "availabilityHours": "24/7 Open Access",
+      "kycVerified": true,
+      "createdAt": "2026-11-06T20:30:08.749Z",
+      "updatedAt": "2026-11-24T04:55:08.749Z"
+    }
+  ],
+  "reservations": [
+    {
+      "id": "res-seed-active",
+      "driverId": "drv-elena",
+      "driverName": "Elena Weber",
+      "hostId": "host-studio",
+      "chargingPointId": "cp-albion-courtyard",
+      "chargingPointName": "Maxvorstadt Studio Courtyard",
+      "chargingPointType": "private_host",
+      "connectorId": "c-al-2",
+      "connectorType": "Type1",
+      "powerKw": 7.4,
+      "pricePerKwh": 20,
+      "status": "reserved",
+      "reservedAt": "2026-11-24T05:02:08.749Z",
+      "expiresAt": "2026-11-24T05:32:08.749Z",
+      "qrCodeToken": "IMC-AL2A-QR",
+      "distanceKm": 1.4,
+      "notes": "Arriving in 10 min for 2-hour top-up."
+    },
+    {
+      "id": "res-seed-completed-1",
+      "driverId": "drv-elena",
+      "driverName": "Elena Weber",
+      "hostId": "host-lukas",
+      "chargingPointId": "cp-schwabing-wallbox",
+      "chargingPointName": "Schwabing Residence Wallbox",
+      "chargingPointType": "private_host",
+      "connectorId": "c-sw-1",
+      "connectorType": "Type2",
+      "powerKw": 22,
+      "pricePerKwh": 18,
+      "status": "completed",
+      "reservedAt": "2026-11-24T00:50:08.749Z",
+      "expiresAt": "2026-11-24T01:20:08.749Z",
+      "confirmedAt": "2026-11-24T01:00:08.749Z",
+      "startedAt": "2026-11-24T01:02:08.749Z",
+      "completedAt": "2026-11-24T02:22:08.749Z",
+      "qrCodeToken": "IMC-SW19-QR",
+      "distanceKm": 2.8
+    },
+    {
+      "id": "res-seed-disputed",
+      "driverId": "drv-elena",
+      "driverName": "Elena Weber",
+      "hostId": "host-lukas",
+      "chargingPointId": "cp-schwabing-wallbox",
+      "chargingPointName": "Schwabing Residence Wallbox",
+      "chargingPointType": "private_host",
+      "connectorId": "c-sw-2",
+      "connectorType": "Type2",
+      "powerKw": 11,
+      "pricePerKwh": 18,
+      "status": "disputed",
+      "reservedAt": "2026-11-23T17:10:08.749Z",
+      "expiresAt": "2026-11-23T17:40:08.749Z",
+      "confirmedAt": "2026-11-23T17:20:08.749Z",
+      "startedAt": "2026-11-23T17:25:08.749Z",
+      "completedAt": "2026-11-23T18:25:08.749Z",
+      "qrCodeToken": "IMC-DSP2-QR",
+      "distanceKm": 2.8
+    }
+  ],
+  "sessions": [
+    {
+      "id": "ses-seed-1",
+      "reservationId": "res-seed-completed-1",
+      "driverId": "drv-elena",
+      "driverName": "Elena Weber",
+      "hostId": "host-lukas",
+      "chargingPointId": "cp-schwabing-wallbox",
+      "chargingPointName": "Schwabing Residence Wallbox",
+      "chargingPointType": "private_host",
+      "connectorId": "c-sw-1",
+      "pricePerKwh": 18,
+      "startTime": "2026-11-24T01:02:08.749Z",
+      "endTime": "2026-11-24T02:22:08.749Z",
+      "energyDeliveredKwh": 22.4,
+      "meterReadingStartWh": 120180,
+      "meterReadingEndWh": 142580,
+      "meterPhotoStart": "/src/assets/images/digital_smart_meter_1795443225372.jpg",
+      "meterPhotoEnd": "/src/assets/images/digital_smart_meter_1795443225372.jpg",
+      "amount": 403.2,
+      "commission": 80.64,
+      "hostPayout": 322.56,
+      "status": "completed"
+    },
+    {
+      "id": "ses-seed-partner",
+      "reservationId": "res-partner-hist",
+      "driverId": "drv-elena",
+      "driverName": "Elena Weber",
+      "hostId": "host-ionity",
+      "chargingPointId": "cp-ionity-ostbahnhof",
+      "chargingPointName": "Ionity Munich East Ultra-Rapid Hub",
+      "chargingPointType": "existing_station",
+      "connectorId": "c-io-1",
+      "pricePerKwh": 28,
+      "startTime": "2026-11-23T05:10:08.749Z",
+      "endTime": "2026-11-23T05:45:08.749Z",
+      "energyDeliveredKwh": 42,
+      "amount": 1176,
+      "commission": 176.4,
+      "hostPayout": 0,
+      "status": "completed"
+    },
+    {
+      "id": "ses-seed-disputed",
+      "reservationId": "res-seed-disputed",
+      "driverId": "drv-elena",
+      "driverName": "Elena Weber",
+      "hostId": "host-lukas",
+      "chargingPointId": "cp-schwabing-wallbox",
+      "chargingPointName": "Schwabing Residence Wallbox",
+      "chargingPointType": "private_host",
+      "connectorId": "c-sw-2",
+      "pricePerKwh": 18,
+      "startTime": "2026-11-23T17:25:08.749Z",
+      "endTime": "2026-11-23T18:25:08.749Z",
+      "energyDeliveredKwh": 48.5,
+      "meterReadingStartWh": 71680,
+      "meterReadingEndWh": 120180,
+      "meterPhotoStart": "/src/assets/images/digital_smart_meter_1795443225372.jpg",
+      "meterPhotoEnd": "/src/assets/images/digital_smart_meter_1795443225372.jpg",
+      "amount": 873,
+      "commission": 174.6,
+      "hostPayout": 698.4,
+      "status": "disputed",
+      "disputeReason": "Meter delta (48.50 kWh) exceeds physical 11 kW hardware ceiling for 60-minute session duration."
+    }
+  ],
+  "payments": [
+    {
+      "id": "pay-seed-1",
+      "sessionId": "ses-seed-1",
+      "driverId": "drv-elena",
+      "hostId": "host-lukas",
+      "amount": 403.2,
+      "type": "charge",
+      "status": "completed",
+      "stripeTransactionId": "pi_3Q9xLmImCharge001",
+      "description": "Metered session · 22.40 kWh @ ₹18.00/kWh",
+      "createdAt": "2026-11-24T02:22:08.749Z",
+      "completedAt": "2026-11-24T02:23:08.749Z"
+    },
+    {
+      "id": "pay-seed-2",
+      "sessionId": "ses-seed-1",
+      "driverId": "drv-elena",
+      "hostId": "host-lukas",
+      "amount": 322.56,
+      "type": "payout",
+      "status": "pending",
+      "stripeTransactionId": "po_3Q9xLmHost001",
+      "description": "Host 80% share pending weekly settlement",
+      "createdAt": "2026-11-24T02:23:08.749Z"
+    },
+    {
+      "id": "pay-seed-3",
+      "sessionId": "ses-seed-partner",
+      "driverId": "drv-elena",
+      "hostId": "host-ionity",
+      "amount": 176.4,
+      "type": "commission",
+      "status": "completed",
+      "stripeTransactionId": "inv_Ionity15Pct002",
+      "description": "Ionity 15% partner commission (42.00 kWh)",
+      "createdAt": "2026-11-23T05:45:08.749Z",
+      "completedAt": "2026-11-23T05:46:08.749Z"
+    }
+  ],
+  "reviews": [
+    {
+      "id": "rev-1",
+      "chargingPointId": "cp-schwabing-wallbox",
+      "driverId": "drv-elena",
+      "driverName": "Elena Weber",
+      "rating": 5,
+      "comment": "Clean driveway access and exact digital meter readout matched my Tesla telemetry within 0.1 kWh.",
+      "createdAt": "2026-11-24T02:30:08.749Z"
+    },
+    {
+      "id": "rev-2",
+      "chargingPointId": "cp-schwabing-wallbox",
+      "driverId": "drv-markus",
+      "driverName": "Markus Lindner",
+      "rating": 5,
+      "comment": "Lukas verified QR code immediately and parking bay is spacious.",
+      "createdAt": "2026-11-22T06:30:08.749Z"
+    },
+    {
+      "id": "rev-3",
+      "chargingPointId": "cp-albion-courtyard",
+      "driverId": "drv-sophia",
+      "driverName": "Sophia Klein",
+      "rating": 5,
+      "comment": "Quiet courtyard charger right near Odeonsplatz.",
+      "createdAt": "2026-11-22T21:30:08.749Z"
+    },
+    {
+      "id": "rev-4",
+      "chargingPointId": "cp-ionity-ostbahnhof",
+      "driverId": "drv-elena",
+      "driverName": "Elena Weber",
+      "rating": 5,
+      "comment": "Hit 245 kW peak on stall 01. Timber canopy kept the rain off.",
+      "createdAt": "2026-11-23T06:00:08.749Z"
+    }
+  ],
+  "partners": [
+    {
+      "id": "prt-ionity",
+      "partnerName": "Ionity",
+      "apiEndpoint": "https://ocpi.ionity.eu/2.2/locations",
+      "lastSyncTime": "2026-11-24T05:06:08.749Z",
+      "syncIntervalMinutes": 5,
+      "status": "active",
+      "syncedStationsCount": 2,
+      "commissionRate": 0.15
+    },
+    {
+      "id": "prt-chargepoint",
+      "partnerName": "ChargePoint",
+      "apiEndpoint": "https://api.chargepoint.com/ocpi/v2/stations",
+      "lastSyncTime": "2026-11-24T05:07:08.749Z",
+      "syncIntervalMinutes": 5,
+      "status": "active",
+      "syncedStationsCount": 1,
+      "commissionRate": 0.15
+    },
+    {
+      "id": "prt-fastned",
+      "partnerName": "Fastned",
+      "apiEndpoint": "https://api.fastnedcharging.com/v1/hubs",
+      "lastSyncTime": "2026-11-24T04:52:08.749Z",
+      "syncIntervalMinutes": 5,
+      "status": "error",
+      "syncedStationsCount": 0,
+      "commissionRate": 0.15
+    }
+  ],
+  "liveTelemetry": {},
+  "telemetryEvents": [
+    {
+      "id": "tel-seed-1",
+      "timestamp": "2026-11-24T05:07:08.749Z",
+      "chargingPointId": "cp-schwabing-wallbox",
+      "chargingPointName": "Schwabing Residence Wallbox",
+      "connectorId": "c-sw-1",
+      "eventType": "StatusNotification",
+      "protocol": "OCPP 2.0.1",
+      "powerKw": 0,
+      "meterWh": 142580,
+      "status": "available",
+      "summary": "Idle heartbeat verified · MID meter SM-400 synced at 142,580 Wh."
+    },
+    {
+      "id": "tel-seed-2",
+      "timestamp": "2026-11-24T05:06:08.749Z",
+      "chargingPointId": "cp-ionity-ostbahnhof",
+      "chargingPointName": "Ionity Munich East Ultra-Rapid Hub",
+      "connectorId": "c-io-1",
+      "eventType": "StatusNotification",
+      "protocol": "OCPI 2.2",
+      "powerKw": 0,
+      "status": "available",
+      "summary": "OCPI 2.2 station status polling active (350 kW DC stall ready)."
+    }
+  ],
+  "telemetryHeartbeatEnabled": true
+}
