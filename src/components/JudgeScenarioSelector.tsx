@@ -88,7 +88,7 @@ export function JudgeScenarioSelector({
         title="1-Click Pitch Scenarios for Hackathon Judges"
       >
         <Award className="h-3.5 w-3.5 text-emerald-600" />
-        <span className="hidden sm:inline">Judge Scenarios</span>
+        <span className="hidden sm:inline">Prototye Scenarios</span>
         <span className="sm:hidden">Scenarios</span>
         <ChevronDown className="h-3 w-3 text-emerald-700" />
       </button>
@@ -110,9 +110,8 @@ export function JudgeScenarioSelector({
                 key={s.id}
                 type="button"
                 onClick={() => handleSelect(s.id)}
-                className={`w-full rounded-lg p-2.5 text-left transition-colors hover:bg-zinc-50 flex flex-col gap-1 ${
-                  activeScenario === s.id ? 'bg-zinc-50 ring-1 ring-emerald-500/30' : ''
-                }`}
+                className={`w-full rounded-lg p-2.5 text-left transition-colors hover:bg-zinc-50 flex flex-col gap-1 ${activeScenario === s.id ? 'bg-zinc-50 ring-1 ring-emerald-500/30' : ''
+                  }`}
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-zinc-900 font-display">
