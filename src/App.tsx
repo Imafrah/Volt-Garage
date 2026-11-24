@@ -347,10 +347,8 @@ export default function App() {
               }}
               className="group flex items-center gap-2.5 text-zinc-900 whitespace-nowrap shrink-0"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-white shadow-xs">
-                <svg className="h-4 w-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                </svg>
+              <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg border border-zinc-200/80 bg-white shadow-xs">
+                <img src="/logo.png" alt="Volt Garage Logo" className="h-full w-full object-contain p-0.5" />
               </div>
               <div className="flex flex-col">
                 <span className="font-display text-sm font-bold tracking-tight text-zinc-900 sm:text-base">
