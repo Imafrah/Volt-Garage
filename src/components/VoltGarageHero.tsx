@@ -98,41 +98,41 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
             <div className="overflow-hidden rounded-2xl bg-white shadow-xl shadow-zinc-200/60">
               
               {/* Showcase Mode Segmented Switcher */}
-              <div className="flex items-center justify-between bg-zinc-50/80 px-3.5 py-2">
-                <div className="flex items-center gap-1 rounded-lg bg-zinc-200/70 p-0.5 text-xs font-medium">
+              <div className="flex items-center justify-between bg-zinc-50/80 px-3 py-2">
+                <div className="flex items-center gap-0.5 rounded-lg bg-zinc-200/70 p-0.5 text-xs font-medium overflow-x-auto scrollbar-none">
                   <button
                     type="button"
                     onClick={() => setShowcaseMode('3d-bay')}
-                    className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 transition-colors ${
+                    className={`inline-flex items-center gap-1 shrink-0 rounded-md px-2 py-1 transition-colors sm:gap-1.5 sm:px-2.5 ${
                       showcaseMode === '3d-bay'
                         ? 'bg-white font-semibold text-zinc-900 shadow-xs'
                         : 'text-zinc-600 hover:text-zinc-900'
                     }`}
                   >
-                    <Zap className="h-3.5 w-3.5 text-emerald-600" />
-                    <span>3D EV Bay</span>
+                    <Zap className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-emerald-600 shrink-0" />
+                    <span className="whitespace-nowrap">3D Bay</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowcaseMode('residential')}
-                    className={`rounded-md px-2.5 py-1 transition-colors ${
+                    className={`shrink-0 rounded-md px-2 py-1 transition-colors sm:px-2.5 ${
                       showcaseMode === 'residential'
                         ? 'bg-white font-semibold text-zinc-900 shadow-xs'
                         : 'text-zinc-600 hover:text-zinc-900'
                     }`}
                   >
-                    Residential Wallbox
+                    <span className="whitespace-nowrap">Wallbox</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowcaseMode('commercial')}
-                    className={`rounded-md px-2.5 py-1 transition-colors ${
+                    className={`shrink-0 rounded-md px-2 py-1 transition-colors sm:px-2.5 ${
                       showcaseMode === 'commercial'
                         ? 'bg-white font-semibold text-zinc-900 shadow-xs'
                         : 'text-zinc-600 hover:text-zinc-900'
                     }`}
                   >
-                    Commercial Hub
+                    <span className="whitespace-nowrap">DC Hub</span>
                   </button>
                 </div>
 
@@ -226,45 +226,45 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
       {/* Bottom Technical Specs Ribbon (Seamless Light Minimalist Architecture) */}
       <div className="bg-zinc-50/60 py-3.5">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-6 text-xs">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4 sm:gap-6 text-xs">
             
-            <div className="flex items-center gap-3">
-              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-zinc-200 text-zinc-800 font-mono text-[11px] font-semibold">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-zinc-200 text-zinc-800 font-mono text-[11px] font-semibold">
                 AC
               </div>
               <div>
                 <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-wide">Power Band</div>
-                <div className="font-mono font-medium text-zinc-900 tabular-nums">3.3 kW – 150 kW</div>
+                <div className="font-mono font-medium text-zinc-900 tabular-nums text-xs">3.3 – 150 kW</div>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-zinc-200 text-zinc-800 font-mono text-[11px] font-semibold">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-zinc-200 text-zinc-800 font-mono text-[11px] font-semibold">
                 ₹
               </div>
               <div>
                 <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-wide">Community Tariff</div>
-                <div className="font-mono font-medium text-zinc-900 tabular-nums">₹18.00 / kWh</div>
+                <div className="font-mono font-medium text-zinc-900 tabular-nums text-xs">₹18.00 / kWh</div>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-zinc-200 text-zinc-800 font-mono text-[11px] font-semibold">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-zinc-200 text-zinc-800 font-mono text-[11px] font-semibold">
                 30m
               </div>
               <div>
                 <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-wide">Hold Window</div>
-                <div className="font-medium text-zinc-900">Guaranteed 30-Min</div>
+                <div className="font-medium text-zinc-900 text-xs">Guaranteed</div>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-zinc-200 text-zinc-800 font-mono text-[11px] font-semibold">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-zinc-200 text-zinc-800 font-mono text-[11px] font-semibold">
                 80%
               </div>
               <div>
                 <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-wide">Host Settlement</div>
-                <div className="font-medium text-zinc-900">Weekly Automated</div>
+                <div className="font-medium text-zinc-900 text-xs">Weekly Auto</div>
               </div>
             </div>
 

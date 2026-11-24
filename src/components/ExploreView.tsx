@@ -357,11 +357,12 @@ export function ExploreView({
       {/* Workspace Filter Toolbar */}
       <section
         aria-label="Charging station filters"
-        className="rounded-xl border border-zinc-200/90 bg-white p-4 shadow-xs"
+        className="rounded-xl border border-zinc-200/90 bg-white p-3.5 shadow-xs sm:p-4"
       >
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex flex-1 flex-wrap items-center gap-3">
-            <div className="relative min-w-[220px] flex-1">
+        <div className="flex flex-col gap-3">
+          {/* Row 1: Search + type filter */}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="relative flex-1">
               <label htmlFor="charger-search" className="sr-only">
                 Search charging stations or addresses
               </label>
@@ -379,13 +380,13 @@ export function ExploreView({
             <div
               role="group"
               aria-label="Host type filter"
-              className="flex items-center gap-1 overflow-x-auto max-w-full rounded-lg bg-zinc-100 p-1 scrollbar-none"
+              className="flex items-center gap-1 overflow-x-auto max-w-full rounded-lg bg-zinc-100 p-1 scrollbar-none shrink-0"
             >
               {(
                 [
-                  { id: 'all', label: 'All Types' },
-                  { id: 'private_host', label: 'Private Host' },
-                  { id: 'existing_station', label: 'Partner Hub' },
+                  { id: 'all', label: 'All' },
+                  { id: 'private_host', label: 'Private' },
+                  { id: 'existing_station', label: 'Partner' },
                 ] as const
               ).map((item) => (
                 <button
@@ -402,7 +403,10 @@ export function ExploreView({
                 </button>
               ))}
             </div>
+          </div>
 
+          {/* Row 2: Connector + radius + toggles */}
+          <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-600">
             <div>
               <label htmlFor="connector-filter" className="sr-only">
                 Connector type
@@ -422,9 +426,7 @@ export function ExploreView({
                 <option value="Type1">Type 1</option>
               </select>
             </div>
-          </div>
 
-          <div className="flex flex-wrap items-center gap-5 text-xs text-zinc-600">
             <label className="flex items-center gap-2 font-medium">
               <span>Radius</span>
               <input
@@ -433,7 +435,7 @@ export function ExploreView({
                 max={20}
                 value={radiusKm}
                 onChange={(e) => setRadiusKm(Number(e.target.value))}
-                className="w-24 accent-emerald-600"
+                className="w-20 accent-emerald-600 sm:w-24"
               />
               <span className="w-11 font-mono tabular-nums text-zinc-900">
                 {radiusKm} km

@@ -518,13 +518,13 @@ export default function App() {
           <div className="space-y-6">
             {/* Contextual Page Header (for Trips and Host consoles) */}
             {activeView !== 'explore' && (
-              <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end border-b border-zinc-200/80 pb-4">
+              <div className="flex flex-col gap-3 border-b border-zinc-200/80 pb-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 text-balance">
                     {activeView === 'trips' &&
-                      'Active Reservations, QR Check-In & Metered Billing'}
+                      'Reservations & Metered Billing'}
                     {activeView === 'host' &&
-                      'Host Infrastructure Console & Meter Verification'}
+                      'Host Console & Meter Verification'}
                   </h1>
                   <p className="mt-1 text-xs sm:text-sm text-zinc-500 max-w-2xl">
                     {activeView === 'trips' &&
@@ -534,7 +534,7 @@ export default function App() {
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-500">
-                  <span>Active EV Owner:</span>
+                  <span className="hidden sm:inline">Active EV Owner:</span>
                   {snapshot.drivers.length > 1 ? (
                     <select
                       aria-label="Select active EV Owner"
@@ -555,8 +555,8 @@ export default function App() {
                   )}
                   {primaryDriver.vehicles[0] && (
                     <>
-                      <span aria-hidden="true">·</span>
-                      <span className="font-mono text-zinc-700">
+                      <span aria-hidden="true" className="hidden sm:inline">·</span>
+                      <span className="hidden sm:inline font-mono text-zinc-700">
                         {primaryDriver.vehicles[0].make}{' '}
                         {primaryDriver.vehicles[0].model}
                       </span>

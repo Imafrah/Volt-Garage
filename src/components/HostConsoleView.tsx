@@ -30,6 +30,7 @@ import type {
   TelemetryEventRecord,
 } from '../domain/types';
 import { SmartMeter3D } from './SmartMeter3D';
+import { HostAvailabilityScheduler } from './HostAvailabilityScheduler';
 
 export type HostSubTab = 'queue' | 'payouts' | 'onboard';
 
@@ -1491,19 +1492,13 @@ export function HostConsoleView({
               </>
             )}
 
-            <div>
-              <label
-                htmlFor="onboard-hours"
-                className="block text-xs font-medium text-zinc-700"
-              >
-                Availability Hours
+            <div className="sm:col-span-2 lg:col-span-3">
+              <label className="block text-xs font-medium text-zinc-700 mb-1">
+                Availability Schedule
               </label>
-              <input
-                id="onboard-hours"
-                type="text"
+              <HostAvailabilityScheduler
                 value={availabilityHours}
-                onChange={(e) => setAvailabilityHours(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900"
+                onChange={setAvailabilityHours}
               />
             </div>
 
