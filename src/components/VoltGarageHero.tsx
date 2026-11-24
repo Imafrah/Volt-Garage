@@ -1,35 +1,43 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { ArrowRight, Compass, Globe as GlobeIcon, Layers, TrendingUp, Zap } from 'lucide-react';
-import Globe from './originkit/ui/globe';
-import SunsetVelocity from './originkit/ui/hero-57/sunset-velocity';
+import { ArrowRight, Compass, TrendingUp, Zap } from 'lucide-react';
 
 interface VoltGarageHeroProps {
   onExploreClick: () => void;
   onHostClick: () => void;
-  onOpenHero57?: () => void;
 }
 
-export function VoltGarageHero({ onExploreClick, onHostClick, onOpenHero57 }: VoltGarageHeroProps) {
+export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const [chargerState, setChargerState] = useState<'available' | 'charging'>('available');
-  const [visualMode, setVisualMode] = useState<'globe' | 'pedestal' | 'velocity'>('globe');
+  const ledMatRef = useRef<THREE.MeshBasicMaterial | null>(null);
+  const cyanLightRef = useRef<THREE.PointLight | null>(null);
+
+  // Update LED material and point light dynamically when chargerState changes
+  useEffect(() => {
+    if (ledMatRef.current) {
+      ledMatRef.current.color.set(chargerState === 'available' ? 0x10b981 : 0x06b6d4);
+    }
+    if (cyanLightRef.current) {
+      cyanLightRef.current.color.set(chargerState === 'available' ? 0x10b981 : 0x06b6d4);
+    }
+  }, [chargerState]);
 
   useEffect(() => {
     const container = mountRef.current;
     if (!container) return;
 
-    const width = container.clientWidth;
-    const height = container.clientHeight;
+    const width = container.clientWidth || 400;
+    const height = container.clientHeight || 360;
 
     // Three.js Scene Setup
     const scene = new THREE.Scene();
     scene.background = null;
 
     const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
-    camera.position.set(0, 0.4, 3.8);
+    camera.position.set(0, 0.35, 3.8);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
@@ -49,9 +57,10 @@ export function VoltGarageHero({ onExploreClick, onHostClick, onOpenHero57 }: Vo
     rimLight.position.set(-4, -2, -3);
     scene.add(rimLight);
 
-    const cyanLight = new THREE.PointLight(0x06b6d4, 1.5, 6);
+    const cyanLight = new THREE.PointLight(0x10b981, 1.5, 6);
     cyanLight.position.set(0, 0.8, 1.2);
     scene.add(cyanLight);
+    cyanLightRef.current = cyanLight;
 
     // Charger Pedestal Group
     const chargerGroup = new THREE.Group();
@@ -106,6 +115,7 @@ export function VoltGarageHero({ onExploreClick, onHostClick, onOpenHero57 }: Vo
     const ledMat = new THREE.MeshBasicMaterial({
       color: chargerState === 'available' ? 0x10b981 : 0x06b6d4,
     });
+    ledMatRef.current = ledMat;
     const ledRing = new THREE.Mesh(ringGeo, ledMat);
     ledRing.position.set(0, 0.72, 0.19);
     chargerGroup.add(ledRing);
@@ -168,6 +178,7 @@ export function VoltGarageHero({ onExploreClick, onHostClick, onOpenHero57 }: Vo
       if (!container) return;
       const w = container.clientWidth;
       const h = container.clientHeight;
+      if (w === 0 || h === 0) return;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
@@ -192,9 +203,7 @@ export function VoltGarageHero({ onExploreClick, onHostClick, onOpenHero57 }: Vo
 
       // Pulse LED status light
       const pulse = 0.8 + 0.3 * Math.sin(elapsed * 3);
-      if (ledMat.color) {
-        cyanLight.intensity = pulse * 1.8;
-      }
+      cyanLight.intensity = pulse * 1.8;
 
       renderer.render(scene, camera);
     };
@@ -225,8 +234,10 @@ export function VoltGarageHero({ onExploreClick, onHostClick, onOpenHero57 }: Vo
       screenMat.dispose();
       cableMat.dispose();
       gunMat.dispose();
+      ledMatRef.current = null;
+      cyanLightRef.current = null;
     };
-  }, [chargerState]);
+  }, []);
 
   return (
     <section aria-label="Volt Garage Platform Overview" className="relative w-full border-b border-zinc-800 bg-zinc-950 text-zinc-100">
@@ -278,7 +289,7 @@ export function VoltGarageHero({ onExploreClick, onHostClick, onOpenHero57 }: Vo
             </div>
           </div>
 
-          {/* Action CTAs: Full width on mobile, inline on tablet/desktop */}
+          {/* Action CTAs */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3 pt-1">
             <button
               type="button"
@@ -300,156 +311,41 @@ export function VoltGarageHero({ onExploreClick, onHostClick, onOpenHero57 }: Vo
           </div>
         </div>
 
-        {/* Right Column: Interactive 3D Visualizer (Originkit Earth Globe / 3D Pedestal / Hero 57) */}
+        {/* Right Column: Interactive 3D EV Wallbox Pedestal */}
         <div className="lg:col-span-5 relative flex flex-col items-center justify-center">
-          {/* Visual Mode Switcher Pill */}
-          <div className="mb-2 flex items-center gap-1 rounded-lg border border-zinc-800 bg-zinc-900 p-1 text-xs font-mono">
-            <button
-              type="button"
-              onClick={() => setVisualMode('globe')}
-              className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 transition-colors ${
-                visualMode === 'globe'
-                  ? 'bg-emerald-500 font-semibold text-zinc-950'
-                  : 'text-zinc-400 hover:text-white'
-              }`}
-            >
-              <GlobeIcon className="h-3.5 w-3.5" />
-              <span>Earth grid</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setVisualMode('pedestal')}
-              className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 transition-colors ${
-                visualMode === 'pedestal'
-                  ? 'bg-emerald-500 font-semibold text-zinc-950'
-                  : 'text-zinc-400 hover:text-white'
-              }`}
-            >
-              <Zap className="h-3.5 w-3.5" />
-              <span>3D pedestal</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setVisualMode('velocity')}
-              className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 transition-colors ${
-                visualMode === 'velocity'
-                  ? 'bg-emerald-500 font-semibold text-zinc-950'
-                  : 'text-zinc-400 hover:text-white'
-              }`}
-            >
-              <Layers className="h-3.5 w-3.5" />
-              <span>Hero 57</span>
-            </button>
+          {/* Header Tag */}
+          <div className="mb-2 flex items-center justify-between w-full max-w-sm px-1 text-xs font-mono text-zinc-400">
+            <span className="flex items-center gap-1.5 text-zinc-300">
+              <Zap className="h-3.5 w-3.5 text-emerald-400" />
+              <span>Interactive Wallbox Pedestal</span>
+            </span>
+            <span className="text-[11px] text-zinc-500">Rotate to inspect</span>
           </div>
 
-          {/* Interactive Globe Container */}
-          {visualMode === 'globe' && (
-            <div className="h-[280px] sm:h-[380px] lg:h-[420px] w-full flex items-center justify-center">
-              <Globe
-                fill="dots"
-                scale={7.8}
-                speed={1.6}
-                direction="left"
-                showGrid={true}
-                showOutline={true}
-                fillColor="#34d399"
-                oceanColor="#09090b"
-                outlineColor="#10b981"
-                graticuleColor="#27272a"
-                initialLatitude={20}
-                initialLongitude={30}
-                markerConfig={{
-                  markers: [
-                    { lat: 48.137, lng: 11.576 }, // Munich Metro Hub
-                    { lat: 12.9716, lng: 77.5946 }, // Bengaluru Hub (Darshan P2P Grid)
-                    { lat: 52.52, lng: 13.405 }, // Berlin
-                    { lat: 51.5074, lng: -0.1278 }, // London
-                    { lat: 37.7749, lng: -122.4194 }, // Silicon Valley
-                    { lat: 28.6139, lng: 77.209 }, // New Delhi
-                  ],
-                  color: "#34d399",
-                  size: 40,
-                }}
-              />
-            </div>
-          )}
-
-          {/* Interactive 3D Charging Pedestal */}
+          {/* Interactive 3D Charging Pedestal Canvas */}
           <div
             ref={mountRef}
-            className={`h-[280px] sm:h-[380px] lg:h-[420px] w-full cursor-grab active:cursor-grabbing ${
-              visualMode === 'pedestal' ? 'block' : 'hidden'
-            }`}
+            className="h-[300px] sm:h-[380px] lg:h-[420px] w-full cursor-grab active:cursor-grabbing rounded-2xl border border-zinc-800/80 bg-zinc-900/40 backdrop-blur-xs flex items-center justify-center"
             title="Interactive 3D EV Pedestal — Move cursor to inspect"
           />
 
-          {/* Hero 57 Sunset Velocity Scene */}
-          {visualMode === 'velocity' && (
-            <div className="h-[280px] sm:h-[380px] lg:h-[420px] w-full relative overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950">
-              <SunsetVelocity
-                background="#09090b"
-                skyTop="#18181b"
-                skyHorizon="#27272a"
-                advanced={{
-                  sunX: 50,
-                  sunY: 30,
-                  sunSize: 90,
-                  vignette: 15,
-                  hazeColor: '#10b981',
-                  hazeOpacity: 35,
-                  cloudColor: '#27272a',
-                  roadColor: '#09090b',
-                  laneColor: '#34d399',
-                  turbineNear: '#18181b',
-                  turbineMid: '#27272a',
-                  turbineFar: '#3f3f46',
-                }}
-                style={{ minWidth: 0, minHeight: 0, width: "100%", height: "100%" }}
-              />
-            </div>
-          )}
-
           {/* Dynamic Interactive Telemetry Strip */}
-          <div className="mt-2.5 flex items-center justify-between w-full max-w-xs rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs font-mono">
-            {visualMode === 'globe' ? (
-              <>
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                  <span className="text-zinc-300 font-medium">Global grid live</span>
-                </div>
-                <span className="text-emerald-400 font-mono tabular-nums">6 metro hubs</span>
-              </>
-            ) : visualMode === 'pedestal' ? (
-              <>
-                <div className="flex items-center gap-2">
-                  <span className={`h-2 w-2 rounded-full ${chargerState === 'available' ? 'bg-emerald-500' : 'bg-cyan-400'}`} />
-                  <span className="text-zinc-400 font-medium">Pedestal 01</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setChargerState((s) => (s === 'available' ? 'charging' : 'available'))}
-                  className="text-xs font-medium text-emerald-400 hover:text-emerald-300 underline underline-offset-2"
-                >
-                  {chargerState === 'available' ? 'Simulate plug-in' : 'Simulate unplug'}
-                </button>
-              </>
-            ) : (
-              <>
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                  <span className="text-zinc-300 font-medium">Wind & grid velocity</span>
-                </div>
-                {onOpenHero57 && (
-                  <button
-                    type="button"
-                    onClick={onOpenHero57}
-                    className="text-xs font-medium text-emerald-400 hover:text-emerald-300 underline underline-offset-2"
-                  >
-                    View section 57
-                  </button>
-                )}
-              </>
-            )}
+          <div className="mt-3 flex items-center justify-between w-full max-w-sm rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-2 text-xs font-mono">
+            <div className="flex items-center gap-2">
+              <span className={`h-2 w-2 rounded-full ${chargerState === 'available' ? 'bg-emerald-500' : 'bg-cyan-400'}`} />
+              <span className="text-zinc-300 font-medium">Pedestal 01</span>
+              <span className="text-zinc-500">·</span>
+              <span className={chargerState === 'available' ? 'text-emerald-400' : 'text-cyan-400'}>
+                {chargerState === 'available' ? '22 kW AC Ready' : 'Charging at 22 kW'}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setChargerState((s) => (s === 'available' ? 'charging' : 'available'))}
+              className="text-xs font-medium text-emerald-400 hover:text-emerald-300 underline underline-offset-2 transition-colors"
+            >
+              {chargerState === 'available' ? 'Simulate plug-in' : 'Simulate unplug'}
+            </button>
           </div>
         </div>
       </div>

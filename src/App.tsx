@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Car, Compass, Home, Layers, RotateCcw, UserPlus } from 'lucide-react';
+import { Car, Compass, Home, RotateCcw, UserPlus } from 'lucide-react';
 import { apiClient } from './api/client';
 import { DriverTripsView } from './components/DriverTripsView';
 import { ExploreView } from './components/ExploreView';
 import { HostConsoleView, type HostSubTab } from './components/HostConsoleView';
 import { VoltGarageHero } from './components/VoltGarageHero';
-import Hero57 from './components/originkit/hero-57';
 import {
   RegistrationModal,
   type RegistrationRole,
@@ -38,7 +37,6 @@ export default function App() {
   const [activeHostId, setActiveHostId] = useState<string | null>(null);
   const [registrationRole, setRegistrationRole] =
     useState<RegistrationRole | null>(null);
-  const [showHero57, setShowHero57] = useState(false);
   const [sseStatus, setSseStatus] = useState<SseConnectionStatus>(() =>
     typeof navigator !== 'undefined' && !navigator.onLine
       ? 'reconnecting'
@@ -398,16 +396,6 @@ export default function App() {
           <div className="flex shrink-0 items-center gap-1 sm:gap-2">
             <button
               type="button"
-              onClick={() => setShowHero57(true)}
-              title="Preview Originkit Hero 57 Section"
-              aria-label="Preview Originkit Hero 57"
-              className="whitespace-nowrap shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
-            >
-              <Layers className="h-3.5 w-3.5 text-emerald-600" />
-              <span className="hidden sm:inline">Hero 57</span>
-            </button>
-            <button
-              type="button"
               onClick={handleResetDemo}
               title="Reset demo data to initial state"
               aria-label="Reset Demo Data"
@@ -483,7 +471,6 @@ export default function App() {
             setHostInitialTab('onboard');
             setActiveView('host');
           }}
-          onOpenHero57={() => setShowHero57(true)}
         />
       )}
 
@@ -663,41 +650,6 @@ export default function App() {
           onRegisterDriver={handleRegisterDriver}
           onRegisterHost={handleRegisterHost}
         />
-      )}
-
-      {/* Originkit Hero 57 Showcase Modal */}
-      {showHero57 && (
-        <div
-          className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md flex flex-col items-center justify-start p-2 sm:p-6"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Hero 57 Showcase"
-        >
-          <div className="relative w-full max-w-6xl rounded-2xl overflow-hidden shadow-2xl border border-zinc-700 bg-white my-auto">
-            <div className="sticky top-0 z-50 flex items-center justify-between border-b border-zinc-200 bg-zinc-900 px-4 py-2.5 text-white">
-              <div className="flex items-center gap-2">
-                <span className="text-emerald-400 font-bold">✦</span>
-                <span className="text-xs sm:text-sm font-semibold tracking-tight">
-                  Originkit Hero 57 Section Showcase
-                </span>
-                <span className="rounded bg-zinc-800 px-2 py-0.5 font-mono text-[10px] text-zinc-400">
-                  sunset-velocity
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowHero57(false)}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-800 px-3 py-1 text-xs font-medium text-zinc-200 transition-colors hover:bg-zinc-700 hover:text-white"
-              >
-                <span>✕</span>
-                <span>Close</span>
-              </button>
-            </div>
-            <div className="overflow-x-hidden">
-              <Hero57 />
-            </div>
-          </div>
-        </div>
       )}
     </div>
   );
