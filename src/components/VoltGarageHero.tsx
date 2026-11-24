@@ -1,20 +1,19 @@
 import { useState } from 'react';
-import { ArrowRight, CheckCircle2, Clock, Compass, ShieldCheck, Sparkles, TrendingUp, Zap } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Clock, Compass, ShieldCheck, TrendingUp, Zap } from 'lucide-react';
 import homeWallboxImg from '../assets/images/private_home_wallbox_1795443222640.jpg';
 import fastHubImg from '../assets/images/company_fast_hub_1795443225006.jpg';
+import { HeroCar3D } from './HeroCar3D';
 
 interface VoltGarageHeroProps {
   onExploreClick: () => void;
   onHostClick: () => void;
 }
 
-type ShowcaseMode = 'residential' | 'commercial';
+type ShowcaseMode = '3d-bay' | 'residential' | 'commercial';
 
 export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroProps) {
-  const [showcaseMode, setShowcaseMode] = useState<ShowcaseMode>('residential');
-  const [sessionSimActive, setSessionSimActive] = useState(false);
-
-  const isResidential = showcaseMode === 'residential';
+  const [showcaseMode, setShowcaseMode] = useState<ShowcaseMode>('3d-bay');
+  const [sessionSimActive, setSessionSimActive] = useState(true);
 
   return (
     <section aria-label="Volt Garage Platform Overview" className="relative w-full border-b border-zinc-200/80 bg-white text-zinc-900">
@@ -99,16 +98,25 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
             <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
               
               {/* Showcase Mode Segmented Switcher */}
-              <div className="flex items-center justify-between border-b border-zinc-200 bg-zinc-50/80 px-4 py-2.5">
+              <div className="flex items-center justify-between border-b border-zinc-200 bg-zinc-50/80 px-3.5 py-2">
                 <div className="flex items-center gap-1 rounded-lg bg-zinc-200/70 p-0.5 text-xs font-medium">
                   <button
                     type="button"
-                    onClick={() => {
-                      setShowcaseMode('residential');
-                      setSessionSimActive(false);
-                    }}
+                    onClick={() => setShowcaseMode('3d-bay')}
+                    className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 transition-colors ${
+                      showcaseMode === '3d-bay'
+                        ? 'bg-white font-semibold text-zinc-900 shadow-xs'
+                        : 'text-zinc-600 hover:text-zinc-900'
+                    }`}
+                  >
+                    <Zap className="h-3.5 w-3.5 text-emerald-600" />
+                    <span>3D EV Bay</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowcaseMode('residential')}
                     className={`rounded-md px-2.5 py-1 transition-colors ${
-                      isResidential
+                      showcaseMode === 'residential'
                         ? 'bg-white font-semibold text-zinc-900 shadow-xs'
                         : 'text-zinc-600 hover:text-zinc-900'
                     }`}
@@ -117,79 +125,82 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
                   </button>
                   <button
                     type="button"
-                    onClick={() => {
-                      setShowcaseMode('commercial');
-                      setSessionSimActive(false);
-                    }}
+                    onClick={() => setShowcaseMode('commercial')}
                     className={`rounded-md px-2.5 py-1 transition-colors ${
-                      !isResidential
+                      showcaseMode === 'commercial'
                         ? 'bg-white font-semibold text-zinc-900 shadow-xs'
                         : 'text-zinc-600 hover:text-zinc-900'
                     }`}
                   >
-                    Commercial Fast Hub
+                    Commercial Hub
                   </button>
                 </div>
 
-                <span className="font-mono text-[11px] font-medium text-emerald-700">
-                  {isResidential ? '3.3 – 22 kW AC' : '50 – 150 kW DC'}
+                <span className="hidden sm:inline font-mono text-[11px] font-medium text-emerald-700">
+                  {showcaseMode === '3d-bay' ? 'Interactive 3D Twin' : showcaseMode === 'residential' ? '3.3 – 22 kW AC' : '50 – 150 kW DC'}
                 </span>
               </div>
 
-              {/* Real Hardware Photography with Studio Framing */}
+              {/* Showcase Display Area */}
               <div className="relative aspect-16/10 w-full overflow-hidden bg-zinc-100">
-                <img
-                  src={isResidential ? homeWallboxImg : fastHubImg}
-                  alt={isResidential ? 'Private residential home wallbox' : 'Commercial fast DC hub'}
-                  className="h-full w-full object-cover transition-opacity duration-300"
-                />
+                {showcaseMode === '3d-bay' ? (
+                  <HeroCar3D isCharging={sessionSimActive} onSessionToggle={setSessionSimActive} />
+                ) : (
+                  <>
+                    <img
+                      src={showcaseMode === 'residential' ? homeWallboxImg : fastHubImg}
+                      alt={showcaseMode === 'residential' ? 'Private residential home wallbox' : 'Commercial fast DC hub'}
+                      className="h-full w-full object-cover transition-opacity duration-300"
+                    />
 
-                {/* Live Status Overlay Pill */}
-                <div className="absolute top-3 left-3 flex items-center gap-2 rounded-full border border-white/60 bg-white/95 px-3 py-1 text-xs font-mono backdrop-blur-md shadow-xs">
-                  <span className={`h-2 w-2 rounded-full ${sessionSimActive ? 'bg-cyan-500 animate-pulse' : 'bg-emerald-500'}`} />
-                  <span className="font-semibold text-zinc-800">
-                    {sessionSimActive ? 'CHARGING IN PROGRESS' : 'BAY 01 · AVAILABLE'}
-                  </span>
-                </div>
+                    {/* Live Status Overlay Pill */}
+                    <div className="absolute top-3 left-3 flex items-center gap-2 rounded-full border border-white/60 bg-white/95 px-3 py-1 text-xs font-mono backdrop-blur-md shadow-xs">
+                      <span className={`h-2 w-2 rounded-full ${sessionSimActive ? 'bg-cyan-500 animate-pulse' : 'bg-emerald-500'}`} />
+                      <span className="font-semibold text-zinc-800">
+                        {sessionSimActive ? 'CHARGING IN PROGRESS' : 'BAY 01 · AVAILABLE'}
+                      </span>
+                    </div>
 
-                {/* Active Hold Countdown Badge */}
-                <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full border border-zinc-800/10 bg-zinc-900/90 px-2.5 py-1 text-[11px] font-mono text-white backdrop-blur-md">
-                  <Clock className="h-3 w-3 text-emerald-400" />
-                  <span>30m Hold Window</span>
-                </div>
+                    {/* Active Hold Countdown Badge */}
+                    <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full border border-zinc-800/10 bg-zinc-900/90 px-2.5 py-1 text-[11px] font-mono text-white backdrop-blur-md">
+                      <Clock className="h-3 w-3 text-emerald-400" />
+                      <span>30m Hold Window</span>
+                    </div>
 
-                {/* Bottom Telemetry Overlay Bar */}
-                <div className="absolute bottom-3 inset-x-3 rounded-xl border border-white/60 bg-white/95 p-3 backdrop-blur-md shadow-xs">
-                  <div className="flex items-center justify-between text-xs">
-                    <div>
-                      <div className="font-semibold text-zinc-900">
-                        {isResidential ? 'Marienplatz Residential Hub' : 'Schwabing DC Fast Terminal'}
-                      </div>
-                      <div className="text-[11px] text-zinc-500">
-                        {isResidential ? 'Elena Weber · Verified Private Host' : 'Partner Hub · 8 Bays Active'}
+                    {/* Bottom Telemetry Overlay Bar */}
+                    <div className="absolute bottom-3 inset-x-3 rounded-xl border border-white/60 bg-white/95 p-3 backdrop-blur-md shadow-xs">
+                      <div className="flex items-center justify-between text-xs">
+                        <div>
+                          <div className="font-semibold text-zinc-900">
+                            {showcaseMode === 'residential' ? 'Marienplatz Residential Hub' : 'Schwabing DC Fast Terminal'}
+                          </div>
+                          <div className="text-[11px] text-zinc-500">
+                            {showcaseMode === 'residential' ? 'Elena Weber · Verified Private Host' : 'Partner Hub · 8 Bays Active'}
+                          </div>
+                        </div>
+                        <div className="text-right font-mono">
+                          <div className="text-sm font-bold text-zinc-900 tabular-nums">
+                            {showcaseMode === 'residential' ? '₹18.00' : '₹26.50'} <span className="text-[10px] text-zinc-500 font-normal">/ kWh</span>
+                          </div>
+                          <div className="text-[10px] text-emerald-700 font-medium">
+                            {sessionSimActive ? 'Metering: 14.2 kWh' : 'Zero booking fee'}
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div className="text-right font-mono">
-                      <div className="text-sm font-bold text-zinc-900 tabular-nums">
-                        {isResidential ? '₹18.00' : '₹26.50'} <span className="text-[10px] text-zinc-500 font-normal">/ kWh</span>
-                      </div>
-                      <div className="text-[10px] text-emerald-700 font-medium">
-                        {sessionSimActive ? 'Metering: 14.2 kWh' : 'Zero booking fee'}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                  </>
+                )}
               </div>
 
               {/* Interactive Telemetry & Simulation Controller */}
-              <div className="border-t border-zinc-100 bg-zinc-50/70 p-3.5">
+              <div className="border-t border-zinc-100 bg-zinc-50/70 p-3 sm:p-3.5">
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2 font-mono text-zinc-600">
                     <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                    <span>OCPP 2.0.1 Meter:</span>
+                    <span className="hidden sm:inline">OCPP 2.0.1 Meter:</span>
                     <span className="font-semibold text-zinc-900 tabular-nums">
                       {sessionSimActive 
-                        ? (isResidential ? '230V · 32A · 7.4 kW' : '400V · 125A · 50 kW')
+                        ? (showcaseMode === 'commercial' ? '400V · 125A · 50 kW' : '230V · 32A · 7.4 kW')
                         : 'Standby · 230V Live'
                       }
                     </span>
