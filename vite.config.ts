@@ -29,9 +29,10 @@ export default defineConfig(() => {
       },
     ],
     resolve: {
-      alias: {
-        '@': path.resolve(__dirname, '.'),
-      },
+      alias: [
+        { find: /^@\/components\/(.*)/, replacement: path.resolve(__dirname, 'src/components/$1') },
+        { find: /^@\/(.*)/, replacement: path.resolve(__dirname, 'src/$1') },
+      ],
     },
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.

@@ -1,17 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { ArrowRight, Compass, Globe as GlobeIcon, TrendingUp, Zap } from 'lucide-react';
+import { ArrowRight, Compass, Globe as GlobeIcon, Sparkles, TrendingUp, Zap } from 'lucide-react';
 import Globe from './originkit/ui/globe';
+import SunsetVelocity from './originkit/ui/hero-57/sunset-velocity';
 
 interface VoltGarageHeroProps {
   onExploreClick: () => void;
   onHostClick: () => void;
+  onOpenHero57?: () => void;
 }
 
-export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroProps) {
+export function VoltGarageHero({ onExploreClick, onHostClick, onOpenHero57 }: VoltGarageHeroProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const [chargerState, setChargerState] = useState<'available' | 'charging'>('available');
-  const [visualMode, setVisualMode] = useState<'globe' | 'pedestal'>('globe');
+  const [visualMode, setVisualMode] = useState<'globe' | 'pedestal' | 'velocity'>('globe');
 
   useEffect(() => {
     const container = mountRef.current;
@@ -301,11 +303,11 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
         {/* Right Column: Interactive 3D Visualizer (Originkit Earth Globe / 3D Pedestal) */}
         <div className="lg:col-span-5 relative flex flex-col items-center justify-center">
           {/* Visual Mode Switcher Pill */}
-          <div className="mb-2 flex items-center rounded-lg border border-zinc-800 bg-zinc-900/90 p-0.5 text-xs font-mono backdrop-blur-md">
+          <div className="mb-2 flex items-center gap-1 rounded-lg border border-zinc-800 bg-zinc-900/90 p-1 text-xs font-mono backdrop-blur-md">
             <button
               type="button"
               onClick={() => setVisualMode('globe')}
-              className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1 transition-colors ${
+              className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 transition-colors ${
                 visualMode === 'globe'
                   ? 'bg-emerald-500 font-semibold text-zinc-950 shadow-xs'
                   : 'text-zinc-400 hover:text-white'
@@ -317,7 +319,7 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
             <button
               type="button"
               onClick={() => setVisualMode('pedestal')}
-              className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1 transition-colors ${
+              className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 transition-colors ${
                 visualMode === 'pedestal'
                   ? 'bg-emerald-500 font-semibold text-zinc-950 shadow-xs'
                   : 'text-zinc-400 hover:text-white'
@@ -325,6 +327,18 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
             >
               <Zap className="h-3.5 w-3.5" />
               <span>3D Pedestal</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setVisualMode('velocity')}
+              className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 transition-colors ${
+                visualMode === 'velocity'
+                  ? 'bg-emerald-500 font-semibold text-zinc-950 shadow-xs'
+                  : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>Hero 57 Scene</span>
             </button>
           </div>
 
@@ -369,6 +383,32 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
             title="Interactive 3D EV Pedestal — Move cursor to inspect"
           />
 
+          {/* Hero 57 Sunset Velocity Scene */}
+          {visualMode === 'velocity' && (
+            <div className="h-[360px] sm:h-[440px] w-full relative overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950">
+              <SunsetVelocity
+                background="#09090b"
+                skyTop="#18181b"
+                skyHorizon="#27272a"
+                advanced={{
+                  sunX: 50,
+                  sunY: 30,
+                  sunSize: 90,
+                  vignette: 15,
+                  hazeColor: '#10b981',
+                  hazeOpacity: 35,
+                  cloudColor: '#27272a',
+                  roadColor: '#09090b',
+                  laneColor: '#34d399',
+                  turbineNear: '#18181b',
+                  turbineMid: '#27272a',
+                  turbineFar: '#3f3f46',
+                }}
+                style={{ minWidth: 0, minHeight: 0, width: "100%", height: "100%" }}
+              />
+            </div>
+          )}
+
           {/* Dynamic Interactive Telemetry Strip */}
           <div className="mt-2 flex items-center justify-between w-full max-w-xs rounded-lg border border-zinc-800 bg-zinc-900/90 px-3.5 py-2 text-xs font-mono backdrop-blur-md">
             {visualMode === 'globe' ? (
@@ -382,7 +422,7 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
                 </div>
                 <span className="text-emerald-400 font-mono">6 METRO HUBS</span>
               </>
-            ) : (
+            ) : visualMode === 'pedestal' ? (
               <>
                 <div className="flex items-center gap-2">
                   <span className="relative flex h-2 w-2">
@@ -398,6 +438,24 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
                 >
                   {chargerState === 'available' ? 'Simulate Plug-In' : 'Simulate Unplug'}
                 </button>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center gap-2">
+                  <span className="relative flex h-2 w-2">
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+                  </span>
+                  <span className="text-zinc-300 font-semibold">WIND & GRID VELOCITY</span>
+                </div>
+                {onOpenHero57 && (
+                  <button
+                    type="button"
+                    onClick={onOpenHero57}
+                    className="text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 underline underline-offset-2"
+                  >
+                    View Section 57
+                  </button>
+                )}
               </>
             )}
           </div>
