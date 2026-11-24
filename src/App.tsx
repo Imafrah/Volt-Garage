@@ -4,6 +4,7 @@ import { apiClient } from './api/client';
 import { DriverTripsView } from './components/DriverTripsView';
 import { ExploreView } from './components/ExploreView';
 import { HostConsoleView, type HostSubTab } from './components/HostConsoleView';
+import { VoltGarageHero } from './components/VoltGarageHero';
 import {
   RegistrationModal,
   type RegistrationRole,
@@ -565,15 +566,27 @@ export default function App() {
             </div>
 
             {activeView === 'explore' && (
-              <ExploreView
-                points={snapshot.chargingPoints}
-                reviews={snapshot.reviews}
-                reservations={snapshot.reservations}
-                driver={primaryDriver}
-                onReserve={handleReserve}
-                onUpdateDriverLocation={handleUpdateDriverLocation}
-                onGoToTrips={() => setActiveView('trips')}
-              />
+              <>
+                <VoltGarageHero
+                  onExploreClick={() => {
+                    const el = document.getElementById('charger-search');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  onHostClick={() => {
+                    setHostInitialTab('onboard');
+                    setActiveView('host');
+                  }}
+                />
+                <ExploreView
+                  points={snapshot.chargingPoints}
+                  reviews={snapshot.reviews}
+                  reservations={snapshot.reservations}
+                  driver={primaryDriver}
+                  onReserve={handleReserve}
+                  onUpdateDriverLocation={handleUpdateDriverLocation}
+                  onGoToTrips={() => setActiveView('trips')}
+                />
+              </>
             )}
 
             {activeView === 'trips' && (
