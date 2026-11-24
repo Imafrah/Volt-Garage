@@ -460,6 +460,20 @@ export default function App() {
         })}
       </nav>
 
+      {/* Full-Bleed Edge-to-Edge Hero Banner (Explore View) */}
+      {!loading && !loadError && snapshot && primaryDriver && activeView === 'explore' && (
+        <VoltGarageHero
+          onExploreClick={() => {
+            const el = document.getElementById('charger-search');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }}
+          onHostClick={() => {
+            setHostInitialTab('onboard');
+            setActiveView('host');
+          }}
+        />
+      )}
+
       <main className="mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-6 pb-20 sm:pb-6">
         {loading ? (
           <div
@@ -504,89 +518,75 @@ export default function App() {
           </div>
         ) : (
           <div className="space-y-6">
-            {/* Contextual Page Header */}
-            <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end border-b border-zinc-200/80 pb-4">
-              <div>
-                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 text-balance">
-                  {activeView === 'explore' &&
-                    'Charging Network & Real-Time Availability'}
-                  {activeView === 'trips' &&
-                    'Active Reservations, QR Check-In & Metered Billing'}
-                  {activeView === 'host' &&
-                    'Host Infrastructure Console & Meter Verification'}
-                </h1>
-                <p className="mt-1 text-xs sm:text-sm text-zinc-500 max-w-2xl">
-                  {activeView === 'explore' &&
-                    'Compare metered private wallboxes and partner DC hubs with 30-minute instant slot holds.'}
-                  {activeView === 'trips' &&
-                    'Manage your EV garage, confirm QR arrival tokens, track charging sessions, and rate hosts.'}
-                  {activeView === 'host' &&
-                    'Verify arriving drivers, record start/end smart meter readings (Wh), and settle 80% payouts.'}
-                </p>
-              </div>
-              <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-500">
-                <span>Active EV Owner:</span>
-                {snapshot.drivers.length > 1 ? (
-                  <select
-                    aria-label="Select active EV Owner"
-                    value={primaryDriver.uid}
-                    onChange={(e) => setActiveDriverId(e.target.value)}
-                    className="rounded-lg border border-zinc-200 bg-white px-2.5 py-1 text-xs font-medium text-zinc-900"
-                  >
-                    {snapshot.drivers.map((d) => (
-                      <option key={d.uid} value={d.uid}>
-                        {d.name}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <span className="font-medium text-zinc-900">
-                    {primaryDriver.name}
-                  </span>
-                )}
-                {primaryDriver.vehicles[0] && (
-                  <>
-                    <span aria-hidden="true">·</span>
-                    <span className="font-mono text-zinc-700">
-                      {primaryDriver.vehicles[0].make}{' '}
-                      {primaryDriver.vehicles[0].model}
+            {/* Contextual Page Header (for Trips and Host consoles) */}
+            {activeView !== 'explore' && (
+              <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end border-b border-zinc-200/80 pb-4">
+                <div>
+                  <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 text-balance">
+                    {activeView === 'trips' &&
+                      'Active Reservations, QR Check-In & Metered Billing'}
+                    {activeView === 'host' &&
+                      'Host Infrastructure Console & Meter Verification'}
+                  </h1>
+                  <p className="mt-1 text-xs sm:text-sm text-zinc-500 max-w-2xl">
+                    {activeView === 'trips' &&
+                      'Manage your EV garage, confirm QR arrival tokens, track charging sessions, and rate hosts.'}
+                    {activeView === 'host' &&
+                      'Verify arriving drivers, record start/end smart meter readings (Wh), and settle 80% payouts.'}
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-500">
+                  <span>Active EV Owner:</span>
+                  {snapshot.drivers.length > 1 ? (
+                    <select
+                      aria-label="Select active EV Owner"
+                      value={primaryDriver.uid}
+                      onChange={(e) => setActiveDriverId(e.target.value)}
+                      className="rounded-lg border border-zinc-200 bg-white px-2.5 py-1 text-xs font-medium text-zinc-900"
+                    >
+                      {snapshot.drivers.map((d) => (
+                        <option key={d.uid} value={d.uid}>
+                          {d.name}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <span className="font-medium text-zinc-900">
+                      {primaryDriver.name}
                     </span>
-                  </>
-                )}
-                <span aria-hidden="true">·</span>
-                <button
-                  type="button"
-                  onClick={() => setRegistrationRole('driver')}
-                  className="inline-flex items-center gap-1 font-semibold text-emerald-700 hover:text-emerald-800"
-                >
-                  <UserPlus className="h-3 w-3" />
-                  <span>+ New Driver</span>
-                </button>
+                  )}
+                  {primaryDriver.vehicles[0] && (
+                    <>
+                      <span aria-hidden="true">·</span>
+                      <span className="font-mono text-zinc-700">
+                        {primaryDriver.vehicles[0].make}{' '}
+                        {primaryDriver.vehicles[0].model}
+                      </span>
+                    </>
+                  )}
+                  <span aria-hidden="true">·</span>
+                  <button
+                    type="button"
+                    onClick={() => setRegistrationRole('driver')}
+                    className="inline-flex items-center gap-1 font-semibold text-emerald-700 hover:text-emerald-800"
+                  >
+                    <UserPlus className="h-3 w-3" />
+                    <span>+ New Driver</span>
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
 
             {activeView === 'explore' && (
-              <>
-                <VoltGarageHero
-                  onExploreClick={() => {
-                    const el = document.getElementById('charger-search');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  onHostClick={() => {
-                    setHostInitialTab('onboard');
-                    setActiveView('host');
-                  }}
-                />
-                <ExploreView
-                  points={snapshot.chargingPoints}
-                  reviews={snapshot.reviews}
-                  reservations={snapshot.reservations}
-                  driver={primaryDriver}
-                  onReserve={handleReserve}
-                  onUpdateDriverLocation={handleUpdateDriverLocation}
-                  onGoToTrips={() => setActiveView('trips')}
-                />
-              </>
+              <ExploreView
+                points={snapshot.chargingPoints}
+                reviews={snapshot.reviews}
+                reservations={snapshot.reservations}
+                driver={primaryDriver}
+                onReserve={handleReserve}
+                onUpdateDriverLocation={handleUpdateDriverLocation}
+                onGoToTrips={() => setActiveView('trips')}
+              />
             )}
 
             {activeView === 'trips' && (

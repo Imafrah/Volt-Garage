@@ -225,19 +225,19 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
   }, [chargerState]);
 
   return (
-    <div className="relative mb-8 overflow-hidden rounded-2xl border border-zinc-800 bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 text-white shadow-xl">
+    <section aria-label="Volt Garage Platform Overview" className="relative w-full border-b border-zinc-800/90 bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 text-white shadow-2xl">
       {/* Subtle Background Electric Grid Texture */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.035]"
+        className="pointer-events-none absolute inset-0 opacity-[0.04]"
         style={{
           backgroundImage: `radial-gradient(circle at 1px 1px, #ffffff 1px, transparent 0)`,
-          backgroundSize: '24px 24px',
+          backgroundSize: '28px 28px',
         }}
       />
 
-      <div className="relative z-10 grid grid-cols-1 items-center gap-8 lg:grid-cols-12 p-6 sm:p-10">
+      <div className="relative z-10 mx-auto max-w-7xl grid grid-cols-1 items-center gap-8 lg:grid-cols-12 px-4 py-10 sm:px-8 sm:py-16">
         {/* Left Column: Product Positioning & CTAs */}
-        <div className="lg:col-span-7 space-y-5">
+        <div className="lg:col-span-7 space-y-6">
           {/* Hardware Badge */}
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-950/60 px-3 py-1 text-xs font-mono font-medium text-emerald-400">
@@ -251,7 +251,7 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
 
           {/* Main Headline */}
           <div className="space-y-2">
-            <h1 className="font-display text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-[1.12]">
+            <h1 className="font-display text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.1]">
               Decentralized EV Charging. <br className="hidden sm:inline" />
               <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
                 Guaranteed Reservations.
@@ -264,7 +264,7 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
           </div>
 
           {/* Real-World Proof Point Banner (Darshan / Bolt.Earth Case Study) */}
-          <div className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900/80 p-3 text-xs text-zinc-300 backdrop-blur-sm max-w-xl">
+          <div className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900/90 p-3.5 text-xs text-zinc-300 backdrop-blur-sm max-w-xl">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
               <TrendingUp className="h-4 w-4" />
             </div>
@@ -279,7 +279,7 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
             <button
               type="button"
               onClick={onExploreClick}
-              className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-5 py-2.5 text-xs sm:text-sm font-semibold text-zinc-950 shadow-lg shadow-emerald-500/20 transition-all hover:bg-emerald-400 hover:shadow-emerald-500/30 active:scale-[0.98]"
+              className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-5 py-3 text-xs sm:text-sm font-semibold text-zinc-950 shadow-lg shadow-emerald-500/20 transition-all hover:bg-emerald-400 hover:shadow-emerald-500/30 active:scale-[0.98]"
             >
               <span>Explore Munich Grid</span>
               <Compass className="h-4 w-4" />
@@ -288,7 +288,7 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
             <button
               type="button"
               onClick={onHostClick}
-              className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-800/90 px-4 py-2.5 text-xs sm:text-sm font-medium text-white transition-all hover:bg-zinc-700 hover:border-zinc-600 active:scale-[0.98]"
+              className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-800/90 px-4 py-3 text-xs sm:text-sm font-medium text-white transition-all hover:bg-zinc-700 hover:border-zinc-600 active:scale-[0.98]"
             >
               <span>Calculate Host ROI</span>
               <ArrowRight className="h-4 w-4 text-zinc-400" />
@@ -300,7 +300,7 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
         <div className="lg:col-span-5 relative flex flex-col items-center justify-center">
           <div
             ref={mountRef}
-            className="h-[320px] sm:h-[380px] w-full cursor-grab active:cursor-grabbing"
+            className="h-[360px] sm:h-[440px] w-full cursor-grab active:cursor-grabbing"
             title="Interactive 3D EV Pedestal — Move cursor to inspect"
           />
 
@@ -324,42 +324,44 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
         </div>
       </div>
 
-      {/* Bottom Technical Specs Ribbon */}
-      <div className="border-t border-zinc-800/80 bg-zinc-950/90 px-6 py-3 sm:px-10">
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-6 text-xs">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-6 w-6 items-center justify-center rounded bg-zinc-800 text-emerald-400 font-mono text-[10px]">AC</div>
-            <div>
-              <div className="text-[10px] uppercase font-mono text-zinc-500">Power Band</div>
-              <div className="font-mono font-medium text-zinc-200">3.3 kW – 22 kW</div>
+      {/* Bottom Technical Specs Ribbon (Full-Width) */}
+      <div className="border-t border-zinc-800/80 bg-zinc-950/95 py-3.5">
+        <div className="mx-auto max-w-7xl px-4 sm:px-8">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-6 text-xs">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-6 w-6 items-center justify-center rounded bg-zinc-800 text-emerald-400 font-mono text-[10px]">AC</div>
+              <div>
+                <div className="text-[10px] uppercase font-mono text-zinc-500">Power Band</div>
+                <div className="font-mono font-medium text-zinc-200">3.3 kW – 22 kW</div>
+              </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-6 w-6 items-center justify-center rounded bg-zinc-800 text-cyan-400 font-mono text-[10px]">₹</div>
-            <div>
-              <div className="text-[10px] uppercase font-mono text-zinc-500">Community Tariff</div>
-              <div className="font-mono font-medium text-zinc-200">₹18.00 / kWh</div>
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-6 w-6 items-center justify-center rounded bg-zinc-800 text-cyan-400 font-mono text-[10px]">₹</div>
+              <div>
+                <div className="text-[10px] uppercase font-mono text-zinc-500">Community Tariff</div>
+                <div className="font-mono font-medium text-zinc-200">₹18.00 / kWh</div>
+              </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-6 w-6 items-center justify-center rounded bg-zinc-800 text-teal-400 font-mono text-[10px]">30m</div>
-            <div>
-              <div className="text-[10px] uppercase font-mono text-zinc-500">Hold Window</div>
-              <div className="font-mono font-medium text-zinc-200">Guaranteed Hold</div>
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-6 w-6 items-center justify-center rounded bg-zinc-800 text-teal-400 font-mono text-[10px]">30m</div>
+              <div>
+                <div className="text-[10px] uppercase font-mono text-zinc-500">Hold Window</div>
+                <div className="font-mono font-medium text-zinc-200">Guaranteed Hold</div>
+              </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-6 w-6 items-center justify-center rounded bg-zinc-800 text-emerald-400 font-mono text-[10px]">80%</div>
-            <div>
-              <div className="text-[10px] uppercase font-mono text-zinc-500">Host Settlement</div>
-              <div className="font-mono font-medium text-zinc-200">Automated Payouts</div>
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-6 w-6 items-center justify-center rounded bg-zinc-800 text-emerald-400 font-mono text-[10px]">80%</div>
+              <div>
+                <div className="text-[10px] uppercase font-mono text-zinc-500">Host Settlement</div>
+                <div className="font-mono font-medium text-zinc-200">Automated Payouts</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
