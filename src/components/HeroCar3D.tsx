@@ -483,7 +483,7 @@ export function HeroCar3D({ onSessionToggle, isCharging = true }: HeroCar3DProps
       />
 
       {/* Top Floating Badge & Status */}
-      <div className="absolute top-3 left-3 flex items-center gap-2 rounded-full border border-white/80 bg-white/95 px-3 py-1 text-xs font-mono shadow-xs backdrop-blur-md">
+      <div className="absolute top-3 left-3 flex items-center gap-2 rounded-full bg-white/95 px-3 py-1 text-xs font-mono shadow-xs backdrop-blur-md">
         <span className={`h-2 w-2 rounded-full ${isCharging ? 'bg-emerald-500' : 'bg-zinc-400'}`} />
         <span className="font-semibold text-zinc-900">
           {drivingState === 'driving' ? 'AUTONOMOUS ARRIVAL DOCKING' : isCharging ? 'METERED 11 kW CHARGE ACTIVE' : 'DOCKED · STANDBY'}
@@ -491,7 +491,7 @@ export function HeroCar3D({ onSessionToggle, isCharging = true }: HeroCar3DProps
       </div>
 
       {/* Top-Right Paint & Replay Controls */}
-      <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white/95 p-1 shadow-xs backdrop-blur-md">
+      <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full bg-white/95 p-1 shadow-xs backdrop-blur-md">
         {CAR_PAINTS.map((p) => (
           <button
             key={p.id}
@@ -517,7 +517,7 @@ export function HeroCar3D({ onSessionToggle, isCharging = true }: HeroCar3DProps
       </div>
 
       {/* Bottom Floating Telemetry Overlay Bar */}
-      <div className="absolute bottom-3 inset-x-3 rounded-xl border border-white/80 bg-white/95 p-3 shadow-xs backdrop-blur-md">
+      <div className="absolute bottom-3 inset-x-3 rounded-xl bg-white/95 p-3 shadow-xs backdrop-blur-md">
         <div className="flex items-center justify-between text-xs">
           <div>
             <div className="flex items-center gap-1.5 font-semibold text-zinc-900">

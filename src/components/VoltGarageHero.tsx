@@ -16,7 +16,7 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
   const [sessionSimActive, setSessionSimActive] = useState(true);
 
   return (
-    <section aria-label="Volt Garage Platform Overview" className="relative w-full border-b border-zinc-200/80 bg-white text-zinc-900">
+    <section aria-label="Volt Garage Platform Overview" className="relative w-full bg-white text-zinc-900">
       <div className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:py-16">
         <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-12">
           
@@ -95,10 +95,10 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
 
           {/* Right Column: Hardware & Live Telemetry Studio Showcase */}
           <div className="lg:col-span-5">
-            <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+            <div className="overflow-hidden rounded-2xl bg-white shadow-xl shadow-zinc-200/60">
               
               {/* Showcase Mode Segmented Switcher */}
-              <div className="flex items-center justify-between border-b border-zinc-200 bg-zinc-50/80 px-3.5 py-2">
+              <div className="flex items-center justify-between bg-zinc-50/80 px-3.5 py-2">
                 <div className="flex items-center gap-1 rounded-lg bg-zinc-200/70 p-0.5 text-xs font-medium">
                   <button
                     type="button"
@@ -136,7 +136,7 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
                   </button>
                 </div>
 
-                <span className="hidden sm:inline font-mono text-[11px] font-medium text-emerald-700">
+                <span className="hidden sm:inline font-mono text-[11px] font-medium text-emerald-700 whitespace-nowrap pl-2">
                   {showcaseMode === '3d-bay' ? 'Interactive 3D Twin' : showcaseMode === 'residential' ? '3.3 – 22 kW AC' : '50 – 150 kW DC'}
                 </span>
               </div>
@@ -193,7 +193,7 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
               </div>
 
               {/* Interactive Telemetry & Simulation Controller */}
-              <div className="border-t border-zinc-100 bg-zinc-50/70 p-3 sm:p-3.5">
+              <div className="bg-zinc-50/70 p-3 sm:p-3.5">
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2 font-mono text-zinc-600">
                     <span className="h-2 w-2 rounded-full bg-emerald-500" />
@@ -209,7 +209,7 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
                   <button
                     type="button"
                     onClick={() => setSessionSimActive((prev) => !prev)}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 shadow-xs transition-colors hover:bg-zinc-100 hover:text-zinc-900"
                   >
                     <Zap className="h-3 w-3 text-emerald-600" />
                     <span>{sessionSimActive ? 'Simulate Unplug' : 'Simulate Plug-In'}</span>
@@ -224,7 +224,7 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
       </div>
 
       {/* Bottom Technical Specs Ribbon (Seamless Light Minimalist Architecture) */}
-      <div className="border-t border-zinc-200/80 bg-zinc-50/60 py-3.5">
+      <div className="bg-zinc-50/60 py-3.5">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-6 text-xs">
             
