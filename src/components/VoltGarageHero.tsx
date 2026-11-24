@@ -93,32 +93,32 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
             </div>
           </div>
 
-          {/* Right Column: Hardware & Live Telemetry Studio Showcase */}
+          {/* Right Column: Dark Studio Showcase */}
           <div className="lg:col-span-5">
-            <div className="overflow-hidden rounded-2xl bg-white shadow-xl shadow-zinc-200/60">
-              
-              {/* Showcase Mode Segmented Switcher */}
-              <div className="flex items-center justify-between bg-zinc-50/80 px-3 py-2">
-                <div className="flex items-center gap-0.5 rounded-lg bg-zinc-200/70 p-0.5 text-xs font-medium overflow-x-auto scrollbar-none">
+            <div className="overflow-hidden rounded-2xl ring-1 ring-white/8 bg-[#0a0b0f] shadow-2xl shadow-black/50">
+
+              {/* ── Tab bar ─────────────────────────────────── */}
+              <div className="flex items-center justify-between border-b border-white/8 bg-[#0d0e14] px-3 py-2.5">
+                <div className="flex items-center gap-0.5 rounded-lg bg-white/6 p-0.5 text-xs font-medium">
                   <button
                     type="button"
                     onClick={() => setShowcaseMode('3d-bay')}
-                    className={`inline-flex items-center gap-1 shrink-0 rounded-md px-2 py-1 transition-colors sm:gap-1.5 sm:px-2.5 ${
+                    className={`inline-flex items-center gap-1.5 shrink-0 rounded-md px-2.5 py-1.5 transition-all ${
                       showcaseMode === '3d-bay'
-                        ? 'bg-white font-semibold text-zinc-900 shadow-xs'
-                        : 'text-zinc-600 hover:text-zinc-900'
+                        ? 'bg-white/14 font-semibold text-white'
+                        : 'text-white/40 hover:text-white/70'
                     }`}
                   >
-                    <Zap className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-emerald-600 shrink-0" />
+                    <Zap className="h-3 w-3 text-emerald-400 shrink-0" />
                     <span className="whitespace-nowrap">3D Bay</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowcaseMode('residential')}
-                    className={`shrink-0 rounded-md px-2 py-1 transition-colors sm:px-2.5 ${
+                    className={`shrink-0 rounded-md px-2.5 py-1.5 transition-all ${
                       showcaseMode === 'residential'
-                        ? 'bg-white font-semibold text-zinc-900 shadow-xs'
-                        : 'text-zinc-600 hover:text-zinc-900'
+                        ? 'bg-white/14 font-semibold text-white'
+                        : 'text-white/40 hover:text-white/70'
                     }`}
                   >
                     <span className="whitespace-nowrap">Wallbox</span>
@@ -126,23 +126,26 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
                   <button
                     type="button"
                     onClick={() => setShowcaseMode('commercial')}
-                    className={`shrink-0 rounded-md px-2 py-1 transition-colors sm:px-2.5 ${
+                    className={`shrink-0 rounded-md px-2.5 py-1.5 transition-all ${
                       showcaseMode === 'commercial'
-                        ? 'bg-white font-semibold text-zinc-900 shadow-xs'
-                        : 'text-zinc-600 hover:text-zinc-900'
+                        ? 'bg-white/14 font-semibold text-white'
+                        : 'text-white/40 hover:text-white/70'
                     }`}
                   >
                     <span className="whitespace-nowrap">DC Hub</span>
                   </button>
                 </div>
 
-                <span className="hidden sm:inline font-mono text-[11px] font-medium text-emerald-700 whitespace-nowrap pl-2">
-                  {showcaseMode === '3d-bay' ? 'Interactive 3D Twin' : showcaseMode === 'residential' ? '3.3 – 22 kW AC' : '50 – 150 kW DC'}
-                </span>
+                <div className="hidden sm:flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="font-mono text-[10px] font-medium text-emerald-400 tracking-wider">
+                    {showcaseMode === '3d-bay' ? 'LIVE 3D TWIN' : showcaseMode === 'residential' ? '3.3–22 kW AC' : '50–150 kW DC'}
+                  </span>
+                </div>
               </div>
 
-              {/* Showcase Display Area */}
-              <div className="relative aspect-16/10 w-full overflow-hidden bg-zinc-100">
+              {/* ── Main viewport ───────────────────────────── */}
+              <div className="relative w-full overflow-hidden bg-[#0a0b0f]" style={{ aspectRatio: '16/10' }}>
                 {showcaseMode === '3d-bay' ? (
                   <HeroCar3D isCharging={sessionSimActive} onSessionToggle={setSessionSimActive} />
                 ) : (
@@ -150,39 +153,41 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
                     <img
                       src={showcaseMode === 'residential' ? homeWallboxImg : fastHubImg}
                       alt={showcaseMode === 'residential' ? 'Private residential home wallbox' : 'Commercial fast DC hub'}
-                      className="h-full w-full object-cover transition-opacity duration-300"
+                      className="h-full w-full object-cover"
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/20" />
 
-                    {/* Live Status Overlay Pill */}
-                    <div className="absolute top-3 left-3 flex items-center gap-2 rounded-full border border-white/60 bg-white/95 px-3 py-1 text-xs font-mono backdrop-blur-md shadow-xs">
-                      <span className={`h-2 w-2 rounded-full ${sessionSimActive ? 'bg-cyan-500 animate-pulse' : 'bg-emerald-500'}`} />
-                      <span className="font-semibold text-zinc-800">
+                    {/* Status pill */}
+                    <div className="absolute top-3 left-3 flex items-center gap-2 rounded-full border border-white/15 bg-black/70 px-3 py-1 backdrop-blur-sm">
+                      <span className={`h-1.5 w-1.5 rounded-full ${sessionSimActive ? 'bg-emerald-400 animate-pulse' : 'bg-zinc-500'}`} />
+                      <span className="font-mono text-[11px] font-semibold tracking-wide text-white/90">
                         {sessionSimActive ? 'CHARGING IN PROGRESS' : 'BAY 01 · AVAILABLE'}
                       </span>
                     </div>
 
-                    {/* Active Hold Countdown Badge */}
-                    <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full border border-zinc-800/10 bg-zinc-900/90 px-2.5 py-1 text-[11px] font-mono text-white backdrop-blur-md">
+                    {/* Hold window badge */}
+                    <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full border border-white/10 bg-black/70 px-2.5 py-1 backdrop-blur-sm">
                       <Clock className="h-3 w-3 text-emerald-400" />
-                      <span>30m Hold Window</span>
+                      <span className="font-mono text-[10px] text-white/80">30 min hold</span>
                     </div>
 
-                    {/* Bottom Telemetry Overlay Bar */}
-                    <div className="absolute bottom-3 inset-x-3 rounded-xl border border-white/60 bg-white/95 p-3 backdrop-blur-md shadow-xs">
-                      <div className="flex items-center justify-between text-xs">
+                    {/* Bottom overlay */}
+                    <div className="absolute bottom-0 inset-x-0 border-t border-white/8 bg-black/75 px-4 py-3 backdrop-blur-sm">
+                      <div className="flex items-center justify-between gap-4 text-xs">
                         <div>
-                          <div className="font-semibold text-zinc-900">
+                          <div className="font-semibold text-white/90">
                             {showcaseMode === 'residential' ? 'Marienplatz Residential Hub' : 'Schwabing DC Fast Terminal'}
                           </div>
-                          <div className="text-[11px] text-zinc-500">
+                          <div className="font-mono text-[10px] text-white/40 mt-0.5">
                             {showcaseMode === 'residential' ? 'Elena Weber · Verified Private Host' : 'Partner Hub · 8 Bays Active'}
                           </div>
                         </div>
-                        <div className="text-right font-mono">
-                          <div className="text-sm font-bold text-zinc-900 tabular-nums">
-                            {showcaseMode === 'residential' ? '₹18.00' : '₹26.50'} <span className="text-[10px] text-zinc-500 font-normal">/ kWh</span>
+                        <div className="text-right font-mono shrink-0">
+                          <div className="text-sm font-bold tabular-nums text-white">
+                            {showcaseMode === 'residential' ? '₹18.00' : '₹26.50'}
+                            <span className="text-[10px] font-normal text-white/40 ml-1">/ kWh</span>
                           </div>
-                          <div className="text-[10px] text-emerald-700 font-medium">
+                          <div className="text-[10px] text-emerald-400 font-medium">
                             {sessionSimActive ? 'Metering: 14.2 kWh' : 'Zero booking fee'}
                           </div>
                         </div>
@@ -192,29 +197,30 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
                 )}
               </div>
 
-              {/* Interactive Telemetry & Simulation Controller */}
-              <div className="bg-zinc-50/70 p-3 sm:p-3.5">
-                <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2 font-mono text-zinc-600">
-                    <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                    <span className="hidden sm:inline">OCPP 2.0.1 Meter:</span>
-                    <span className="font-semibold text-zinc-900 tabular-nums">
-                      {sessionSimActive 
-                        ? (showcaseMode === 'commercial' ? '400V · 125A · 50 kW' : '230V · 32A · 7.4 kW')
-                        : 'Standby · 230V Live'
-                      }
-                    </span>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => setSessionSimActive((prev) => !prev)}
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 shadow-xs transition-colors hover:bg-zinc-100 hover:text-zinc-900"
-                  >
-                    <Zap className="h-3 w-3 text-emerald-600" />
-                    <span>{sessionSimActive ? 'Simulate Unplug' : 'Simulate Plug-In'}</span>
-                  </button>
+              {/* ── Bottom control strip ─────────────────────── */}
+              <div className="flex items-center justify-between border-t border-white/8 bg-[#0d0e14] px-4 py-2.5">
+                <div className="flex items-center gap-2 font-mono text-xs">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                  <span className="text-white/35 hidden sm:inline">OCPP 2.0.1</span>
+                  <span className="font-semibold text-white/80 tabular-nums">
+                    {sessionSimActive
+                      ? (showcaseMode === 'commercial' ? '400V · 125A · 50 kW' : '230V · 32A · 7.4 kW')
+                      : 'Standby · 230V Live'}
+                  </span>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={() => setSessionSimActive((prev) => !prev)}
+                  className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
+                    sessionSimActive
+                      ? 'bg-white/8 text-white/60 hover:bg-white/14 hover:text-white'
+                      : 'bg-emerald-600 text-white hover:bg-emerald-500'
+                  }`}
+                >
+                  <Zap className={`h-3 w-3 ${sessionSimActive ? 'text-white/50' : 'text-white'}`} />
+                  <span>{sessionSimActive ? 'Simulate Unplug' : 'Simulate Plug-In'}</span>
+                </button>
               </div>
 
             </div>
