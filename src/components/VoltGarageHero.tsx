@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { ArrowRight, Compass, Globe as GlobeIcon, Sparkles, TrendingUp, Zap } from 'lucide-react';
+import { ArrowRight, Compass, Globe as GlobeIcon, Layers, TrendingUp, Zap } from 'lucide-react';
 import Globe from './originkit/ui/globe';
 import SunsetVelocity from './originkit/ui/hero-57/sunset-velocity';
 
@@ -229,61 +229,61 @@ export function VoltGarageHero({ onExploreClick, onHostClick, onOpenHero57 }: Vo
   }, [chargerState]);
 
   return (
-    <section aria-label="Volt Garage Platform Overview" className="relative w-full border-b border-zinc-800/90 bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 text-white shadow-2xl">
+    <section aria-label="Volt Garage Platform Overview" className="relative w-full border-b border-zinc-800 bg-zinc-950 text-zinc-100">
       {/* Subtle Background Electric Grid Texture */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.04]"
+        className="pointer-events-none absolute inset-0 opacity-[0.03]"
         style={{
           backgroundImage: `radial-gradient(circle at 1px 1px, #ffffff 1px, transparent 0)`,
-          backgroundSize: '28px 28px',
+          backgroundSize: '24px 24px',
         }}
       />
 
-      <div className="relative z-10 mx-auto max-w-7xl grid grid-cols-1 items-center gap-8 lg:grid-cols-12 px-4 py-10 sm:px-8 sm:py-16">
+      <div className="relative z-10 mx-auto max-w-7xl grid grid-cols-1 items-center gap-8 lg:grid-cols-12 px-4 py-8 sm:px-6 sm:py-14 lg:py-16">
         {/* Left Column: Product Positioning & CTAs */}
-        <div className="lg:col-span-7 space-y-6">
-          {/* Hardware Badge */}
+        <div className="lg:col-span-7 space-y-5 sm:space-y-6">
+          {/* Hardware & Standard Badges */}
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-950/60 px-3 py-1 text-xs font-mono font-medium text-emerald-400">
-              <Zap className="h-3.5 w-3.5 fill-emerald-400 text-emerald-400" />
-              <span>P2P EV CHARGING INFRASTRUCTURE</span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-950/40 px-2.5 py-0.5 text-xs font-mono text-emerald-400">
+              <Zap className="h-3 w-3 fill-emerald-400 text-emerald-400" />
+              <span>P2P EV infrastructure</span>
             </span>
-            <span className="inline-flex items-center gap-1 rounded-full border border-zinc-700 bg-zinc-800/80 px-2.5 py-0.5 text-[11px] font-mono text-zinc-300">
-              OCPP 2.0.1 COMPLIANT
+            <span className="inline-flex items-center gap-1 rounded-full border border-zinc-800 bg-zinc-900 px-2.5 py-0.5 text-xs font-mono text-zinc-400">
+              OCPP 2.0.1 compliant
             </span>
           </div>
 
           {/* Main Headline */}
-          <div className="space-y-2">
-            <h1 className="font-display text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.1]">
-              Decentralized EV Charging. <br className="hidden sm:inline" />
-              <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
-                Guaranteed Reservations.
+          <div className="space-y-3">
+            <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tight text-white leading-[1.12]">
+              Decentralized EV charging.{' '}
+              <span className="text-emerald-400">
+                Guaranteed reservations.
               </span>
             </h1>
             <p className="text-sm sm:text-base text-zinc-300 leading-relaxed max-w-xl">
-              Connect to community residential wallboxes and commercial DC fast hubs. 
+              Connect to verified neighborhood wallboxes and high-voltage DC hubs.
               Enjoy 30-minute guaranteed holds, zero-wait QR check-in, and automated metered billing with 10 km geofence protection.
             </p>
           </div>
 
           {/* Real-World Proof Point Banner (Darshan / Bolt.Earth Case Study) */}
-          <div className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900/90 p-3.5 text-xs text-zinc-300 backdrop-blur-sm max-w-xl">
+          <div className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900/80 p-3.5 text-xs text-zinc-300 max-w-xl">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
               <TrendingUp className="h-4 w-4" />
             </div>
-            <div>
-              <span className="font-semibold text-white">Bengaluru Micro-Host Benchmark:</span>{' '}
-              Hosts earn up to <span className="font-mono font-semibold text-emerald-400">₹8,000/week</span> on standard 3.3 kW residential connections with zero ongoing staffing required.
+            <div className="leading-normal">
+              <span className="font-medium text-white">Bengaluru micro-host benchmark:</span>{' '}
+              Hosts earn up to <span className="font-mono font-medium text-emerald-400 tabular-nums">₹8,000/week</span> on standard 3.3 kW residential connections with zero ongoing staffing required.
             </div>
           </div>
 
-          {/* Action CTAs */}
-          <div className="flex flex-wrap items-center gap-3 pt-1">
+          {/* Action CTAs: Full width on mobile, inline on tablet/desktop */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3 pt-1">
             <button
               type="button"
               onClick={onExploreClick}
-              className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-5 py-3 text-xs sm:text-sm font-semibold text-zinc-950 shadow-lg shadow-emerald-500/20 transition-all hover:bg-emerald-400 hover:shadow-emerald-500/30 active:scale-[0.98]"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-500 px-5 py-2.5 text-xs sm:text-sm font-semibold text-zinc-950 transition-colors hover:bg-emerald-400"
             >
               <span>Explore Munich Grid</span>
               <Compass className="h-4 w-4" />
@@ -292,7 +292,7 @@ export function VoltGarageHero({ onExploreClick, onHostClick, onOpenHero57 }: Vo
             <button
               type="button"
               onClick={onHostClick}
-              className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-800/90 px-4 py-3 text-xs sm:text-sm font-medium text-white transition-all hover:bg-zinc-700 hover:border-zinc-600 active:scale-[0.98]"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-xs sm:text-sm font-medium text-zinc-200 transition-colors hover:bg-zinc-700 hover:text-white"
             >
               <span>Calculate Host ROI</span>
               <ArrowRight className="h-4 w-4 text-zinc-400" />
@@ -300,51 +300,51 @@ export function VoltGarageHero({ onExploreClick, onHostClick, onOpenHero57 }: Vo
           </div>
         </div>
 
-        {/* Right Column: Interactive 3D Visualizer (Originkit Earth Globe / 3D Pedestal) */}
+        {/* Right Column: Interactive 3D Visualizer (Originkit Earth Globe / 3D Pedestal / Hero 57) */}
         <div className="lg:col-span-5 relative flex flex-col items-center justify-center">
           {/* Visual Mode Switcher Pill */}
-          <div className="mb-2 flex items-center gap-1 rounded-lg border border-zinc-800 bg-zinc-900/90 p-1 text-xs font-mono backdrop-blur-md">
+          <div className="mb-2 flex items-center gap-1 rounded-lg border border-zinc-800 bg-zinc-900 p-1 text-xs font-mono">
             <button
               type="button"
               onClick={() => setVisualMode('globe')}
               className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 transition-colors ${
                 visualMode === 'globe'
-                  ? 'bg-emerald-500 font-semibold text-zinc-950 shadow-xs'
+                  ? 'bg-emerald-500 font-semibold text-zinc-950'
                   : 'text-zinc-400 hover:text-white'
               }`}
             >
               <GlobeIcon className="h-3.5 w-3.5" />
-              <span>Earth Grid</span>
+              <span>Earth grid</span>
             </button>
             <button
               type="button"
               onClick={() => setVisualMode('pedestal')}
               className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 transition-colors ${
                 visualMode === 'pedestal'
-                  ? 'bg-emerald-500 font-semibold text-zinc-950 shadow-xs'
+                  ? 'bg-emerald-500 font-semibold text-zinc-950'
                   : 'text-zinc-400 hover:text-white'
               }`}
             >
               <Zap className="h-3.5 w-3.5" />
-              <span>3D Pedestal</span>
+              <span>3D pedestal</span>
             </button>
             <button
               type="button"
               onClick={() => setVisualMode('velocity')}
               className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 transition-colors ${
                 visualMode === 'velocity'
-                  ? 'bg-emerald-500 font-semibold text-zinc-950 shadow-xs'
+                  ? 'bg-emerald-500 font-semibold text-zinc-950'
                   : 'text-zinc-400 hover:text-white'
               }`}
             >
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>Hero 57 Scene</span>
+              <Layers className="h-3.5 w-3.5" />
+              <span>Hero 57</span>
             </button>
           </div>
 
           {/* Interactive Globe Container */}
           {visualMode === 'globe' && (
-            <div className="h-[360px] sm:h-[440px] w-full flex items-center justify-center">
+            <div className="h-[280px] sm:h-[380px] lg:h-[420px] w-full flex items-center justify-center">
               <Globe
                 fill="dots"
                 scale={7.8}
@@ -377,7 +377,7 @@ export function VoltGarageHero({ onExploreClick, onHostClick, onOpenHero57 }: Vo
           {/* Interactive 3D Charging Pedestal */}
           <div
             ref={mountRef}
-            className={`h-[360px] sm:h-[440px] w-full cursor-grab active:cursor-grabbing ${
+            className={`h-[280px] sm:h-[380px] lg:h-[420px] w-full cursor-grab active:cursor-grabbing ${
               visualMode === 'pedestal' ? 'block' : 'hidden'
             }`}
             title="Interactive 3D EV Pedestal — Move cursor to inspect"
@@ -385,7 +385,7 @@ export function VoltGarageHero({ onExploreClick, onHostClick, onOpenHero57 }: Vo
 
           {/* Hero 57 Sunset Velocity Scene */}
           {visualMode === 'velocity' && (
-            <div className="h-[360px] sm:h-[440px] w-full relative overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950">
+            <div className="h-[280px] sm:h-[380px] lg:h-[420px] w-full relative overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950">
               <SunsetVelocity
                 background="#09090b"
                 skyTop="#18181b"
@@ -410,50 +410,42 @@ export function VoltGarageHero({ onExploreClick, onHostClick, onOpenHero57 }: Vo
           )}
 
           {/* Dynamic Interactive Telemetry Strip */}
-          <div className="mt-2 flex items-center justify-between w-full max-w-xs rounded-lg border border-zinc-800 bg-zinc-900/90 px-3.5 py-2 text-xs font-mono backdrop-blur-md">
+          <div className="mt-2.5 flex items-center justify-between w-full max-w-xs rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs font-mono">
             {visualMode === 'globe' ? (
               <>
                 <div className="flex items-center gap-2">
-                  <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-                  </span>
-                  <span className="text-zinc-300 font-semibold">GLOBAL GRID LIVE</span>
+                  <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                  <span className="text-zinc-300 font-medium">Global grid live</span>
                 </div>
-                <span className="text-emerald-400 font-mono">6 METRO HUBS</span>
+                <span className="text-emerald-400 font-mono tabular-nums">6 metro hubs</span>
               </>
             ) : visualMode === 'pedestal' ? (
               <>
                 <div className="flex items-center gap-2">
-                  <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-                  </span>
-                  <span className="text-zinc-400">PEDESTAL 01</span>
+                  <span className={`h-2 w-2 rounded-full ${chargerState === 'available' ? 'bg-emerald-500' : 'bg-cyan-400'}`} />
+                  <span className="text-zinc-400 font-medium">Pedestal 01</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setChargerState((s) => (s === 'available' ? 'charging' : 'available'))}
-                  className="text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 underline underline-offset-2"
+                  className="text-xs font-medium text-emerald-400 hover:text-emerald-300 underline underline-offset-2"
                 >
-                  {chargerState === 'available' ? 'Simulate Plug-In' : 'Simulate Unplug'}
+                  {chargerState === 'available' ? 'Simulate plug-in' : 'Simulate unplug'}
                 </button>
               </>
             ) : (
               <>
                 <div className="flex items-center gap-2">
-                  <span className="relative flex h-2 w-2">
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-                  </span>
-                  <span className="text-zinc-300 font-semibold">WIND & GRID VELOCITY</span>
+                  <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                  <span className="text-zinc-300 font-medium">Wind & grid velocity</span>
                 </div>
                 {onOpenHero57 && (
                   <button
                     type="button"
                     onClick={onOpenHero57}
-                    className="text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 underline underline-offset-2"
+                    className="text-xs font-medium text-emerald-400 hover:text-emerald-300 underline underline-offset-2"
                   >
-                    View Section 57
+                    View section 57
                   </button>
                 )}
               </>
@@ -463,38 +455,38 @@ export function VoltGarageHero({ onExploreClick, onHostClick, onOpenHero57 }: Vo
       </div>
 
       {/* Bottom Technical Specs Ribbon (Full-Width) */}
-      <div className="border-t border-zinc-800/80 bg-zinc-950/95 py-3.5">
-        <div className="mx-auto max-w-7xl px-4 sm:px-8">
+      <div className="border-t border-zinc-800 bg-zinc-950 py-3 sm:py-3.5">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-6 text-xs">
             <div className="flex items-center gap-2.5">
               <div className="flex h-6 w-6 items-center justify-center rounded bg-zinc-800 text-emerald-400 font-mono text-[10px]">AC</div>
               <div>
-                <div className="text-[10px] uppercase font-mono text-zinc-500">Power Band</div>
-                <div className="font-mono font-medium text-zinc-200">3.3 kW – 22 kW</div>
+                <div className="text-[10px] font-mono text-zinc-500">Power band</div>
+                <div className="font-mono font-medium text-zinc-200 tabular-nums">3.3 kW – 22 kW</div>
               </div>
             </div>
 
             <div className="flex items-center gap-2.5">
-              <div className="flex h-6 w-6 items-center justify-center rounded bg-zinc-800 text-cyan-400 font-mono text-[10px]">₹</div>
+              <div className="flex h-6 w-6 items-center justify-center rounded bg-zinc-800 text-zinc-300 font-mono text-[10px]">₹</div>
               <div>
-                <div className="text-[10px] uppercase font-mono text-zinc-500">Community Tariff</div>
-                <div className="font-mono font-medium text-zinc-200">₹18.00 / kWh</div>
+                <div className="text-[10px] font-mono text-zinc-500">Community tariff</div>
+                <div className="font-mono font-medium text-zinc-200 tabular-nums">₹18.00 / kWh</div>
               </div>
             </div>
 
             <div className="flex items-center gap-2.5">
-              <div className="flex h-6 w-6 items-center justify-center rounded bg-zinc-800 text-teal-400 font-mono text-[10px]">30m</div>
+              <div className="flex h-6 w-6 items-center justify-center rounded bg-zinc-800 text-zinc-300 font-mono text-[10px]">30m</div>
               <div>
-                <div className="text-[10px] uppercase font-mono text-zinc-500">Hold Window</div>
-                <div className="font-mono font-medium text-zinc-200">Guaranteed Hold</div>
+                <div className="text-[10px] font-mono text-zinc-500">Hold window</div>
+                <div className="font-mono font-medium text-zinc-200">Guaranteed hold</div>
               </div>
             </div>
 
             <div className="flex items-center gap-2.5">
               <div className="flex h-6 w-6 items-center justify-center rounded bg-zinc-800 text-emerald-400 font-mono text-[10px]">80%</div>
               <div>
-                <div className="text-[10px] uppercase font-mono text-zinc-500">Host Settlement</div>
-                <div className="font-mono font-medium text-zinc-200">Automated Payouts</div>
+                <div className="text-[10px] font-mono text-zinc-500">Host settlement</div>
+                <div className="font-mono font-medium text-zinc-200">Automated payouts</div>
               </div>
             </div>
           </div>

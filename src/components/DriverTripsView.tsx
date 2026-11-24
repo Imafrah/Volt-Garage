@@ -101,7 +101,7 @@ function QrVisual({ token }: { token: string }) {
   return (
     <svg
       viewBox="0 0 60 60"
-      className="h-20 w-20 shrink-0 rounded-lg border border-slate-200 bg-white p-1.5"
+      className="h-20 w-20 shrink-0 rounded-lg border border-zinc-200 bg-white p-1.5"
       aria-label={`QR verification code ${token}`}
     >
       {cells.map((filled, idx) => {
@@ -280,13 +280,13 @@ export function DriverTripsView({
   return (
     <div className="space-y-8">
       {/* Driver Profile & Vehicle Garage */}
-      <section className="rounded-xl border border-slate-200 bg-white p-4 sm:p-6">
-        <div className="flex flex-col justify-between gap-4 border-b border-slate-200 pb-4 sm:flex-row sm:items-center">
+      <section className="rounded-xl border border-zinc-200 bg-white p-4 sm:p-6">
+        <div className="flex flex-col justify-between gap-4 border-b border-zinc-200 pb-4 sm:flex-row sm:items-center">
           <div>
-            <h2 className="text-lg font-bold text-slate-900">
+            <h2 className="text-lg font-bold text-zinc-900">
               Driver Account & Vehicle Garage
             </h2>
-            <p className="mt-0.5 text-xs text-slate-500">
+            <p className="mt-0.5 text-xs text-zinc-500">
               {driver.name} · {driver.email} · {driver.paymentMethodLabel}
             </p>
           </div>
@@ -294,15 +294,15 @@ export function DriverTripsView({
             <div
               role="group"
               aria-label="Garage view mode"
-              className="flex items-center gap-1 rounded-lg bg-slate-100 p-1"
+              className="flex items-center gap-1 rounded-lg bg-zinc-100 p-1"
             >
               <button
                 type="button"
                 onClick={() => setGarageViewMode('3d')}
                 className={`flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-semibold transition-colors sm:px-3 ${
                   garageViewMode === '3d'
-                    ? 'bg-white text-slate-900 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-white text-zinc-900 shadow-xs'
+                    : 'text-zinc-600 hover:text-zinc-900'
                 }`}
               >
                 <Box className="h-3.5 w-3.5 text-emerald-600" />
@@ -314,8 +314,8 @@ export function DriverTripsView({
                 onClick={() => setGarageViewMode('grid')}
                 className={`flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-semibold transition-colors sm:px-3 ${
                   garageViewMode === 'grid'
-                    ? 'bg-white text-slate-900 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-white text-zinc-900 shadow-xs'
+                    : 'text-zinc-600 hover:text-zinc-900'
                 }`}
               >
                 <Car className="h-3.5 w-3.5" />
@@ -327,7 +327,7 @@ export function DriverTripsView({
               <button
                 type="button"
                 onClick={onOpenDriverRegistration}
-                className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 hover:bg-slate-50"
+                className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-semibold text-zinc-800 hover:bg-zinc-50"
               >
                 <Plus className="h-3.5 w-3.5" />
                 <span>Register Driver</span>
@@ -348,13 +348,13 @@ export function DriverTripsView({
         {showAddVehicle && (
           <form
             onSubmit={handleVehicleSubmit}
-            className="mt-4 space-y-4 rounded-lg border border-slate-200 bg-slate-50 p-4"
+            className="mt-4 space-y-4 rounded-lg border border-zinc-200 bg-zinc-50 p-4"
           >
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-5">
               <div>
                 <label
                   htmlFor="veh-make"
-                  className="block text-xs font-medium text-slate-700"
+                  className="block text-xs font-medium text-zinc-700"
                 >
                   Make
                 </label>
@@ -364,13 +364,13 @@ export function DriverTripsView({
                   value={vehMake}
                   onChange={(e) => setVehMake(e.target.value)}
                   placeholder="Hyundai"
-                  className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900"
+                  className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900"
                 />
               </div>
               <div>
                 <label
                   htmlFor="veh-model"
-                  className="block text-xs font-medium text-slate-700"
+                  className="block text-xs font-medium text-zinc-700"
                 >
                   Model
                 </label>
@@ -380,13 +380,13 @@ export function DriverTripsView({
                   value={vehModel}
                   onChange={(e) => setVehModel(e.target.value)}
                   placeholder="Ioniq 5"
-                  className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900"
+                  className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900"
                 />
               </div>
               <div>
                 <label
                   htmlFor="veh-year"
-                  className="block text-xs font-medium text-slate-700"
+                  className="block text-xs font-medium text-zinc-700"
                 >
                   Year
                 </label>
@@ -395,13 +395,13 @@ export function DriverTripsView({
                   type="number"
                   value={vehYear}
                   onChange={(e) => setVehYear(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-xs text-slate-900"
+                  className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-xs text-zinc-900"
                 />
               </div>
               <div>
                 <label
                   htmlFor="veh-plate"
-                  className="block text-xs font-medium text-slate-700"
+                  className="block text-xs font-medium text-zinc-700"
                 >
                   License Plate
                 </label>
@@ -411,13 +411,13 @@ export function DriverTripsView({
                   value={vehPlate}
                   onChange={(e) => setVehPlate(e.target.value)}
                   placeholder="M-IQ 501E"
-                  className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-xs text-slate-900"
+                  className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-xs text-zinc-900"
                 />
               </div>
               <div>
                 <label
                   htmlFor="veh-battery"
-                  className="block text-xs font-medium text-slate-700"
+                  className="block text-xs font-medium text-zinc-700"
                 >
                   Battery (kWh)
                 </label>
@@ -426,19 +426,19 @@ export function DriverTripsView({
                   type="number"
                   value={vehBattery}
                   onChange={(e) => setVehBattery(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-xs text-slate-900"
+                  className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-xs text-zinc-900"
                 />
               </div>
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex flex-wrap items-center gap-3 text-xs">
-                <span className="font-medium text-slate-700">Connectors:</span>
+                <span className="font-medium text-zinc-700">Connectors:</span>
                 {(['Type2', 'CCS', 'Type1', 'CHAdeMO'] as ConnectorType[]).map(
                   (conn) => (
                     <label
                       key={conn}
-                      className="flex cursor-pointer items-center gap-1.5 text-slate-700"
+                      className="flex cursor-pointer items-center gap-1.5 text-zinc-700"
                     >
                       <input
                         type="checkbox"
@@ -479,12 +479,12 @@ export function DriverTripsView({
             {driver.vehicles.map((v, idx) => (
               <div
                 key={v.id}
-                className="flex items-start gap-3 rounded-lg border border-slate-200 p-4 transition-all hover:border-slate-300"
+                className="flex items-start gap-3 rounded-lg border border-zinc-200 p-4 transition-all hover:border-zinc-300"
               >
                 <Car className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="truncate text-sm font-semibold text-slate-900">
+                    <span className="truncate text-sm font-semibold text-zinc-900">
                       {v.make} {v.model}
                     </span>
                     {idx === 0 && (
@@ -493,10 +493,10 @@ export function DriverTripsView({
                       </span>
                     )}
                   </div>
-                  <div className="mt-1 font-mono text-xs text-slate-500 tabular-nums">
+                  <div className="mt-1 font-mono text-xs text-zinc-500 tabular-nums">
                     {v.licensePlate} · {v.year} · {v.batteryCapacity} kWh
                   </div>
-                  <div className="mt-1 text-xs text-slate-600">
+                  <div className="mt-1 text-xs text-zinc-600">
                     Connectors: {v.connectorType.join(' / ')}
                   </div>
                   <button
@@ -529,25 +529,25 @@ export function DriverTripsView({
       {/* Reservations Location Search Bar */}
       <section
         aria-label="Filter reservations"
-        className="rounded-xl border border-slate-200 bg-white p-4"
+        className="rounded-xl border border-zinc-200 bg-white p-4"
       >
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="relative flex-1">
             <label htmlFor="trips-location-search" className="sr-only">
               Filter reservations by location name
             </label>
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -tranzinc-y-1/2 text-zinc-400" />
             <input
               id="trips-location-search"
               type="text"
               value={tripSearchQuery}
               onChange={(e) => setTripSearchQuery(e.target.value)}
               placeholder="Filter past and upcoming reservations by location name..."
-              className="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:bg-white focus:outline-none"
+              className="w-full rounded-lg border border-zinc-200 bg-zinc-50 py-2 pl-9 pr-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-emerald-600 focus:bg-white focus:outline-none"
             />
           </div>
 
-          <div className="flex items-center justify-between gap-3 text-xs text-slate-500 sm:justify-end">
+          <div className="flex items-center justify-between gap-3 text-xs text-zinc-500 sm:justify-end">
             <span className="font-mono tabular-nums">
               {activeReservations.length} upcoming · {pastReservations.length}{' '}
               past
@@ -556,7 +556,7 @@ export function DriverTripsView({
               <button
                 type="button"
                 onClick={() => setTripSearchQuery('')}
-                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
               >
                 Clear
               </button>
@@ -569,10 +569,10 @@ export function DriverTripsView({
       <section className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <h2 className="text-lg font-bold text-slate-900">
+            <h2 className="text-lg font-bold text-zinc-900">
               Active Holds & Live Sessions
             </h2>
-            <span className="font-mono text-xs tabular-nums text-slate-500">
+            <span className="font-mono text-xs tabular-nums text-zinc-500">
               {activeReservations.length} active
             </span>
           </div>
@@ -581,7 +581,7 @@ export function DriverTripsView({
             <button
               type="button"
               onClick={() => setMapModalResId(activeReservations[0].id)}
-              className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-800 transition-colors hover:bg-slate-50"
+              className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 rounded-lg border border-zinc-200 bg-white px-3.5 py-2 text-xs font-semibold text-zinc-800 transition-colors hover:bg-zinc-50"
             >
               <Map className="h-3.5 w-3.5 text-emerald-600" />
               Visual Map Summary
@@ -603,15 +603,15 @@ export function DriverTripsView({
                   </span>
                 </div>
                 {blockedRecovery.backupSuggestion ? (
-                  <div className="space-y-1 text-xs text-slate-700">
+                  <div className="space-y-1 text-xs text-zinc-700">
                     <div>
                       Nearest compatible backup within 5 km:{' '}
-                      <span className="font-semibold text-slate-900">
+                      <span className="font-semibold text-zinc-900">
                         {blockedRecovery.backupSuggestion.point.name}
                       </span>{' '}
                       ({blockedRecovery.backupSuggestion.point.address})
                     </div>
-                    <div className="flex flex-wrap items-center gap-2 font-mono text-xs tabular-nums text-slate-700">
+                    <div className="flex flex-wrap items-center gap-2 font-mono text-xs tabular-nums text-zinc-700">
                       <span>
                         {blockedRecovery.backupSuggestion.distanceKm.toFixed(2)} km
                       </span>
@@ -635,7 +635,7 @@ export function DriverTripsView({
                     </div>
                   </div>
                 ) : (
-                  <p className="text-xs text-slate-700">
+                  <p className="text-xs text-zinc-700">
                     No other compatible chargers are currently free within 5 km. Open the map to check partner hubs outside your immediate radius.
                   </p>
                 )}
@@ -666,7 +666,7 @@ export function DriverTripsView({
                   <button
                     type="button"
                     onClick={onExploreMap}
-                    className="rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white hover:bg-slate-800"
+                    className="rounded-lg bg-zinc-900 px-4 py-2 text-xs font-semibold text-white hover:bg-zinc-800"
                   >
                     Explore Map
                   </button>
@@ -674,7 +674,7 @@ export function DriverTripsView({
                 <button
                   type="button"
                   onClick={() => setBlockedRecovery(null)}
-                  className="rounded-lg border border-amber-300 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                  className="rounded-lg border border-amber-300 bg-white px-3 py-2 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
                 >
                   Dismiss
                 </button>
@@ -684,13 +684,13 @@ export function DriverTripsView({
         )}
 
         {activeReservations.length === 0 ? (
-          <div className="rounded-xl border border-slate-200 bg-white p-8 text-center">
-            <p className="text-sm font-medium text-slate-900">
+          <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center">
+            <p className="text-sm font-medium text-zinc-900">
               {tripSearchQuery.trim()
                 ? `No upcoming reservations match "${tripSearchQuery.trim()}"`
                 : 'No active reservations or charging holds'}
             </p>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs text-zinc-500">
               {tripSearchQuery.trim()
                 ? 'Clear the location filter to view all active holds.'
                 : 'Reserve an available connector on the map to start a 30-minute hold.'}
@@ -699,7 +699,7 @@ export function DriverTripsView({
               <button
                 type="button"
                 onClick={() => setTripSearchQuery('')}
-                className="mt-4 rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                className="mt-4 rounded-lg border border-zinc-200 bg-white px-4 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50"
               >
                 Clear Search
               </button>
@@ -754,12 +754,12 @@ export function DriverTripsView({
               return (
                 <article
                   key={res.id}
-                  className="rounded-xl border border-slate-200 bg-white p-6"
+                  className="rounded-xl border border-zinc-200 bg-white p-6"
                 >
-                  <div className="flex flex-col justify-between gap-4 border-b border-slate-200 pb-4 md:flex-row md:items-center">
+                  <div className="flex flex-col justify-between gap-4 border-b border-zinc-200 pb-4 md:flex-row md:items-center">
                     <div>
-                      <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
-                        <span className="font-mono font-semibold text-slate-700">
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-500">
+                        <span className="font-mono font-semibold text-zinc-700">
                           {res.id}
                         </span>
                         <span aria-hidden="true">·</span>
@@ -777,7 +777,7 @@ export function DriverTripsView({
                           ₹{res.pricePerKwh.toFixed(2)}/kWh
                         </span>
                       </div>
-                      <h3 className="mt-1 text-base font-bold text-slate-900">
+                      <h3 className="mt-1 text-base font-bold text-zinc-900">
                         {res.chargingPointName}
                       </h3>
                     </div>
@@ -786,7 +786,7 @@ export function DriverTripsView({
                       <button
                         type="button"
                         onClick={() => setMapModalResId(res.id)}
-                        className="inline-flex items-center gap-1 whitespace-nowrap rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                        className="inline-flex items-center gap-1 whitespace-nowrap rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
                       >
                         <MapPin className="h-3.5 w-3.5 text-emerald-600" />
                         Map Summary
@@ -807,7 +807,7 @@ export function DriverTripsView({
                             : 'Charging In Progress'}
                       </span>
                       {res.status === 'reserved' && (
-                        <span className="inline-flex items-center gap-1 font-mono font-semibold tabular-nums text-slate-900">
+                        <span className="inline-flex items-center gap-1 font-mono font-semibold tabular-nums text-zinc-900">
                           <Clock className="h-3.5 w-3.5 text-amber-600" />
                           {formatCountdown(res.expiresAt, nowMs)}
                         </span>
@@ -821,13 +821,13 @@ export function DriverTripsView({
                       <div className="flex items-center gap-4">
                         <QrVisual token={res.qrCodeToken} />
                         <div className="space-y-1 text-xs">
-                          <div className="font-semibold text-slate-900">
+                          <div className="font-semibold text-zinc-900">
                             Arrival QR Verification Token
                           </div>
-                          <div className="font-mono text-sm font-bold text-slate-900">
+                          <div className="font-mono text-sm font-bold text-zinc-900">
                             {res.qrCodeToken}
                           </div>
-                          <p className="text-slate-500">
+                          <p className="text-zinc-500">
                             Scan at charger or enter token / connector ID (
                             <span className="font-mono">{res.connectorId}</span>
                             ) within 30 minutes.
@@ -847,7 +847,7 @@ export function DriverTripsView({
                           }
                           placeholder={`Enter ${res.qrCodeToken}`}
                           aria-label={`QR verification code for ${res.chargingPointName}`}
-                          className="w-44 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 font-mono text-xs text-slate-900 focus:border-emerald-600 focus:bg-white focus:outline-none"
+                          className="w-44 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 font-mono text-xs text-zinc-900 focus:border-emerald-600 focus:bg-white focus:outline-none"
                         />
                         <button
                           type="button"
@@ -857,7 +857,7 @@ export function DriverTripsView({
                               [res.id]: res.qrCodeToken,
                             }))
                           }
-                          className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                          className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
                         >
                           <QrCode className="h-3.5 w-3.5" />
                           Scan QR
@@ -897,7 +897,7 @@ export function DriverTripsView({
                           onClick={() =>
                             runAction(res.id, () => onCancelReservation(res.id))
                           }
-                          className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50"
+                          className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs font-medium text-zinc-600 hover:bg-zinc-50"
                         >
                           Cancel Hold
                         </button>
@@ -909,11 +909,11 @@ export function DriverTripsView({
                   {res.status === 'confirmed' && (
                     <div className="mt-5 flex flex-col justify-between gap-4 md:flex-row md:items-end">
                       <div className="space-y-1 text-xs">
-                        <div className="inline-flex items-center gap-1.5 font-semibold text-slate-900">
+                        <div className="inline-flex items-center gap-1.5 font-semibold text-zinc-900">
                           <CheckCircle2 className="h-4 w-4 text-emerald-600" />
                           Arrival Verified · Plug In Vehicle
                         </div>
-                        <p className="text-slate-500">
+                        <p className="text-zinc-500">
                           {isPrivate
                             ? 'Capture the initial smart meter reading (Wh) before initiating power flow.'
                             : 'Partner OCPP gateway is ready to authorize DC power delivery.'}
@@ -925,7 +925,7 @@ export function DriverTripsView({
                           <div>
                             <label
                               htmlFor={`start-wh-${res.id}`}
-                              className="block text-[11px] font-medium text-slate-600"
+                              className="block text-[11px] font-medium text-zinc-600"
                             >
                               Start Meter Reading (Wh)
                             </label>
@@ -939,7 +939,7 @@ export function DriverTripsView({
                                   [res.id]: e.target.value,
                                 }))
                               }
-                              className="mt-1 w-36 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 font-mono text-xs tabular-nums text-slate-900"
+                              className="mt-1 w-36 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 font-mono text-xs tabular-nums text-zinc-900"
                             />
                           </div>
                         )}
@@ -976,22 +976,22 @@ export function DriverTripsView({
                               <Activity className="h-3.5 w-3.5 text-emerald-600" />
                               <span>Live Charging Telemetry</span>
                             </div>
-                            <span className="font-mono text-[11px] text-slate-600 tabular-nums">
+                            <span className="font-mono text-[11px] text-zinc-600 tabular-nums">
                               {telemetry.protocol} · Elapsed{' '}
                               {formatElapsed(telemetry.elapsedSeconds)}
                             </span>
                           </div>
                           <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-4">
                             <div>
-                              <div className="text-[11px] text-slate-500">
+                              <div className="text-[11px] text-zinc-500">
                                 Live Power
                               </div>
-                              <div className="mt-0.5 font-mono text-base font-bold tabular-nums text-slate-900">
+                              <div className="mt-0.5 font-mono text-base font-bold tabular-nums text-zinc-900">
                                 {telemetry.livePowerKw.toFixed(1)} kW
                               </div>
                             </div>
                             <div>
-                              <div className="text-[11px] text-slate-500">
+                              <div className="text-[11px] text-zinc-500">
                                 Delivered Energy
                               </div>
                               <div
@@ -1002,12 +1002,12 @@ export function DriverTripsView({
                               </div>
                             </div>
                             <div>
-                              <div className="text-[11px] text-slate-500">
+                              <div className="text-[11px] text-zinc-500">
                                 {isPrivate ? 'Live Meter Readout' : 'Meter Pulse'}
                               </div>
                               <div
                                 data-testid={`live-wh-${session.id}`}
-                                className="mt-0.5 font-mono text-sm font-semibold tabular-nums text-slate-900"
+                                className="mt-0.5 font-mono text-sm font-semibold tabular-nums text-zinc-900"
                               >
                                 {isPrivate
                                   ? `${telemetry.currentMeterWh.toLocaleString()} Wh`
@@ -1015,12 +1015,12 @@ export function DriverTripsView({
                               </div>
                             </div>
                             <div>
-                              <div className="text-[11px] text-slate-500">
+                              <div className="text-[11px] text-zinc-500">
                                 Running Cost
                               </div>
                               <div
                                 data-testid={`live-cost-${session.id}`}
-                                className="mt-0.5 font-mono text-base font-bold tabular-nums text-slate-900"
+                                className="mt-0.5 font-mono text-base font-bold tabular-nums text-zinc-900"
                               >
                                 ₹{telemetry.estimatedCostInr.toFixed(2)}
                               </div>
@@ -1029,39 +1029,39 @@ export function DriverTripsView({
                         </div>
                       )}
 
-                      <div className="grid grid-cols-1 gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4 sm:grid-cols-3">
+                      <div className="grid grid-cols-1 gap-4 rounded-lg border border-zinc-200 bg-zinc-50 p-4 sm:grid-cols-3">
                         <div>
-                          <div className="text-xs text-slate-500">
+                          <div className="text-xs text-zinc-500">
                             Session Started
                           </div>
-                          <div className="mt-0.5 font-mono text-xs font-medium text-slate-900">
+                          <div className="mt-0.5 font-mono text-xs font-medium text-zinc-900">
                             {new Date(session.startTime).toLocaleTimeString()}
                           </div>
                         </div>
                         {isPrivate ? (
                           <div>
-                            <div className="text-xs text-slate-500">
+                            <div className="text-xs text-zinc-500">
                               Start Meter Reading
                             </div>
-                            <div className="mt-0.5 font-mono text-sm font-semibold tabular-nums text-slate-900">
+                            <div className="mt-0.5 font-mono text-sm font-semibold tabular-nums text-zinc-900">
                               {session.meterReadingStartWh?.toLocaleString()} Wh
                             </div>
                           </div>
                         ) : (
                           <div>
-                            <div className="text-xs text-slate-500">
+                            <div className="text-xs text-zinc-500">
                               Partner Protocol
                             </div>
-                            <div className="mt-0.5 font-mono text-xs font-medium text-slate-900">
+                            <div className="mt-0.5 font-mono text-xs font-medium text-zinc-900">
                               OCPI 2.2 Live Telemetry
                             </div>
                           </div>
                         )}
                         <div>
-                          <div className="text-xs text-slate-500">
+                          <div className="text-xs text-zinc-500">
                             Billing Model
                           </div>
-                          <div className="mt-0.5 text-xs font-medium text-slate-900">
+                          <div className="mt-0.5 text-xs font-medium text-zinc-900">
                             {isPrivate
                               ? 'Metered · 80% Host / 20% ImCharge'
                               : 'Partner Direct · 15% Commission'}
@@ -1076,7 +1076,7 @@ export function DriverTripsView({
                               <div>
                                 <label
                                   htmlFor={`end-wh-${session.id}`}
-                                  className="block text-xs font-medium text-slate-700"
+                                  className="block text-xs font-medium text-zinc-700"
                                 >
                                   End Meter Reading (Wh)
                                 </label>
@@ -1090,10 +1090,10 @@ export function DriverTripsView({
                                       [res.id]: e.target.value,
                                     }))
                                   }
-                                  className="mt-1 w-40 rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-xs tabular-nums text-slate-900"
+                                  className="mt-1 w-40 rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-xs tabular-nums text-zinc-900"
                                 />
                               </div>
-                              <label className="flex cursor-pointer items-center gap-2 pb-2 text-xs text-slate-600">
+                              <label className="flex cursor-pointer items-center gap-2 pb-2 text-xs text-zinc-600">
                                 <input
                                   type="checkbox"
                                   checked={Boolean(flagDisputeInputs[res.id])}
@@ -1112,7 +1112,7 @@ export function DriverTripsView({
                             <div>
                               <label
                                 htmlFor={`partner-kwh-${session.id}`}
-                                className="block text-xs font-medium text-slate-700"
+                                className="block text-xs font-medium text-zinc-700"
                               >
                                 Partner Delivered Energy (kWh)
                               </label>
@@ -1127,14 +1127,14 @@ export function DriverTripsView({
                                     [res.id]: e.target.value,
                                   }))
                                 }
-                                className="mt-1 w-40 rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-xs tabular-nums text-slate-900"
+                                className="mt-1 w-40 rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-xs tabular-nums text-zinc-900"
                               />
                             </div>
                           )}
                         </div>
 
                         {previewBilling && (
-                          <div className="text-xs text-slate-600 font-mono tabular-nums">
+                          <div className="text-xs text-zinc-600 font-mono tabular-nums">
                             Delta: {previewBilling.energyDeliveredKwh.toFixed(2)}{' '}
                             kWh · Total ₹{previewBilling.grossAmount.toFixed(2)}{' '}
                             (Host ₹{previewBilling.hostPayout.toFixed(2)})
@@ -1161,7 +1161,7 @@ export function DriverTripsView({
                               )
                             )
                           }
-                          className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
+                          className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg bg-zinc-900 px-4 py-2 text-xs font-semibold text-white hover:bg-zinc-800 disabled:opacity-60"
                         >
                           <CreditCard className="h-3.5 w-3.5" />
                           End Charging & Pay
@@ -1178,13 +1178,13 @@ export function DriverTripsView({
 
       {/* Session History, Receipts & Reviews */}
       <section className="space-y-4">
-        <h2 className="text-lg font-bold text-slate-900">
+        <h2 className="text-lg font-bold text-zinc-900">
           Completed Trips & Receipts
         </h2>
 
-        <div className="divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white">
+        <div className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 bg-white">
           {pastReservations.length === 0 ? (
-            <div className="p-6 text-xs text-slate-500">
+            <div className="p-6 text-xs text-zinc-500">
               {tripSearchQuery.trim()
                 ? `No past reservations match "${tripSearchQuery.trim()}".`
                 : 'No completed trips yet.'}
@@ -1207,7 +1207,7 @@ export function DriverTripsView({
                 <div key={res.id} className="space-y-3 p-5">
                   <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
                     <div>
-                      <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-500">
                         <span className="font-mono">{res.id}</span>
                         <span aria-hidden="true">·</span>
                         <span>{res.connectorType}</span>
@@ -1218,28 +1218,28 @@ export function DriverTripsView({
                               ? 'font-medium text-emerald-700'
                               : res.status === 'disputed'
                                 ? 'font-medium text-red-700'
-                                : 'font-medium text-slate-500'
+                                : 'font-medium text-zinc-500'
                           }
                         >
                           {res.status.charAt(0).toUpperCase() +
                             res.status.slice(1)}
                         </span>
                       </div>
-                      <h3 className="mt-0.5 text-sm font-semibold text-slate-900">
+                      <h3 className="mt-0.5 text-sm font-semibold text-zinc-900">
                         {res.chargingPointName}
                       </h3>
                     </div>
 
                     {session && (
                       <div className="flex flex-wrap items-center gap-4 font-mono text-xs tabular-nums">
-                        <span className="text-slate-600">
+                        <span className="text-zinc-600">
                           {session.energyDeliveredKwh.toFixed(2)} kWh
                         </span>
-                        <span className="font-semibold text-slate-900">
+                        <span className="font-semibold text-zinc-900">
                           ₹{session.amount.toFixed(2)}
                         </span>
                         {chargePayment && (
-                          <span className="text-slate-500">
+                          <span className="text-zinc-500">
                             {chargePayment.stripeTransactionId}
                           </span>
                         )}
@@ -1248,7 +1248,7 @@ export function DriverTripsView({
                   </div>
 
                   {res.status === 'cancelled' && res.notes && (
-                    <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                    <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-600">
                       {res.notes}
                     </div>
                   )}
@@ -1284,7 +1284,7 @@ export function DriverTripsView({
                     >
                       <label
                         htmlFor={`rate-${res.id}`}
-                        className="text-xs font-medium text-slate-600"
+                        className="text-xs font-medium text-zinc-600"
                       >
                         Rate host:
                       </label>
@@ -1300,7 +1300,7 @@ export function DriverTripsView({
                             },
                           }))
                         }
-                        className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-800"
+                        className="rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-xs text-zinc-800"
                       >
                         {[5, 4, 3, 2, 1].map((n) => (
                           <option key={n} value={n}>
@@ -1319,12 +1319,12 @@ export function DriverTripsView({
                         }
                         placeholder="Share feedback on parking access or meter accuracy..."
                         aria-label={`Review comment for ${res.chargingPointName}`}
-                        className="min-w-[220px] flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-900"
+                        className="min-w-[220px] flex-1 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs text-zinc-900"
                       />
                       <button
                         type="submit"
                         disabled={!formState.comment.trim() || busyId === res.id}
-                        className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 hover:bg-slate-50 disabled:opacity-50"
+                        className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-semibold text-zinc-800 hover:bg-zinc-50 disabled:opacity-50"
                       >
                         <Star className="h-3 w-3 text-amber-500" />
                         Post Review
@@ -1358,7 +1358,7 @@ export function DriverTripsView({
 
         return (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/50 p-4"
             onClick={() => setMapModalResId(null)}
           >
             <div
@@ -1366,20 +1366,20 @@ export function DriverTripsView({
               aria-modal="true"
               aria-labelledby="map-summary-title"
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-xl"
+              className="w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-xl border border-zinc-200 bg-white shadow-xl"
             >
-              <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-4 py-3 sm:px-5 sm:py-4">
+              <div className="flex items-start justify-between gap-4 border-b border-zinc-200 px-4 py-3 sm:px-5 sm:py-4">
                 <div>
                   <div className="text-xs font-medium text-emerald-700">
                     Reservation Location & 3D Bay Summary
                   </div>
                   <h3
                     id="map-summary-title"
-                    className="mt-0.5 text-base font-bold text-slate-900"
+                    className="mt-0.5 text-base font-bold text-zinc-900"
                   >
                     {modalRes.chargingPointName}
                   </h3>
-                  <p className="mt-0.5 text-xs text-slate-500">
+                  <p className="mt-0.5 text-xs text-zinc-500">
                     {modalPoint?.address || 'Munich Metro Charging Bay'}
                   </p>
                 </div>
@@ -1388,7 +1388,7 @@ export function DriverTripsView({
                     <div
                       role="group"
                       aria-label="Modal preview mode"
-                      className="flex items-center gap-1 rounded-lg bg-slate-100 p-0.5"
+                      className="flex items-center gap-1 rounded-lg bg-zinc-100 p-0.5"
                     >
                       <button
                         type="button"
@@ -1396,8 +1396,8 @@ export function DriverTripsView({
                         aria-pressed={modalPreviewMode === '3d'}
                         className={`inline-flex items-center gap-1 whitespace-nowrap rounded-md px-2 py-1 text-xs font-medium ${
                           modalPreviewMode === '3d'
-                            ? 'bg-white text-slate-900 shadow-xs'
-                            : 'text-slate-600 hover:text-slate-900'
+                            ? 'bg-white text-zinc-900 shadow-xs'
+                            : 'text-zinc-600 hover:text-zinc-900'
                         }`}
                       >
                         <Box className="h-3 w-3 text-emerald-600" />
@@ -1409,8 +1409,8 @@ export function DriverTripsView({
                         aria-pressed={modalPreviewMode === '2d'}
                         className={`inline-flex items-center gap-1 whitespace-nowrap rounded-md px-2 py-1 text-xs font-medium ${
                           modalPreviewMode === '2d'
-                            ? 'bg-white text-slate-900 shadow-xs'
-                            : 'text-slate-600 hover:text-slate-900'
+                            ? 'bg-white text-zinc-900 shadow-xs'
+                            : 'text-zinc-600 hover:text-zinc-900'
                         }`}
                       >
                         <Map className="h-3 w-3" />
@@ -1422,7 +1422,7 @@ export function DriverTripsView({
                     type="button"
                     onClick={() => setMapModalResId(null)}
                     aria-label="Close map summary modal"
-                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-zinc-200 text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -1540,23 +1540,23 @@ export function DriverTripsView({
                 </svg>
 
                 {/* Destination floating card */}
-                <div className="absolute right-3 top-3 rounded-lg border border-slate-200 bg-white/95 px-3 py-1.5 text-xs shadow-xs">
+                <div className="absolute right-3 top-3 rounded-lg border border-zinc-200 bg-white/95 px-3 py-1.5 text-xs shadow-xs">
                   <div className="font-mono font-semibold tabular-nums text-emerald-700">
                     ₹{modalRes.pricePerKwh.toFixed(2)}/kWh
                   </div>
-                  <div className="font-mono text-[11px] text-slate-600 tabular-nums">
+                  <div className="font-mono text-[11px] text-zinc-600 tabular-nums">
                     {modalRes.connectorType} · {modalRes.powerKw} kW
                   </div>
                 </div>
 
                 {/* Bottom route telemetry strip */}
-                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between rounded-lg border border-slate-200 bg-white/95 px-3 py-2 text-xs">
-                  <span className="inline-flex items-center gap-1.5 font-medium text-slate-900">
+                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between rounded-lg border border-zinc-200 bg-white/95 px-3 py-2 text-xs">
+                  <span className="inline-flex items-center gap-1.5 font-medium text-zinc-900">
                     <Navigation className="h-3.5 w-3.5 text-emerald-600" />
                     {modalRes.distanceKm} km away · ~{etaMin} min drive
                   </span>
                   {modalPoint && (
-                    <span className="font-mono text-[11px] tabular-nums text-slate-500">
+                    <span className="font-mono text-[11px] tabular-nums text-zinc-500">
                       {modalPoint.location.lat.toFixed(4)}°N,{' '}
                       {modalPoint.location.lon.toFixed(4)}°E
                     </span>
@@ -1565,9 +1565,9 @@ export function DriverTripsView({
               </div>
               )}
 
-              <div className="flex items-center justify-between gap-3 border-t border-slate-200 bg-slate-50 px-5 py-3.5">
-                <span className="font-mono text-xs text-slate-600">
-                  Hold Token: <strong className="text-slate-900">{modalRes.qrCodeToken}</strong>
+              <div className="flex items-center justify-between gap-3 border-t border-zinc-200 bg-zinc-50 px-5 py-3.5">
+                <span className="font-mono text-xs text-zinc-600">
+                  Hold Token: <strong className="text-zinc-900">{modalRes.qrCodeToken}</strong>
                 </span>
                 <div className="flex items-center gap-2">
                   <button
@@ -1576,14 +1576,14 @@ export function DriverTripsView({
                       setMapModalResId(null);
                       onExploreMap();
                     }}
-                    className="rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                    className="rounded-lg border border-zinc-200 bg-white px-3.5 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50"
                   >
                     Open Full Map
                   </button>
                   <button
                     type="button"
                     onClick={() => setMapModalResId(null)}
-                    className="rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white hover:bg-slate-800"
+                    className="rounded-lg bg-zinc-900 px-4 py-2 text-xs font-semibold text-white hover:bg-zinc-800"
                   >
                     Done
                   </button>

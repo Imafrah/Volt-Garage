@@ -24,14 +24,11 @@ export function TelemetryStreamIndicator({
           : 'border-amber-200 bg-amber-50/95 text-amber-900'
       }`}
     >
-      <span className="relative flex h-2 w-2">
+      <span className="flex h-2 w-2 items-center justify-center">
         {isLive ? (
-          <>
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-600" />
-          </>
+          <span className="h-2 w-2 rounded-full bg-emerald-600" />
         ) : (
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-500" />
+          <span className="h-2 w-2 rounded-full bg-amber-500" />
         )}
       </span>
       <span className="font-semibold text-zinc-900 tracking-tight">OCPP 2.0.1</span>
@@ -43,7 +40,7 @@ export function TelemetryStreamIndicator({
           isLive ? 'text-emerald-700' : 'text-amber-700'
         }`}
       >
-        {isLive ? '230V · 32A · LIVE' : 'RECONNECTING'}
+        {isLive ? '230V · 32A · Live' : 'Reconnecting'}
       </span>
     </div>
   );

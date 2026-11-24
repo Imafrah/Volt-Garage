@@ -531,23 +531,23 @@ export function SmartMeter3D({
   };
 
   return (
-    <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-white text-slate-900 shadow-sm">
+    <div className="relative overflow-hidden rounded-xl border border-zinc-200 bg-white text-zinc-900 shadow-sm">
       {/* Header */}
-      <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/80 px-4 py-3">
+      <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 bg-zinc-50/80 px-4 py-3">
         <div className="flex items-center gap-2.5">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20">
             <Cpu className="h-4 w-4" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-display text-sm font-bold tracking-tight text-slate-900">
+              <span className="font-display text-sm font-bold tracking-tight text-zinc-900">
                 DIN-Rail Smart Meter Digital Twin
               </span>
               <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-600/20">
                 OCPP 2.0.1
               </span>
             </div>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-zinc-500">
               High-precision 3-phase revenue meter with metered payout validation
             </p>
           </div>
@@ -579,7 +579,7 @@ export function SmartMeter3D({
             type="button"
             onClick={() => sceneActionsRef.current?.resetCamera()}
             title="Reset 3D Camera"
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white/95 text-slate-700 shadow-sm backdrop-blur-xs hover:bg-slate-50 hover:text-slate-900"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 bg-white/95 text-zinc-700 shadow-sm backdrop-blur-xs hover:bg-zinc-50 hover:text-zinc-900"
           >
             <RotateCcw className="h-3.5 w-3.5" />
           </button>
@@ -589,7 +589,7 @@ export function SmartMeter3D({
             className={`flex h-8 items-center gap-1 rounded-lg border px-2.5 text-xs font-medium shadow-sm backdrop-blur-xs transition-colors ${
               autoRotate
                 ? 'border-emerald-600/30 bg-emerald-50 text-emerald-800'
-                : 'border-slate-200 bg-white/95 text-slate-700 hover:bg-slate-50 hover:text-slate-900'
+                : 'border-zinc-200 bg-white/95 text-zinc-700 hover:bg-zinc-50 hover:text-zinc-900'
             }`}
           >
             <Activity className={`h-3 w-3 ${autoRotate ? 'text-emerald-600 animate-pulse' : ''}`} />
@@ -598,11 +598,11 @@ export function SmartMeter3D({
         </div>
 
         {/* Bottom Interactive Controls */}
-        <div className="relative z-10 border-t border-slate-100 bg-slate-50/90 px-4 py-3 backdrop-blur-xs">
+        <div className="relative z-10 border-t border-zinc-100 bg-zinc-50/90 px-4 py-3 backdrop-blur-xs">
           <div className="flex flex-wrap items-center justify-between gap-4">
             {/* Display Mode Indicator */}
             <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-500 font-medium">Active Mode:</span>
+              <span className="text-xs text-zinc-500 font-medium">Active Mode:</span>
               <div className="flex items-center gap-1">
                 {(
                   [
@@ -622,7 +622,7 @@ export function SmartMeter3D({
                     className={`rounded-md px-2.5 py-1 text-xs font-semibold transition-colors ${
                       displayMode === m.id
                         ? 'bg-emerald-600 text-white shadow-xs'
-                        : 'bg-white border border-slate-200 text-slate-600 hover:text-slate-900'
+                        : 'bg-white border border-zinc-200 text-zinc-600 hover:text-zinc-900'
                     }`}
                   >
                     {m.label}
@@ -639,7 +639,7 @@ export function SmartMeter3D({
                 className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all ${
                   breakerTripped
                     ? 'border-red-300 bg-red-50 text-red-700'
-                    : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                    : 'border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50'
                 }`}
               >
                 <Power className="h-3.5 w-3.5" />
@@ -652,7 +652,7 @@ export function SmartMeter3D({
                 className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all ${
                   backlightOn
                     ? 'border-emerald-600/30 bg-emerald-50 text-emerald-800'
-                    : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                    : 'border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50'
                 }`}
               >
                 <Sparkles className="h-3.5 w-3.5" />

@@ -170,7 +170,7 @@ export function RegistrationModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-3 sm:p-4 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/60 p-3 sm:p-4 backdrop-blur-xs"
       onClick={onClose}
     >
       <div
@@ -178,18 +178,18 @@ export function RegistrationModal({
         aria-modal="true"
         aria-labelledby="registration-modal-title"
         onClick={(e) => e.stopPropagation()}
-        className="flex max-h-[92vh] w-full max-w-2xl flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl"
+        className="flex max-h-[92vh] w-full max-w-2xl flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-2xl"
       >
         {/* Clean Header */}
-        <div className="flex shrink-0 items-center justify-between border-b border-slate-200 bg-white px-4 py-3.5 sm:px-6 sm:py-4">
+        <div className="flex shrink-0 items-center justify-between border-b border-zinc-200 bg-white px-4 py-3.5 sm:px-6 sm:py-4">
           <div>
             <h2
               id="registration-modal-title"
-              className="text-base font-bold text-slate-900"
+              className="text-base font-bold text-zinc-900"
             >
               {role === 'driver' ? 'Register as EV Owner' : 'Register as Charging Host'}
             </h2>
-            <p className="mt-0.5 text-xs text-slate-500">
+            <p className="mt-0.5 text-xs text-zinc-500">
               Create your ImCharge account to reserve chargers or host private wallboxes
             </p>
           </div>
@@ -197,7 +197,7 @@ export function RegistrationModal({
             type="button"
             onClick={onClose}
             aria-label="Close registration modal"
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+            className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700"
           >
             <X className="h-4 w-4" />
           </button>
@@ -208,7 +208,7 @@ export function RegistrationModal({
           <div
             role="tablist"
             aria-label="Registration role selector"
-            className="grid grid-cols-2 gap-2 rounded-lg bg-slate-100 p-1"
+            className="grid grid-cols-2 gap-2 rounded-lg bg-zinc-100 p-1"
           >
             <button
               type="button"
@@ -220,8 +220,8 @@ export function RegistrationModal({
               }}
               className={`flex items-center justify-center gap-2 rounded-md py-2 text-xs font-semibold transition-colors ${
                 role === 'driver'
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-white text-zinc-900 shadow-xs'
+                  : 'text-zinc-600 hover:text-zinc-900'
               }`}
             >
               <Car className="h-4 w-4 text-emerald-600" />
@@ -238,8 +238,8 @@ export function RegistrationModal({
               }}
               className={`flex items-center justify-center gap-2 rounded-md py-2 text-xs font-semibold transition-colors ${
                 role === 'host'
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-white text-zinc-900 shadow-xs'
+                  : 'text-zinc-600 hover:text-zinc-900'
               }`}
             >
               <Home className="h-4 w-4 text-emerald-600" />
@@ -264,12 +264,12 @@ export function RegistrationModal({
               className="space-y-4"
             >
               <div className="space-y-3">
-                <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                <div className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
                   1. Contact &amp; Payment Details
                 </div>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div>
-                    <label htmlFor="reg-drv-name" className="block text-xs font-medium text-slate-700">
+                    <label htmlFor="reg-drv-name" className="block text-xs font-medium text-zinc-700">
                       Full Name *
                     </label>
                     <input
@@ -279,12 +279,12 @@ export function RegistrationModal({
                       value={drvName}
                       onChange={(e) => setDrvName(e.target.value)}
                       placeholder="e.g. Lukas Weber"
-                      className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900 focus:border-emerald-600 focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="reg-drv-email" className="block text-xs font-medium text-slate-700">
+                    <label htmlFor="reg-drv-email" className="block text-xs font-medium text-zinc-700">
                       Email Address *
                     </label>
                     <input
@@ -294,12 +294,12 @@ export function RegistrationModal({
                       value={drvEmail}
                       onChange={(e) => setDrvEmail(e.target.value)}
                       placeholder="e.g. lukas@example.de"
-                      className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900 focus:border-emerald-600 focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="reg-drv-phone" className="block text-xs font-medium text-slate-700">
+                    <label htmlFor="reg-drv-phone" className="block text-xs font-medium text-zinc-700">
                       Phone Number *
                     </label>
                     <input
@@ -309,12 +309,12 @@ export function RegistrationModal({
                       value={drvPhone}
                       onChange={(e) => setDrvPhone(e.target.value)}
                       placeholder="e.g. +49 171 4458921"
-                      className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900 focus:border-emerald-600 focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="reg-drv-password" className="block text-xs font-medium text-slate-700">
+                    <label htmlFor="reg-drv-password" className="block text-xs font-medium text-zinc-700">
                       Password (min. 6 characters) *
                     </label>
                     <input
@@ -325,12 +325,12 @@ export function RegistrationModal({
                       value={drvPassword}
                       onChange={(e) => setDrvPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900 focus:border-emerald-600 focus:outline-none"
                     />
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label htmlFor="reg-drv-payment" className="block text-xs font-medium text-slate-700">
+                    <label htmlFor="reg-drv-payment" className="block text-xs font-medium text-zinc-700">
                       Billing / Payment Method *
                     </label>
                     <input
@@ -340,19 +340,19 @@ export function RegistrationModal({
                       value={drvPayment}
                       onChange={(e) => setDrvPayment(e.target.value)}
                       placeholder="e.g. Visa •••• 4419 or UPI"
-                      className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900 focus:border-emerald-600 focus:outline-none"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-3 border-t border-slate-200 pt-4">
-                <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+              <div className="space-y-3 border-t border-zinc-200 pt-4">
+                <div className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
                   2. Primary Electric Vehicle Specs
                 </div>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                   <div>
-                    <label htmlFor="reg-veh-make" className="block text-xs font-medium text-slate-700">
+                    <label htmlFor="reg-veh-make" className="block text-xs font-medium text-zinc-700">
                       Make *
                     </label>
                     <input
@@ -362,12 +362,12 @@ export function RegistrationModal({
                       value={vehMake}
                       onChange={(e) => setVehMake(e.target.value)}
                       placeholder="e.g. BMW"
-                      className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900 focus:border-emerald-600 focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="reg-veh-model" className="block text-xs font-medium text-slate-700">
+                    <label htmlFor="reg-veh-model" className="block text-xs font-medium text-zinc-700">
                       Model *
                     </label>
                     <input
@@ -377,12 +377,12 @@ export function RegistrationModal({
                       value={vehModel}
                       onChange={(e) => setVehModel(e.target.value)}
                       placeholder="e.g. i4 eDrive40"
-                      className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900 focus:border-emerald-600 focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="reg-veh-plate" className="block text-xs font-medium text-slate-700">
+                    <label htmlFor="reg-veh-plate" className="block text-xs font-medium text-zinc-700">
                       License Plate *
                     </label>
                     <input
@@ -392,12 +392,12 @@ export function RegistrationModal({
                       value={vehPlate}
                       onChange={(e) => setVehPlate(e.target.value.toUpperCase())}
                       placeholder="e.g. M-EV 2025"
-                      className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-xs text-zinc-900 focus:border-emerald-600 focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="reg-veh-year" className="block text-xs font-medium text-slate-700">
+                    <label htmlFor="reg-veh-year" className="block text-xs font-medium text-zinc-700">
                       Model Year
                     </label>
                     <input
@@ -407,12 +407,12 @@ export function RegistrationModal({
                       max={2028}
                       value={vehYear}
                       onChange={(e) => setVehYear(e.target.value)}
-                      className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-xs text-zinc-900 focus:border-emerald-600 focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="reg-veh-battery" className="block text-xs font-medium text-slate-700">
+                    <label htmlFor="reg-veh-battery" className="block text-xs font-medium text-zinc-700">
                       Battery Capacity (kWh) *
                     </label>
                     <input
@@ -424,13 +424,13 @@ export function RegistrationModal({
                       required
                       value={vehBattery}
                       onChange={(e) => setVehBattery(e.target.value)}
-                      className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-xs text-zinc-900 focus:border-emerald-600 focus:outline-none"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <span className="block text-xs font-medium text-slate-700">
+                  <span className="block text-xs font-medium text-zinc-700">
                     Charging Connectors (Select at least 1) *
                   </span>
                   <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -440,7 +440,7 @@ export function RegistrationModal({
                         className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors ${
                           vehConnectors.includes(conn)
                             ? 'border-emerald-600 bg-emerald-50 text-emerald-900'
-                            : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                            : 'border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50'
                         }`}
                       >
                         <input
@@ -449,7 +449,7 @@ export function RegistrationModal({
                           onChange={() =>
                             toggleConnector(vehConnectors, setVehConnectors, conn)
                           }
-                          className="h-3.5 w-3.5 rounded border-slate-300 accent-emerald-600"
+                          className="h-3.5 w-3.5 rounded border-zinc-300 accent-emerald-600"
                         />
                         <span>{conn}</span>
                       </label>
@@ -458,11 +458,11 @@ export function RegistrationModal({
                 </div>
               </div>
 
-              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 border-t border-slate-200 pt-4">
+              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 border-t border-zinc-200 pt-4">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-center text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                  className="rounded-lg border border-zinc-200 bg-white px-4 py-2 text-center text-xs font-semibold text-zinc-700 hover:bg-zinc-50"
                 >
                   Cancel
                 </button>
@@ -486,7 +486,7 @@ export function RegistrationModal({
               className="space-y-4"
             >
               <div className="space-y-3">
-                <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                <div className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
                   1. Settlement Model &amp; Host Account
                 </div>
 
@@ -497,15 +497,15 @@ export function RegistrationModal({
                     className={`flex items-start gap-3 rounded-lg border p-3 text-left transition-colors ${
                       hostType === 'private_host'
                         ? 'border-emerald-600 bg-emerald-50/70'
-                        : 'border-slate-200 bg-white hover:bg-slate-50'
+                        : 'border-zinc-200 bg-white hover:bg-zinc-50'
                     }`}
                   >
                     <Home className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" />
                     <div>
-                      <div className="text-xs font-semibold text-slate-900">
+                      <div className="text-xs font-semibold text-zinc-900">
                         Private Wallbox (80% Payout)
                       </div>
-                      <div className="mt-0.5 text-[11px] text-slate-500">
+                      <div className="mt-0.5 text-[11px] text-zinc-500">
                         Home or commercial charger with MID smart meter
                       </div>
                     </div>
@@ -517,15 +517,15 @@ export function RegistrationModal({
                     className={`flex items-start gap-3 rounded-lg border p-3 text-left transition-colors ${
                       hostType === 'existing_station'
                         ? 'border-emerald-600 bg-emerald-50/70'
-                        : 'border-slate-200 bg-white hover:bg-slate-50'
+                        : 'border-zinc-200 bg-white hover:bg-zinc-50'
                     }`}
                   >
-                    <Building2 className="mt-0.5 h-4 w-4 shrink-0 text-slate-700" />
+                    <Building2 className="mt-0.5 h-4 w-4 shrink-0 text-zinc-700" />
                     <div>
-                      <div className="text-xs font-semibold text-slate-900">
+                      <div className="text-xs font-semibold text-zinc-900">
                         Partner Hub (15% Split)
                       </div>
-                      <div className="mt-0.5 text-[11px] text-slate-500">
+                      <div className="mt-0.5 text-[11px] text-zinc-500">
                         Commercial DC fast network via OCPI gateway
                       </div>
                     </div>
@@ -534,7 +534,7 @@ export function RegistrationModal({
 
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div>
-                    <label htmlFor="reg-host-name" className="block text-xs font-medium text-slate-700">
+                    <label htmlFor="reg-host-name" className="block text-xs font-medium text-zinc-700">
                       Host Name or Operator *
                     </label>
                     <input
@@ -544,12 +544,12 @@ export function RegistrationModal({
                       value={hostName}
                       onChange={(e) => setHostName(e.target.value)}
                       placeholder="e.g. Sabine Klein"
-                      className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900 focus:border-emerald-600 focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="reg-host-email" className="block text-xs font-medium text-slate-700">
+                    <label htmlFor="reg-host-email" className="block text-xs font-medium text-zinc-700">
                       Email Address *
                     </label>
                     <input
@@ -559,12 +559,12 @@ export function RegistrationModal({
                       value={hostEmail}
                       onChange={(e) => setHostEmail(e.target.value)}
                       placeholder="e.g. sabine.klein@example.de"
-                      className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900 focus:border-emerald-600 focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="reg-host-phone" className="block text-xs font-medium text-slate-700">
+                    <label htmlFor="reg-host-phone" className="block text-xs font-medium text-zinc-700">
                       Phone Number *
                     </label>
                     <input
@@ -574,12 +574,12 @@ export function RegistrationModal({
                       value={hostPhone}
                       onChange={(e) => setHostPhone(e.target.value)}
                       placeholder="e.g. +49 176 8923410"
-                      className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900 focus:border-emerald-600 focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="reg-host-password" className="block text-xs font-medium text-slate-700">
+                    <label htmlFor="reg-host-password" className="block text-xs font-medium text-zinc-700">
                       Password (min. 6 characters) *
                     </label>
                     <input
@@ -590,12 +590,12 @@ export function RegistrationModal({
                       value={hostPassword}
                       onChange={(e) => setHostPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900 focus:border-emerald-600 focus:outline-none"
                     />
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label htmlFor="reg-host-bank" className="block text-xs font-medium text-slate-700">
+                    <label htmlFor="reg-host-bank" className="block text-xs font-medium text-zinc-700">
                       Payout Bank Account (IBAN or UPI ID) *
                     </label>
                     <input
@@ -605,14 +605,14 @@ export function RegistrationModal({
                       value={hostBank}
                       onChange={(e) => setHostBank(e.target.value)}
                       placeholder="e.g. DE89 3704 0044 0532 0130 99"
-                      className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-xs text-zinc-900 focus:border-emerald-600 focus:outline-none"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-3 border-t border-slate-200 pt-4">
-                <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+              <div className="space-y-3 border-t border-zinc-200 pt-4">
+                <div className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
                   2. Charger Hardware &amp; Operational Hours
                 </div>
 
@@ -620,7 +620,7 @@ export function RegistrationModal({
                   <div className="space-y-3">
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
-                        <label htmlFor="reg-eq-brand" className="block text-xs font-medium text-slate-700">
+                        <label htmlFor="reg-eq-brand" className="block text-xs font-medium text-zinc-700">
                           Charger Brand *
                         </label>
                         <input
@@ -630,12 +630,12 @@ export function RegistrationModal({
                           value={eqBrand}
                           onChange={(e) => setEqBrand(e.target.value)}
                           placeholder="e.g. Easee"
-                          className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                          className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900 focus:border-emerald-600 focus:outline-none"
                         />
                       </div>
 
                       <div>
-                        <label htmlFor="reg-eq-model" className="block text-xs font-medium text-slate-700">
+                        <label htmlFor="reg-eq-model" className="block text-xs font-medium text-zinc-700">
                           Model *
                         </label>
                         <input
@@ -645,12 +645,12 @@ export function RegistrationModal({
                           value={eqModel}
                           onChange={(e) => setEqModel(e.target.value)}
                           placeholder="e.g. Home Wallbox 22kW"
-                          className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                          className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900 focus:border-emerald-600 focus:outline-none"
                         />
                       </div>
 
                       <div>
-                        <label htmlFor="reg-eq-power" className="block text-xs font-medium text-slate-700">
+                        <label htmlFor="reg-eq-power" className="block text-xs font-medium text-zinc-700">
                           Power (kW) *
                         </label>
                         <input
@@ -662,12 +662,12 @@ export function RegistrationModal({
                           required
                           value={eqPower}
                           onChange={(e) => setEqPower(e.target.value)}
-                          className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                          className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-xs text-zinc-900 focus:border-emerald-600 focus:outline-none"
                         />
                       </div>
 
                       <div>
-                        <label htmlFor="reg-eq-meter" className="block text-xs font-medium text-slate-700">
+                        <label htmlFor="reg-eq-meter" className="block text-xs font-medium text-zinc-700">
                           Smart Meter Serial (MID Certified) *
                         </label>
                         <input
@@ -677,13 +677,13 @@ export function RegistrationModal({
                           value={eqMeter}
                           onChange={(e) => setEqMeter(e.target.value)}
                           placeholder="e.g. SM-DE-MUC-90214"
-                          className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                          className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-xs text-zinc-900 focus:border-emerald-600 focus:outline-none"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <span className="block text-xs font-medium text-slate-700">
+                      <span className="block text-xs font-medium text-zinc-700">
                         Connector Types (Select at least 1) *
                       </span>
                       <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -693,7 +693,7 @@ export function RegistrationModal({
                             className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors ${
                               eqConnectors.includes(conn)
                                 ? 'border-emerald-600 bg-emerald-50 text-emerald-900'
-                                : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                                : 'border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50'
                             }`}
                           >
                             <input
@@ -702,7 +702,7 @@ export function RegistrationModal({
                               onChange={() =>
                                 toggleConnector(eqConnectors, setEqConnectors, conn)
                               }
-                              className="h-3.5 w-3.5 rounded border-slate-300 accent-emerald-600"
+                              className="h-3.5 w-3.5 rounded border-zinc-300 accent-emerald-600"
                             />
                             <span>{conn}</span>
                           </label>
@@ -713,7 +713,7 @@ export function RegistrationModal({
                 ) : (
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div>
-                      <label htmlFor="reg-partner-network" className="block text-xs font-medium text-slate-700">
+                      <label htmlFor="reg-partner-network" className="block text-xs font-medium text-zinc-700">
                         Partner Network Name *
                       </label>
                       <input
@@ -723,12 +723,12 @@ export function RegistrationModal({
                         value={partnerNetwork}
                         onChange={(e) => setPartnerNetwork(e.target.value)}
                         placeholder="e.g. Ionity"
-                        className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                        className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900 focus:border-emerald-600 focus:outline-none"
                       />
                     </div>
 
                     <div>
-                      <label htmlFor="reg-partner-station" className="block text-xs font-medium text-slate-700">
+                      <label htmlFor="reg-partner-station" className="block text-xs font-medium text-zinc-700">
                         Partner Station OCPI ID *
                       </label>
                       <input
@@ -738,7 +738,7 @@ export function RegistrationModal({
                         value={partnerStationId}
                         onChange={(e) => setPartnerStationId(e.target.value)}
                         placeholder="e.g. ION-MUC-408"
-                        className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                        className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-xs text-zinc-900 focus:border-emerald-600 focus:outline-none"
                       />
                     </div>
                   </div>
@@ -746,7 +746,7 @@ export function RegistrationModal({
 
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div>
-                    <label htmlFor="reg-avail-weekdays" className="block text-xs font-medium text-slate-700">
+                    <label htmlFor="reg-avail-weekdays" className="block text-xs font-medium text-zinc-700">
                       Weekday Availability
                     </label>
                     <input
@@ -754,12 +754,12 @@ export function RegistrationModal({
                       type="text"
                       value={availWeekdays}
                       onChange={(e) => setAvailWeekdays(e.target.value)}
-                      className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900 focus:border-emerald-600 focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="reg-avail-weekends" className="block text-xs font-medium text-slate-700">
+                    <label htmlFor="reg-avail-weekends" className="block text-xs font-medium text-zinc-700">
                       Weekend Availability
                     </label>
                     <input
@@ -767,17 +767,17 @@ export function RegistrationModal({
                       type="text"
                       value={availWeekends}
                       onChange={(e) => setAvailWeekends(e.target.value)}
-                      className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-emerald-600 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900 focus:border-emerald-600 focus:outline-none"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 border-t border-slate-200 pt-4">
+              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 border-t border-zinc-200 pt-4">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-center text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                  className="rounded-lg border border-zinc-200 bg-white px-4 py-2 text-center text-xs font-semibold text-zinc-700 hover:bg-zinc-50"
                 >
                   Cancel
                 </button>

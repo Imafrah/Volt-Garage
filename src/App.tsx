@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Car, Compass, Home, RotateCcw, UserPlus } from 'lucide-react';
+import { Car, Compass, Home, Layers, RotateCcw, UserPlus } from 'lucide-react';
 import { apiClient } from './api/client';
 import { DriverTripsView } from './components/DriverTripsView';
 import { ExploreView } from './components/ExploreView';
@@ -349,7 +349,7 @@ export default function App() {
               }}
               className="group flex items-center gap-2.5 text-zinc-900 whitespace-nowrap shrink-0"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-white shadow-xs transition-transform group-hover:scale-[1.02]">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-white shadow-xs">
                 <svg className="h-4 w-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                 </svg>
@@ -395,15 +395,15 @@ export default function App() {
           </div>
 
           {/* Action Buttons: Unified Palette and Proportions */}
-          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
             <button
               type="button"
               onClick={() => setShowHero57(true)}
-              title="Preview Originkit Hero 57 Showcase"
+              title="Preview Originkit Hero 57 Section"
               aria-label="Preview Originkit Hero 57"
               className="whitespace-nowrap shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
             >
-              <span className="text-emerald-500 font-bold">✦</span>
+              <Layers className="h-3.5 w-3.5 text-emerald-600" />
               <span className="hidden sm:inline">Hero 57</span>
             </button>
             <button

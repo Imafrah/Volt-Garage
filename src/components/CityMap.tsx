@@ -51,10 +51,10 @@ export function CityMap({
   const radiusPx = Math.max(24, radiusKm * pxPerKm);
 
   return (
-    <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-white px-4 py-2.5">
-        <div className="flex min-w-0 items-center gap-2 text-xs text-slate-600">
-          <span className="truncate font-medium text-slate-900">
+    <div className="relative overflow-hidden rounded-xl border border-zinc-200 bg-zinc-100">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-200 bg-white px-4 py-2.5">
+        <div className="flex min-w-0 items-center gap-2 text-xs text-zinc-600">
+          <span className="truncate font-medium text-zinc-900">
             Munich Metro Grid
           </span>
           <span aria-hidden="true" className="hidden sm:inline">
@@ -72,7 +72,7 @@ export function CityMap({
           <div
             role="group"
             aria-label="Map projection mode"
-            className="flex items-center gap-1 rounded-lg bg-slate-100 p-0.5"
+            className="flex items-center gap-1 rounded-lg bg-zinc-100 p-0.5"
           >
             <button
               type="button"
@@ -80,8 +80,8 @@ export function CityMap({
               aria-pressed={viewMode === '3d'}
               className={`inline-flex items-center gap-1 whitespace-nowrap rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                 viewMode === '3d'
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-white text-zinc-900 shadow-xs'
+                  : 'text-zinc-600 hover:text-zinc-900'
               }`}
             >
               <Box className="h-3 w-3 text-emerald-600" />
@@ -93,8 +93,8 @@ export function CityMap({
               aria-pressed={viewMode === '2d'}
               className={`inline-flex items-center gap-1 whitespace-nowrap rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                 viewMode === '2d'
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-white text-zinc-900 shadow-xs'
+                  : 'text-zinc-600 hover:text-zinc-900'
               }`}
             >
               <MapIcon className="h-3 w-3" />
@@ -110,7 +110,7 @@ export function CityMap({
                   setZoom((z) => Math.min(2.2, +(z + 0.25).toFixed(2)))
                 }
                 aria-label="Zoom in map"
-                className="flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-700 transition-colors hover:bg-slate-50"
+                className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-200 bg-white text-zinc-700 transition-colors hover:bg-zinc-50"
               >
                 <Plus className="h-3.5 w-3.5" />
               </button>
@@ -120,7 +120,7 @@ export function CityMap({
                   setZoom((z) => Math.max(0.65, +(z - 0.25).toFixed(2)))
                 }
                 aria-label="Zoom out map"
-                className="flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-700 transition-colors hover:bg-slate-50"
+                className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-200 bg-white text-zinc-700 transition-colors hover:bg-zinc-50"
               >
                 <Minus className="h-3.5 w-3.5" />
               </button>
@@ -128,7 +128,7 @@ export function CityMap({
                 type="button"
                 onClick={() => setZoom(1)}
                 aria-label="Reset map zoom"
-                className="flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-700 transition-colors hover:bg-slate-50"
+                className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-200 bg-white text-zinc-700 transition-colors hover:bg-zinc-50"
               >
                 <RotateCcw className="h-3.5 w-3.5" />
               </button>
@@ -319,14 +319,14 @@ export function CityMap({
               onClick={() => onSelect(point.id)}
               style={{ left: `${leftPct}%`, top: `${topPct}%` }}
               aria-label={`Select ${point.name}, ₹${point.pricePerKwh.toFixed(2)} per kWh, ${availableCount} available`}
-              className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-lg border px-2 py-1 font-mono text-[11px] font-semibold tabular-nums transition-transform focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 ${
+              className={`absolute -tranzinc-x-1/2 -tranzinc-y-1/2 rounded-lg border px-2 py-1 font-mono text-[11px] font-semibold tabular-nums transition-transform focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 ${
                 isSelected
-                  ? 'z-20 scale-105 border-slate-900 bg-slate-900 text-white shadow-md'
+                  ? 'z-20 scale-105 border-zinc-900 bg-zinc-900 text-white shadow-md'
                   : availableCount > 0
                     ? isPrivate
                       ? 'z-10 border-emerald-600 bg-white text-emerald-800 shadow-sm hover:bg-emerald-50'
-                      : 'z-10 border-slate-300 bg-white text-slate-800 shadow-sm hover:border-slate-500'
-                    : 'z-0 border-slate-300 bg-slate-200 text-slate-500'
+                      : 'z-10 border-zinc-300 bg-white text-zinc-800 shadow-sm hover:border-zinc-500'
+                    : 'z-0 border-zinc-300 bg-zinc-200 text-zinc-500'
               }`}
             >
               ₹{point.pricePerKwh.toFixed(2)}
@@ -336,14 +336,14 @@ export function CityMap({
 
         {/* Selected route telemetry bar */}
         {selectedPoint && (
-          <div className="absolute bottom-3 left-3 right-3 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white/95 px-3 py-2 text-xs text-slate-700 backdrop-blur-sm">
+          <div className="absolute bottom-3 left-3 right-3 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-zinc-200 bg-white/95 px-3 py-2 text-xs text-zinc-700 backdrop-blur-sm">
             <div className="flex items-center gap-2 truncate">
               <Navigation className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
-              <span className="truncate font-medium text-slate-900">
+              <span className="truncate font-medium text-zinc-900">
                 {selectedPoint.name}
               </span>
             </div>
-            <div className="flex items-center gap-2 font-mono tabular-nums text-slate-600">
+            <div className="flex items-center gap-2 font-mono tabular-nums text-zinc-600">
               <span>
                 {calculateDistanceKm(driverLocation, selectedPoint.location)} km
               </span>
@@ -361,7 +361,7 @@ export function CityMap({
       </div>
       )}
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 bg-white px-4 py-2 text-xs text-slate-500">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-zinc-200 bg-white px-4 py-2 text-xs text-zinc-500">
         <div className="flex items-center gap-4">
           <span>Emerald: Available · Amber: Reserved · Canopy: Partner DC Hub</span>
         </div>

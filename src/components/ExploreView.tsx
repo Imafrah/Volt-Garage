@@ -365,21 +365,21 @@ export function ExploreView({
               <label htmlFor="charger-search" className="sr-only">
                 Search charging stations or addresses
               </label>
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -tranzinc-y-1/2 text-zinc-400" />
               <input
                 id="charger-search"
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by station, street, or partner..."
-                className="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:bg-white focus:outline-none"
+                className="w-full rounded-lg border border-zinc-200 bg-zinc-50 py-2 pl-9 pr-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-emerald-600 focus:bg-white focus:outline-none"
               />
             </div>
 
             <div
               role="group"
               aria-label="Host type filter"
-              className="flex items-center gap-1 overflow-x-auto max-w-full rounded-lg bg-slate-100 p-1 scrollbar-none"
+              className="flex items-center gap-1 overflow-x-auto max-w-full rounded-lg bg-zinc-100 p-1 scrollbar-none"
             >
               {(
                 [
@@ -394,8 +394,8 @@ export function ExploreView({
                   onClick={() => setTypeFilter(item.id)}
                   className={`whitespace-nowrap shrink-0 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
                     typeFilter === item.id
-                      ? 'bg-white text-slate-900 shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
+                      ? 'bg-white text-zinc-900 shadow-xs'
+                      : 'text-zinc-600 hover:text-zinc-900'
                   }`}
                 >
                   {item.label}
@@ -413,7 +413,7 @@ export function ExploreView({
                 onChange={(e) =>
                   setConnectorFilter(e.target.value as 'all' | ConnectorType)
                 }
-                className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 focus:border-emerald-600 focus:outline-none"
+                className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs font-medium text-zinc-700 focus:border-emerald-600 focus:outline-none"
               >
                 <option value="all">All Connectors</option>
                 <option value="Type2">Type 2 (AC)</option>
@@ -424,7 +424,7 @@ export function ExploreView({
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-5 text-xs text-slate-600">
+          <div className="flex flex-wrap items-center gap-5 text-xs text-zinc-600">
             <label className="flex items-center gap-2 font-medium">
               <span>Radius</span>
               <input
@@ -435,7 +435,7 @@ export function ExploreView({
                 onChange={(e) => setRadiusKm(Number(e.target.value))}
                 className="w-24 accent-emerald-600"
               />
-              <span className="w-11 font-mono tabular-nums text-slate-900">
+              <span className="w-11 font-mono tabular-nums text-zinc-900">
                 {radiusKm} km
               </span>
             </label>
@@ -445,7 +445,7 @@ export function ExploreView({
                 type="checkbox"
                 checked={availableOnly}
                 onChange={(e) => setAvailableOnly(e.target.checked)}
-                className="h-4 w-4 rounded border-slate-300 accent-emerald-600"
+                className="h-4 w-4 rounded border-zinc-300 accent-emerald-600"
               />
               <span>Available only</span>
             </label>
@@ -455,7 +455,7 @@ export function ExploreView({
                 type="checkbox"
                 checked={matchVehicle}
                 onChange={(e) => setMatchVehicle(e.target.checked)}
-                className="h-4 w-4 rounded border-slate-300 accent-emerald-600"
+                className="h-4 w-4 rounded border-zinc-300 accent-emerald-600"
               />
               <span>
                 Match {primaryVehicle ? primaryVehicle.model : 'vehicle'}
@@ -487,20 +487,20 @@ export function ExploreView({
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-base font-semibold text-slate-900">
+              <h2 className="text-base font-semibold text-zinc-900">
                 Nearby Charging Points
               </h2>
-              <span className="font-mono text-xs tabular-nums text-slate-500">
+              <span className="font-mono text-xs tabular-nums text-zinc-500">
                 {filteredPoints.length} matching locations
               </span>
             </div>
 
             {filteredPoints.length === 0 ? (
-              <div className="rounded-xl border border-slate-200 bg-white p-8 text-center">
-                <p className="text-sm font-medium text-slate-900">
+              <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center">
+                <p className="text-sm font-medium text-zinc-900">
                   No charging points match your current filters
                 </p>
-                <p className="mt-1 text-xs text-slate-500">
+                <p className="mt-1 text-xs text-zinc-500">
                   Try increasing your search radius or resetting connector filters.
                 </p>
                 <button
@@ -513,13 +513,13 @@ export function ExploreView({
                     setAvailableOnly(false);
                     setMatchVehicle(false);
                   }}
-                  className="mt-4 rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                  className="mt-4 rounded-lg border border-zinc-200 bg-white px-4 py-2 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
                 >
                   Reset Filters
                 </button>
               </div>
             ) : (
-              <div className="divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white">
+              <div className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 bg-white">
                 {filteredPoints.map((point) => {
                   const dist = calculateDistanceKm(
                     driver.defaultLocation,
@@ -545,10 +545,10 @@ export function ExploreView({
                         }
                       }}
                       className={`flex w-full flex-col gap-3 p-4 text-left transition-colors sm:flex-row sm:items-center ${
-                        isSelected ? 'bg-emerald-50/50' : 'hover:bg-slate-50'
+                        isSelected ? 'bg-emerald-50/50' : 'hover:bg-zinc-50'
                       }`}
                     >
-                      <div className="h-20 w-full shrink-0 overflow-hidden rounded-lg bg-slate-100 sm:w-28">
+                      <div className="h-20 w-full shrink-0 overflow-hidden rounded-lg bg-zinc-100 sm:w-28">
                         {point.photos[0] && !imgErrors[point.id] ? (
                           <img
                             src={point.photos[0]}
@@ -563,7 +563,7 @@ export function ExploreView({
                             className="h-full w-full object-cover"
                           />
                         ) : (
-                          <div className="flex h-full w-full items-center justify-center bg-slate-100 text-slate-400">
+                          <div className="flex h-full w-full items-center justify-center bg-zinc-100 text-zinc-400">
                             <Zap className="h-5 w-5" />
                           </div>
                         )}
@@ -571,20 +571,20 @@ export function ExploreView({
 
                       <div className="min-w-0 flex-1 space-y-1">
                         <div className="flex items-start justify-between gap-3">
-                          <h3 className="truncate text-sm font-semibold text-slate-900">
+                          <h3 className="truncate text-sm font-semibold text-zinc-900">
                             {point.name}
                           </h3>
-                          <span className="shrink-0 font-mono text-sm font-semibold tabular-nums text-slate-900">
+                          <span className="shrink-0 font-mono text-sm font-semibold tabular-nums text-zinc-900">
                             ₹{point.pricePerKwh.toFixed(2)}/kWh
                           </span>
                         </div>
 
-                        <p className="truncate text-xs text-slate-500">
+                        <p className="truncate text-xs text-zinc-500">
                           {point.address}
                         </p>
 
-                        <div className="flex flex-wrap items-center gap-2 pt-1 text-xs text-slate-600">
-                          <span className="font-medium text-slate-700">
+                        <div className="flex flex-wrap items-center gap-2 pt-1 text-xs text-zinc-600">
+                          <span className="font-medium text-zinc-700">
                             {point.type === 'private_host'
                               ? 'Private Host'
                               : `${point.partnerName || 'Partner'} Hub`}
@@ -608,7 +608,7 @@ export function ExploreView({
                             {freeCount}/{point.connectors.length} available
                           </span>
                           <span aria-hidden="true">·</span>
-                          <span className="inline-flex items-center gap-1 font-mono tabular-nums text-slate-700">
+                          <span className="inline-flex items-center gap-1 font-mono tabular-nums text-zinc-700">
                             <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
                             {point.rating.toFixed(1)} ({point.reviewCount})
                           </span>
@@ -625,15 +625,15 @@ export function ExploreView({
         {/* Right Detail & Instant Hold Panel */}
         <aside id="station-detail-section" className="lg:col-span-5">
           {selectedPoint ? (
-            <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-              <div className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-2">
-                <span className="text-xs font-medium text-slate-600">
+            <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white">
+              <div className="flex items-center justify-between border-b border-zinc-200 bg-white px-4 py-2">
+                <span className="text-xs font-medium text-zinc-600">
                   Station Inspection
                 </span>
                 <div
                   role="group"
                   aria-label="Station preview mode"
-                  className="flex items-center gap-1 rounded-lg bg-slate-100 p-0.5"
+                  className="flex items-center gap-1 rounded-lg bg-zinc-100 p-0.5"
                 >
                   <button
                     type="button"
@@ -641,8 +641,8 @@ export function ExploreView({
                     aria-pressed={detailMediaMode === 'photo'}
                     className={`inline-flex items-center gap-1 whitespace-nowrap rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                       detailMediaMode === 'photo'
-                        ? 'bg-white text-slate-900 shadow-xs'
-                        : 'text-slate-600 hover:text-slate-900'
+                        ? 'bg-white text-zinc-900 shadow-xs'
+                        : 'text-zinc-600 hover:text-zinc-900'
                     }`}
                   >
                     <Camera className="h-3 w-3" />
@@ -654,8 +654,8 @@ export function ExploreView({
                     aria-pressed={detailMediaMode === '3d'}
                     className={`inline-flex items-center gap-1 whitespace-nowrap rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                       detailMediaMode === '3d'
-                        ? 'bg-white text-slate-900 shadow-xs'
-                        : 'text-slate-600 hover:text-slate-900'
+                        ? 'bg-white text-zinc-900 shadow-xs'
+                        : 'text-zinc-600 hover:text-zinc-900'
                     }`}
                   >
                     <Box className="h-3 w-3 text-emerald-600" />
@@ -673,7 +673,7 @@ export function ExploreView({
                   heightClassName="h-56 sm:h-72"
                 />
               ) : (
-                <div className="relative aspect-4/3 w-full bg-slate-100">
+                <div className="relative aspect-4/3 w-full bg-zinc-100">
                   {selectedPoint.photos[0] && !imgErrors[selectedPoint.id] ? (
                     <img
                       src={selectedPoint.photos[0]}
@@ -688,7 +688,7 @@ export function ExploreView({
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-slate-100 text-slate-500">
+                    <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-zinc-100 text-zinc-500">
                       <Zap className="h-8 w-8" />
                       <span className="text-xs font-medium">
                         {selectedPoint.name}
@@ -700,7 +700,7 @@ export function ExploreView({
 
               <div className="space-y-5 p-4 sm:p-6">
                 <div className="space-y-2">
-                  <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-500">
                     <span className="font-medium text-emerald-700">
                       {selectedPoint.type === 'private_host'
                         ? 'Private Host · 80/20 Metered'
@@ -713,13 +713,13 @@ export function ExploreView({
                     </span>
                   </div>
 
-                  <h2 className="text-xl font-bold text-slate-900">
+                  <h2 className="text-xl font-bold text-zinc-900">
                     {selectedPoint.name}
                   </h2>
 
-                  <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600">
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-600">
                     <span className="inline-flex items-center gap-1">
-                      <MapPin className="h-3.5 w-3.5 text-slate-400" />
+                      <MapPin className="h-3.5 w-3.5 text-zinc-400" />
                       {selectedPoint.address}
                     </span>
                     <span aria-hidden="true">·</span>
@@ -730,28 +730,28 @@ export function ExploreView({
                   </div>
                 </div>
 
-                <p className="text-sm leading-relaxed text-slate-600">
+                <p className="text-sm leading-relaxed text-zinc-600">
                   {selectedPoint.description}
                 </p>
 
-                <div className="grid grid-cols-2 gap-4 border-y border-slate-200 py-3 text-xs">
+                <div className="grid grid-cols-2 gap-4 border-y border-zinc-200 py-3 text-xs">
                   <div>
-                    <div className="text-slate-500">Tariff Rate</div>
-                    <div className="mt-0.5 font-mono text-base font-semibold tabular-nums text-slate-900">
+                    <div className="text-zinc-500">Tariff Rate</div>
+                    <div className="mt-0.5 font-mono text-base font-semibold tabular-nums text-zinc-900">
                       ₹{selectedPoint.pricePerKwh.toFixed(2)} / kWh
                     </div>
                   </div>
                   <div>
-                    <div className="text-slate-500">Availability</div>
-                    <div className="mt-0.5 inline-flex items-center gap-1 font-medium text-slate-900">
-                      <Clock className="h-3.5 w-3.5 text-slate-400" />
+                    <div className="text-zinc-500">Availability</div>
+                    <div className="mt-0.5 inline-flex items-center gap-1 font-medium text-zinc-900">
+                      <Clock className="h-3.5 w-3.5 text-zinc-400" />
                       {selectedPoint.availabilityHours}
                     </div>
                   </div>
                   {selectedPoint.meterSerialNumber && (
                     <div className="col-span-2">
-                      <div className="text-slate-500">Smart Meter Serial</div>
-                      <div className="mt-0.5 font-mono text-xs text-slate-800">
+                      <div className="text-zinc-500">Smart Meter Serial</div>
+                      <div className="mt-0.5 font-mono text-xs text-zinc-800">
                         {selectedPoint.meterSerialNumber}
                       </div>
                     </div>
@@ -797,10 +797,10 @@ export function ExploreView({
                 )}
 
                 <div className="space-y-2.5">
-                  <h3 className="text-xs font-semibold tracking-tight text-slate-900">
+                  <h3 className="text-xs font-semibold tracking-tight text-zinc-900">
                     Connectors & Instant 30-Minute Hold
                   </h3>
-                  <div className="divide-y divide-slate-200 rounded-lg border border-slate-200">
+                  <div className="divide-y divide-zinc-200 rounded-lg border border-zinc-200">
                     {selectedPoint.connectors.map((conn) => {
                       const isAvailable = conn.status === 'available';
                       const canBookNow = isAvailable && !isSelectedOutOfRange;
@@ -814,10 +814,10 @@ export function ExploreView({
                           className="flex items-center justify-between gap-3 px-3.5 py-3"
                         >
                           <div className="min-w-0">
-                            <div className="flex items-center gap-2 text-sm font-medium text-slate-900">
+                            <div className="flex items-center gap-2 text-sm font-medium text-zinc-900">
                               <span>{conn.type}</span>
                               <span aria-hidden="true">·</span>
-                              <span className="font-mono text-xs tabular-nums text-slate-600">
+                              <span className="font-mono text-xs tabular-nums text-zinc-600">
                                 {conn.powerKw} kW
                               </span>
                             </div>
@@ -828,7 +828,7 @@ export function ExploreView({
                                     ? 'font-medium text-emerald-700'
                                     : conn.status === 'reserved'
                                       ? 'font-medium text-amber-700'
-                                      : 'font-medium text-slate-500'
+                                      : 'font-medium text-zinc-500'
                                 }
                               >
                                 {conn.status === 'available'
@@ -840,7 +840,7 @@ export function ExploreView({
                               {!isVehicleCompat && (
                                 <>
                                   <span aria-hidden="true">·</span>
-                                  <span className="text-slate-400">
+                                  <span className="text-zinc-400">
                                     Adapter needed
                                   </span>
                                 </>
@@ -859,7 +859,7 @@ export function ExploreView({
                             className={`whitespace-nowrap shrink-0 rounded-lg px-4 py-2 text-xs font-semibold transition-colors ${
                               canBookNow
                                 ? 'bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-60'
-                                : 'cursor-not-allowed bg-slate-100 text-slate-400'
+                                : 'cursor-not-allowed bg-zinc-100 text-zinc-400'
                             }`}
                           >
                             {busyConnectorId === conn.id
@@ -877,12 +877,12 @@ export function ExploreView({
                 </div>
 
                 {/* Verified Reviews */}
-                <div className="space-y-3 border-t border-slate-200 pt-4">
+                <div className="space-y-3 border-t border-zinc-200 pt-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-xs font-semibold text-slate-900">
+                    <h3 className="text-xs font-semibold text-zinc-900">
                       Driver Reviews
                     </h3>
-                    <span className="inline-flex items-center gap-1 font-mono text-xs tabular-nums text-slate-700">
+                    <span className="inline-flex items-center gap-1 font-mono text-xs tabular-nums text-zinc-700">
                       <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
                       {selectedPoint.rating.toFixed(1)} ·{' '}
                       {selectedReviews.length} reviews
@@ -890,7 +890,7 @@ export function ExploreView({
                   </div>
 
                   {selectedReviews.length === 0 ? (
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-zinc-500">
                       No reviews yet for this charging point.
                     </p>
                   ) : (
@@ -898,18 +898,18 @@ export function ExploreView({
                       {selectedReviews.slice(0, 3).map((rev) => (
                         <div
                           key={rev.id}
-                          className="border-b border-slate-100 pb-3 last:border-b-0 last:pb-0"
+                          className="border-b border-zinc-100 pb-3 last:border-b-0 last:pb-0"
                         >
                           <div className="flex items-center justify-between text-xs">
-                            <span className="inline-flex items-center gap-1.5 font-medium text-slate-900">
+                            <span className="inline-flex items-center gap-1.5 font-medium text-zinc-900">
                               <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
                               {rev.driverName}
                             </span>
-                            <span className="font-mono tabular-nums text-slate-600">
+                            <span className="font-mono tabular-nums text-zinc-600">
                               {rev.rating}.0 / 5
                             </span>
                           </div>
-                          <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                          <p className="mt-1 text-xs leading-relaxed text-zinc-600">
                             {rev.comment}
                           </p>
                         </div>
@@ -920,7 +920,7 @@ export function ExploreView({
               </div>
             </div>
           ) : (
-            <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500">
+            <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center text-sm text-zinc-500">
               Select a charging point on the map or list to view details and reserve.
             </div>
           )}

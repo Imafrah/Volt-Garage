@@ -302,11 +302,11 @@ export function HostConsoleView({
   return (
     <div className="space-y-6">
       {/* Host Workspace Toolbar */}
-      <div className="flex flex-col justify-between gap-4 rounded-xl border border-slate-200 bg-white p-3 sm:p-4 sm:flex-row sm:items-center">
+      <div className="flex flex-col justify-between gap-4 rounded-xl border border-zinc-200 bg-white p-3 sm:p-4 sm:flex-row sm:items-center">
         <div
           role="tablist"
           aria-label="Host console sections"
-          className="flex items-center gap-1 overflow-x-auto max-w-full rounded-lg bg-slate-100 p-1 scrollbar-none"
+          className="flex items-center gap-1 overflow-x-auto max-w-full rounded-lg bg-zinc-100 p-1 scrollbar-none"
         >
           {(
             [
@@ -323,8 +323,8 @@ export function HostConsoleView({
               onClick={() => setSubTab(tab.id)}
               className={`whitespace-nowrap shrink-0 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors sm:px-3 ${
                 subTab === tab.id
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-white text-zinc-900 shadow-xs'
+                  : 'text-zinc-600 hover:text-zinc-900'
               }`}
             >
               <span className="sm:hidden">{tab.mobileLabel}</span>
@@ -335,14 +335,14 @@ export function HostConsoleView({
 
         {(subTab === 'queue' || subTab === 'payouts') && (
           <div className="flex flex-wrap items-center gap-2 text-xs">
-            <label htmlFor="host-filter" className="font-medium text-slate-600">
+            <label htmlFor="host-filter" className="font-medium text-zinc-600">
               Host:
             </label>
             <select
               id="host-filter"
               value={selectedHostFilter}
               onChange={(e) => setSelectedHostFilter(e.target.value)}
-              className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-800"
+              className="rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-800"
             >
               <option value="all">All Hosts ({hosts.length})</option>
               {hosts.map((h) => (
@@ -355,7 +355,7 @@ export function HostConsoleView({
               <button
                 type="button"
                 onClick={onOpenHostRegistration}
-                className="inline-flex items-center gap-1 whitespace-nowrap rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-800 hover:bg-slate-50"
+                className="inline-flex items-center gap-1 whitespace-nowrap rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-zinc-800 hover:bg-zinc-50"
               >
                 <span>+ Register Host</span>
               </button>
@@ -367,18 +367,18 @@ export function HostConsoleView({
       {/* Pending Payouts Summary Card / Estimated Payout Widget */}
       <section
         aria-label="Pending Payouts Summary"
-        className="flex flex-col justify-between gap-4 rounded-xl border border-slate-200 bg-white p-5 sm:flex-row sm:items-center"
+        className="flex flex-col justify-between gap-4 rounded-xl border border-zinc-200 bg-white p-5 sm:flex-row sm:items-center"
       >
         <div className="space-y-1">
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">
             <IndianRupee className="h-3.5 w-3.5 text-emerald-600" />
             <span>Pending Payouts</span>
           </div>
-          <h2 className="text-base font-bold text-slate-900">
+          <h2 className="text-base font-bold text-zinc-900">
             Earnings Awaiting Disbursement
           </h2>
-          <p className="text-xs text-slate-500">
-            Scope: <span className="font-medium text-slate-700">{selectedHostLabel}</span>
+          <p className="text-xs text-zinc-500">
+            Scope: <span className="font-medium text-zinc-700">{selectedHostLabel}</span>
             <span aria-hidden="true"> · </span>
             <span className="font-mono tabular-nums">
               {estimatedPayoutSummary.pendingCount} pending transfer
@@ -393,7 +393,7 @@ export function HostConsoleView({
 
         <div className="flex flex-wrap items-center gap-5 sm:justify-end">
           <div className="sm:text-right">
-            <div className="text-xs font-medium text-slate-500">
+            <div className="text-xs font-medium text-zinc-500">
               Estimated Payout
             </div>
             <div
@@ -408,7 +408,7 @@ export function HostConsoleView({
             <button
               type="button"
               onClick={() => setSubTab('payouts')}
-              className="whitespace-nowrap shrink-0 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-800 transition-colors hover:bg-slate-50"
+              className="whitespace-nowrap shrink-0 rounded-lg border border-zinc-200 bg-white px-3.5 py-2 text-xs font-semibold text-zinc-800 transition-colors hover:bg-zinc-50"
             >
               Manage Payouts
             </button>
@@ -437,11 +437,11 @@ export function HostConsoleView({
           )}
 
           {filteredReservations.length === 0 ? (
-            <div className="rounded-xl border border-slate-200 bg-white p-8 text-center">
-              <p className="text-sm font-medium text-slate-900">
+            <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center">
+              <p className="text-sm font-medium text-zinc-900">
                 No active driver arrivals in your host queue
               </p>
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs text-zinc-500">
                 When a driver reserves one of your connectors, QR verification and meter reading controls will appear here.
               </p>
             </div>
@@ -484,11 +484,11 @@ export function HostConsoleView({
                   return (
                     <article
                       key={res.id}
-                      className="rounded-xl border border-slate-200 bg-white p-5"
+                      className="rounded-xl border border-zinc-200 bg-white p-5"
                     >
-                      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
+                      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 pb-3">
                         <div>
-                          <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                          <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-500">
                             <span className="font-mono">{res.id}</span>
                             <span aria-hidden="true">·</span>
                             <span>Driver: {res.driverName}</span>
@@ -497,7 +497,7 @@ export function HostConsoleView({
                               {res.connectorType} ({res.powerKw} kW)
                             </span>
                           </div>
-                          <h3 className="mt-0.5 text-sm font-bold text-slate-900">
+                          <h3 className="mt-0.5 text-sm font-bold text-zinc-900">
                             {res.chargingPointName}
                           </h3>
                         </div>
@@ -509,9 +509,9 @@ export function HostConsoleView({
 
                       {res.status === 'reserved' && (
                         <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-                          <div className="text-xs text-slate-600">
+                          <div className="text-xs text-zinc-600">
                             Driver QR Token:{' '}
-                            <span className="font-mono font-semibold text-slate-900">
+                            <span className="font-mono font-semibold text-zinc-900">
                               {res.qrCodeToken}
                             </span>
                           </div>
@@ -527,7 +527,7 @@ export function HostConsoleView({
                               }
                               placeholder={res.qrCodeToken}
                               aria-label={`Verify driver QR for ${res.id}`}
-                              className="w-36 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 font-mono text-xs"
+                              className="w-36 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 font-mono text-xs"
                             />
                             <button
                               type="button"
@@ -537,7 +537,7 @@ export function HostConsoleView({
                                   [res.id]: res.qrCodeToken,
                                 }))
                               }
-                              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                              className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
                             >
                               <QrCode className="h-3.5 w-3.5" />
                               Match QR
@@ -562,7 +562,7 @@ export function HostConsoleView({
 
                       {res.status === 'confirmed' && (
                         <div className="mt-4 flex flex-wrap items-end justify-between gap-3">
-                          <div className="text-xs text-slate-600">
+                          <div className="text-xs text-zinc-600">
                             {isPrivate
                               ? 'Capture smart meter start reading (Wh) as driver plugs in.'
                               : 'Ready to start partner station session.'}
@@ -572,7 +572,7 @@ export function HostConsoleView({
                               <div>
                                 <label
                                   htmlFor={`host-start-${res.id}`}
-                                  className="block text-[11px] font-medium text-slate-600"
+                                  className="block text-[11px] font-medium text-zinc-600"
                                 >
                                   Start Meter (Wh)
                                 </label>
@@ -586,7 +586,7 @@ export function HostConsoleView({
                                       [res.id]: e.target.value,
                                     }))
                                   }
-                                  className="mt-1 w-32 rounded-lg border border-slate-200 px-2.5 py-1.5 font-mono text-xs"
+                                  className="mt-1 w-32 rounded-lg border border-zinc-200 px-2.5 py-1.5 font-mono text-xs"
                                 />
                               </div>
                             )}
@@ -618,15 +618,15 @@ export function HostConsoleView({
                           {telemetry && (
                             <div className="grid grid-cols-2 gap-3 rounded-lg border border-emerald-200 bg-emerald-50/40 p-3 sm:grid-cols-4">
                               <div>
-                                <div className="text-[11px] text-slate-500">
+                                <div className="text-[11px] text-zinc-500">
                                   Live Power
                                 </div>
-                                <div className="font-mono text-xs font-bold tabular-nums text-slate-900">
+                                <div className="font-mono text-xs font-bold tabular-nums text-zinc-900">
                                   {telemetry.livePowerKw.toFixed(1)} kW
                                 </div>
                               </div>
                               <div>
-                                <div className="text-[11px] text-slate-500">
+                                <div className="text-[11px] text-zinc-500">
                                   Delivered
                                 </div>
                                 <div className="font-mono text-xs font-bold tabular-nums text-emerald-700">
@@ -634,18 +634,18 @@ export function HostConsoleView({
                                 </div>
                               </div>
                               <div>
-                                <div className="text-[11px] text-slate-500">
+                                <div className="text-[11px] text-zinc-500">
                                   Running Total
                                 </div>
-                                <div className="font-mono text-xs font-bold tabular-nums text-slate-900">
+                                <div className="font-mono text-xs font-bold tabular-nums text-zinc-900">
                                   ₹{telemetry.estimatedCostInr.toFixed(2)}
                                 </div>
                               </div>
                               <div>
-                                <div className="text-[11px] text-slate-500">
+                                <div className="text-[11px] text-zinc-500">
                                   Protocol
                                 </div>
-                                <div className="font-mono text-[11px] font-medium tabular-nums text-slate-700">
+                                <div className="font-mono text-[11px] font-medium tabular-nums text-zinc-700">
                                   {telemetry.protocol} · {telemetry.elapsedSeconds}s
                                 </div>
                               </div>
@@ -656,10 +656,10 @@ export function HostConsoleView({
                             {isPrivate ? (
                               <div className="flex flex-wrap items-end gap-3">
                                 <div>
-                                  <span className="block text-[11px] text-slate-500">
+                                  <span className="block text-[11px] text-zinc-500">
                                     Start Reading
                                   </span>
-                                  <span className="font-mono text-xs font-semibold tabular-nums text-slate-900">
+                                  <span className="font-mono text-xs font-semibold tabular-nums text-zinc-900">
                                     {session.meterReadingStartWh?.toLocaleString()}{' '}
                                     Wh
                                   </span>
@@ -667,7 +667,7 @@ export function HostConsoleView({
                                 <div>
                                   <label
                                     htmlFor={`host-end-${session.id}`}
-                                    className="block text-[11px] font-medium text-slate-600"
+                                    className="block text-[11px] font-medium text-zinc-600"
                                   >
                                     End Reading (Wh)
                                   </label>
@@ -681,12 +681,12 @@ export function HostConsoleView({
                                         [res.id]: e.target.value,
                                       }))
                                     }
-                                    className="mt-1 w-32 rounded-lg border border-slate-200 px-2.5 py-1.5 font-mono text-xs"
+                                    className="mt-1 w-32 rounded-lg border border-zinc-200 px-2.5 py-1.5 font-mono text-xs"
                                   />
                                 </div>
                               </div>
                             ) : (
-                              <div className="text-xs text-slate-600">
+                              <div className="text-xs text-zinc-600">
                                 Partner session in progress (15% commission)
                               </div>
                             )}
@@ -713,14 +713,14 @@ export function HostConsoleView({
                                     )
                                 )
                               }
-                              className="rounded-lg bg-slate-900 px-4 py-1.5 text-xs font-semibold text-white hover:bg-slate-800"
+                              className="rounded-lg bg-zinc-900 px-4 py-1.5 text-xs font-semibold text-white hover:bg-zinc-800"
                             >
                               Verify End Meter & Settle
                             </button>
                           </div>
 
                           {preview && (
-                            <div className="border-t border-slate-100 pt-2 font-mono text-xs tabular-nums text-slate-600">
+                            <div className="border-t border-zinc-100 pt-2 font-mono text-xs tabular-nums text-zinc-600">
                               Calculated:{' '}
                               {preview.energyDeliveredKwh.toFixed(2)} kWh ·
                               Gross ₹{preview.grossAmount.toFixed(2)} · Your
@@ -735,20 +735,20 @@ export function HostConsoleView({
               </div>
 
               {/* Meter OCR Reference Card */}
-              <aside className="rounded-xl border border-slate-200 bg-white p-5 lg:col-span-4">
-                <div className="flex items-center gap-2 text-xs font-semibold text-slate-900">
+              <aside className="rounded-xl border border-zinc-200 bg-white p-5 lg:col-span-4">
+                <div className="flex items-center gap-2 text-xs font-semibold text-zinc-900">
                   <Camera className="h-4 w-4 text-emerald-600" />
                   Smart Meter OCR Verification
                 </div>
-                <p className="mt-1.5 text-xs leading-relaxed text-slate-600">
+                <p className="mt-1.5 text-xs leading-relaxed text-zinc-600">
                   Private hosts capture start and end Wh readings. ImCharge
                   computes{' '}
-                  <span className="font-mono text-slate-900">
+                  <span className="font-mono text-zinc-900">
                     (end - start) / 1000
                   </span>{' '}
                   kWh and flags physical power-ceiling anomalies automatically.
                 </p>
-                <div className="mt-3 overflow-hidden rounded-lg border border-slate-200 bg-slate-100">
+                <div className="mt-3 overflow-hidden rounded-lg border border-zinc-200 bg-zinc-100">
                   <img
                     src="/src/assets/images/digital_smart_meter_1795443225372.jpg"
                     alt="Digital smart kWh meter showing 142580 Wh"
@@ -756,7 +756,7 @@ export function HostConsoleView({
                     className="aspect-4/3 w-full object-cover"
                   />
                 </div>
-                <div className="mt-3 flex items-center justify-between font-mono text-xs text-slate-700">
+                <div className="mt-3 flex items-center justify-between font-mono text-xs text-zinc-700">
                   <span>Detected Readout:</span>
                   <span className="font-semibold text-emerald-700">
                     142580 Wh
@@ -771,7 +771,7 @@ export function HostConsoleView({
       {/* TAB 2: My Chargers & Payouts */}
       {subTab === 'payouts' && (
         <div className="space-y-4">
-          <div className="divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white">
+          <div className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 bg-white">
             {payoutSummaries.map(
               ({ host, hostPoints, pendingInr, paidInr }) => (
                 <div
@@ -779,8 +779,8 @@ export function HostConsoleView({
                   className="flex flex-col justify-between gap-4 p-5 md:flex-row md:items-center"
                 >
                   <div className="space-y-1">
-                    <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
-                      <span className="font-semibold text-slate-900">
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-500">
+                      <span className="font-semibold text-zinc-900">
                         {host.name}
                       </span>
                       <span aria-hidden="true">·</span>
@@ -795,7 +795,7 @@ export function HostConsoleView({
                         KYC {host.kycStatus}
                       </span>
                     </div>
-                    <div className="font-mono text-xs text-slate-500">
+                    <div className="font-mono text-xs text-zinc-500">
                       IBAN: {host.bankAccountIban} · {hostPoints.length}{' '}
                       charging point(s)
                     </div>
@@ -803,15 +803,15 @@ export function HostConsoleView({
 
                   <div className="flex flex-wrap items-center gap-6">
                     <div className="text-right font-mono tabular-nums">
-                      <div className="text-[11px] text-slate-500">
+                      <div className="text-[11px] text-zinc-500">
                         Settled Payouts
                       </div>
-                      <div className="text-sm font-semibold text-slate-900">
+                      <div className="text-sm font-semibold text-zinc-900">
                         ₹{paidInr.toFixed(2)}
                       </div>
                     </div>
                     <div className="text-right font-mono tabular-nums">
-                      <div className="text-[11px] text-slate-500">
+                      <div className="text-[11px] text-zinc-500">
                         Pending Weekly
                       </div>
                       <div className="text-sm font-semibold text-emerald-700">
@@ -823,7 +823,7 @@ export function HostConsoleView({
                         type="button"
                         disabled={pendingInr <= 0}
                         onClick={() => onProcessPayouts(host.uid)}
-                        className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
+                        className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg bg-zinc-900 px-4 py-2 text-xs font-semibold text-white hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-zinc-400"
                       >
                         <IndianRupee className="h-3.5 w-3.5" />
                         Process Payout
@@ -848,18 +848,18 @@ export function HostConsoleView({
           {/* OCPP & Smart Meter Telemetry Simulator */}
           <section
             aria-label="OCPP and smart meter telemetry simulator"
-            className="space-y-4 rounded-xl border border-slate-200 bg-white p-4 sm:p-5"
+            className="space-y-4 rounded-xl border border-zinc-200 bg-white p-4 sm:p-5"
           >
-            <div className="flex flex-col justify-between gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-center">
+            <div className="flex flex-col justify-between gap-3 border-b border-zinc-200 pb-4 sm:flex-row sm:items-center">
               <div>
                 <div className="flex items-center gap-2 text-xs font-semibold text-emerald-700">
                   <Radio className="h-3.5 w-3.5" />
                   <span>OCPP 2.0.1 / Smart Meter Telemetry</span>
                 </div>
-                <h3 className="mt-0.5 text-base font-bold text-slate-900">
+                <h3 className="mt-0.5 text-base font-bold text-zinc-900">
                   Hardware Heartbeat & Walk-In Load Simulator
                 </h3>
-                <p className="mt-0.5 text-xs text-slate-600">
+                <p className="mt-0.5 text-xs text-zinc-600">
                   Stream live server meter ticks over SSE or trigger an OCPP webhook pulse. Any unbooked load above 0.5 kW auto-flags the bay occupied.
                 </p>
               </div>
@@ -887,7 +887,7 @@ export function HostConsoleView({
                     setSimBusy(false);
                   }
                 }}
-                className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-50 disabled:opacity-60"
+                className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 rounded-lg border border-zinc-200 bg-white px-3.5 py-2 text-xs font-semibold text-zinc-800 hover:bg-zinc-50 disabled:opacity-60"
               >
                 {telemetryHeartbeatEnabled ? (
                   <>
@@ -907,7 +907,7 @@ export function HostConsoleView({
               <div className="md:col-span-5">
                 <label
                   htmlFor="sim-connector-select"
-                  className="block text-xs font-medium text-slate-700"
+                  className="block text-xs font-medium text-zinc-700"
                 >
                   Target Charging Connector
                 </label>
@@ -915,7 +915,7 @@ export function HostConsoleView({
                   id="sim-connector-select"
                   value={simTargetKey}
                   onChange={(e) => setSimTargetKey(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-900"
+                  className="mt-1 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs font-medium text-zinc-900"
                 >
                   {chargingPoints.flatMap((cp) =>
                     cp.connectors.map((c) => (
@@ -930,7 +930,7 @@ export function HostConsoleView({
               <div className="md:col-span-2">
                 <label
                   htmlFor="sim-load-kw"
-                  className="block text-xs font-medium text-slate-700"
+                  className="block text-xs font-medium text-zinc-700"
                 >
                   Load (kW)
                 </label>
@@ -941,7 +941,7 @@ export function HostConsoleView({
                   min="0"
                   value={simLoadKw}
                   onChange={(e) => setSimLoadKw(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-xs tabular-nums text-slate-900"
+                  className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-xs tabular-nums text-zinc-900"
                 />
               </div>
 
@@ -974,7 +974,7 @@ export function HostConsoleView({
                       setSimBusy(false);
                     }
                   }}
-                  className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-50 disabled:opacity-60"
+                  className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-zinc-200 bg-white px-3.5 py-2 text-xs font-semibold text-zinc-800 hover:bg-zinc-50 disabled:opacity-60"
                 >
                   <Activity className="h-3.5 w-3.5 text-emerald-600" />
                   Send OCPP Meter Pulse
@@ -1032,11 +1032,11 @@ export function HostConsoleView({
             )}
 
             {telemetryEvents[0] && (
-              <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3 text-xs text-slate-600">
-                <span className="font-mono text-slate-500">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-t border-zinc-100 pt-3 text-xs text-zinc-600">
+                <span className="font-mono text-zinc-500">
                   Latest ({telemetryEvents[0].protocol} · {telemetryEvents[0].eventType}):
                 </span>
-                <span className="font-medium text-slate-800">
+                <span className="font-medium text-zinc-800">
                   {telemetryEvents[0].summary}
                 </span>
               </div>
@@ -1047,10 +1047,10 @@ export function HostConsoleView({
           <div className="space-y-3 pt-2">
             <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
               <div>
-                <h3 className="text-base font-bold text-slate-900">
+                <h3 className="text-base font-bold text-zinc-900">
                   Live Connector Availability & Walk-In Protection
                 </h3>
-                <p className="mt-0.5 text-xs text-slate-600">
+                <p className="mt-0.5 text-xs text-zinc-600">
                   If an offline EV plugs in without the app, mark the connector Occupied (Walk-In) to hide it from the map and auto-release unconfirmed holds.
                 </p>
               </div>
@@ -1074,24 +1074,24 @@ export function HostConsoleView({
               </div>
             )}
 
-            <div className="divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white">
+            <div className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 bg-white">
               {chargingPoints.map((cp) => (
                 <div key={cp.id} className="space-y-3 p-5">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div>
-                      <div className="text-sm font-semibold text-slate-900">
+                      <div className="text-sm font-semibold text-zinc-900">
                         {cp.name}
                       </div>
-                      <div className="text-xs text-slate-500">
+                      <div className="text-xs text-zinc-500">
                         {cp.hostName} · {cp.address}
                       </div>
                     </div>
-                    <span className="font-mono text-xs font-semibold tabular-nums text-slate-700">
+                    <span className="font-mono text-xs font-semibold tabular-nums text-zinc-700">
                       ₹{cp.pricePerKwh.toFixed(2)}/kWh
                     </span>
                   </div>
 
-                  <div className="divide-y divide-slate-100 rounded-lg border border-slate-200 bg-slate-50">
+                  <div className="divide-y divide-zinc-100 rounded-lg border border-zinc-200 bg-zinc-50">
                     {cp.connectors.map((conn) => {
                       const rowKey = `${cp.id}:${conn.id}`;
                       const isRowBusy = connectorBusyKey === rowKey;
@@ -1102,7 +1102,7 @@ export function HostConsoleView({
                             ? 'text-red-700'
                             : conn.status === 'reserved'
                               ? 'text-amber-700'
-                              : 'text-slate-600';
+                              : 'text-zinc-600';
 
                       const handleStatusChange = async (
                         nextStatus: 'available' | 'occupied' | 'maintenance'
@@ -1139,15 +1139,15 @@ export function HostConsoleView({
                           className="flex flex-col justify-between gap-3 px-4 py-3 sm:flex-row sm:items-center"
                         >
                           <div className="flex flex-wrap items-center gap-2 text-xs">
-                            <Zap className="h-3.5 w-3.5 text-slate-500" />
-                            <span className="font-semibold text-slate-900">
+                            <Zap className="h-3.5 w-3.5 text-zinc-500" />
+                            <span className="font-semibold text-zinc-900">
                               {conn.type}
                             </span>
-                            <span className="font-mono text-slate-600 tabular-nums">
+                            <span className="font-mono text-zinc-600 tabular-nums">
                               {conn.powerKw} kW
                             </span>
                             <span aria-hidden="true">·</span>
-                            <span className="font-mono text-slate-500">
+                            <span className="font-mono text-zinc-500">
                               {conn.id}
                             </span>
                             <span aria-hidden="true">·</span>
@@ -1161,7 +1161,7 @@ export function HostConsoleView({
                               type="button"
                               disabled={isRowBusy || conn.status === 'available'}
                               onClick={() => handleStatusChange('available')}
-                              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-45"
+                              className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-45"
                             >
                               Set Available
                             </button>
@@ -1177,7 +1177,7 @@ export function HostConsoleView({
                               type="button"
                               disabled={isRowBusy || conn.status === 'maintenance'}
                               onClick={() => handleStatusChange('maintenance')}
-                              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-45"
+                              className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-600 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-45"
                             >
                               Maintenance
                             </button>
@@ -1197,14 +1197,14 @@ export function HostConsoleView({
       {subTab === 'onboard' && (
         <form
           onSubmit={handleOnboardSubmit}
-          className="rounded-xl border border-slate-200 bg-white p-6"
+          className="rounded-xl border border-zinc-200 bg-white p-6"
         >
-          <div className="flex flex-col justify-between gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-center">
+          <div className="flex flex-col justify-between gap-3 border-b border-zinc-200 pb-4 sm:flex-row sm:items-center">
             <div>
-              <h2 className="text-lg font-bold text-slate-900">
+              <h2 className="text-lg font-bold text-zinc-900">
                 List a Charging Point on ImCharge
               </h2>
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs text-zinc-500">
                 Choose a registered host profile or onboard a metered Private
                 Host charger (80% payout) or Existing Partner Station (15%
                 commission).
@@ -1214,7 +1214,7 @@ export function HostConsoleView({
               <button
                 type="button"
                 onClick={onOpenHostRegistration}
-                className="shrink-0 whitespace-nowrap rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-50"
+                className="shrink-0 whitespace-nowrap rounded-lg border border-zinc-200 bg-white px-3.5 py-2 text-xs font-semibold text-zinc-800 hover:bg-zinc-50"
               >
                 Register New Host Account
               </button>
@@ -1224,7 +1224,7 @@ export function HostConsoleView({
           <div className="mt-5">
             <label
               htmlFor="onboard-registered-host"
-              className="block text-xs font-medium text-slate-700"
+              className="block text-xs font-medium text-zinc-700"
             >
               Registered Host Account
             </label>
@@ -1252,7 +1252,7 @@ export function HostConsoleView({
                   setAvailabilityHours(matched.availability.weekdays);
                 }
               }}
-              className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 sm:max-w-md"
+              className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 sm:max-w-md"
             >
               <option value="">Create new host inline...</option>
               {hosts.map((h) => (
@@ -1274,15 +1274,15 @@ export function HostConsoleView({
               className={`flex items-start gap-3 rounded-xl border p-4 text-left transition-colors ${
                 hostType === 'private_host'
                   ? 'border-emerald-600 bg-emerald-50/50'
-                  : 'border-slate-200 hover:bg-slate-50'
+                  : 'border-zinc-200 hover:bg-zinc-50'
               }`}
             >
               <Home className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" />
               <div>
-                <div className="text-sm font-semibold text-slate-900">
+                <div className="text-sm font-semibold text-zinc-900">
                   Private Host (Home, Office, Shop)
                 </div>
-                <div className="mt-0.5 text-xs text-slate-600">
+                <div className="mt-0.5 text-xs text-zinc-600">
                   Metered Wh verification · You set ₹/kWh · 80% host payout
                 </div>
               </div>
@@ -1294,15 +1294,15 @@ export function HostConsoleView({
               className={`flex items-start gap-3 rounded-xl border p-4 text-left transition-colors ${
                 hostType === 'existing_station'
                   ? 'border-emerald-600 bg-emerald-50/50'
-                  : 'border-slate-200 hover:bg-slate-50'
+                  : 'border-zinc-200 hover:bg-zinc-50'
               }`}
             >
-              <Building2 className="mt-0.5 h-5 w-5 shrink-0 text-slate-700" />
+              <Building2 className="mt-0.5 h-5 w-5 shrink-0 text-zinc-700" />
               <div>
-                <div className="text-sm font-semibold text-slate-900">
+                <div className="text-sm font-semibold text-zinc-900">
                   Existing Partner Station
                 </div>
-                <div className="mt-0.5 text-xs text-slate-600">
+                <div className="mt-0.5 text-xs text-zinc-600">
                   Ionity, ChargePoint, Fastned OCPI sync · 15% commission split
                 </div>
               </div>
@@ -1313,7 +1313,7 @@ export function HostConsoleView({
             <div>
               <label
                 htmlFor="onboard-hostname"
-                className="block text-xs font-medium text-slate-700"
+                className="block text-xs font-medium text-zinc-700"
               >
                 Host or Operator Name
               </label>
@@ -1323,14 +1323,14 @@ export function HostConsoleView({
                 value={hostName}
                 onChange={(e) => setHostName(e.target.value)}
                 placeholder="Hannah Richter"
-                className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-emerald-600 focus:bg-white focus:outline-none"
+                className="mt-1 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 focus:border-emerald-600 focus:bg-white focus:outline-none"
               />
             </div>
 
             <div>
               <label
                 htmlFor="onboard-pointname"
-                className="block text-xs font-medium text-slate-700"
+                className="block text-xs font-medium text-zinc-700"
               >
                 Charging Point Title
               </label>
@@ -1340,14 +1340,14 @@ export function HostConsoleView({
                 value={pointName}
                 onChange={(e) => setPointName(e.target.value)}
                 placeholder="Haidhausen Courtyard Wallbox"
-                className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-emerald-600 focus:bg-white focus:outline-none"
+                className="mt-1 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 focus:border-emerald-600 focus:bg-white focus:outline-none"
               />
             </div>
 
             <div>
               <label
                 htmlFor="onboard-address"
-                className="block text-xs font-medium text-slate-700"
+                className="block text-xs font-medium text-zinc-700"
               >
                 Street Address
               </label>
@@ -1357,14 +1357,14 @@ export function HostConsoleView({
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="Weißenburger Platz 6, 81667 München"
-                className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-emerald-600 focus:bg-white focus:outline-none"
+                className="mt-1 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900 focus:border-emerald-600 focus:bg-white focus:outline-none"
               />
             </div>
 
             <div>
               <label
                 htmlFor="onboard-district"
-                className="block text-xs font-medium text-slate-700"
+                className="block text-xs font-medium text-zinc-700"
               >
                 Munich District (Map Coordinates)
               </label>
@@ -1372,7 +1372,7 @@ export function HostConsoleView({
                 id="onboard-district"
                 value={district}
                 onChange={(e) => setDistrict(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
+                className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900"
               >
                 {Object.entries(DISTRICT_COORDS).map(([key, val]) => (
                   <option key={key} value={key}>
@@ -1385,7 +1385,7 @@ export function HostConsoleView({
             <div>
               <label
                 htmlFor="onboard-connector"
-                className="block text-xs font-medium text-slate-700"
+                className="block text-xs font-medium text-zinc-700"
               >
                 Connector Type
               </label>
@@ -1395,7 +1395,7 @@ export function HostConsoleView({
                 onChange={(e) =>
                   setConnectorType(e.target.value as ConnectorType)
                 }
-                className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
+                className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900"
               >
                 <option value="Type2">Type 2 (AC)</option>
                 <option value="CCS">CCS (DC Fast)</option>
@@ -1407,7 +1407,7 @@ export function HostConsoleView({
             <div>
               <label
                 htmlFor="onboard-power"
-                className="block text-xs font-medium text-slate-700"
+                className="block text-xs font-medium text-zinc-700"
               >
                 Max Output Power (kW)
               </label>
@@ -1416,14 +1416,14 @@ export function HostConsoleView({
                 type="number"
                 value={powerKw}
                 onChange={(e) => setPowerKw(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 font-mono text-sm text-slate-900"
+                className="mt-1 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 font-mono text-sm text-zinc-900"
               />
             </div>
 
             <div>
               <label
                 htmlFor="onboard-price"
-                className="block text-xs font-medium text-slate-700"
+                className="block text-xs font-medium text-zinc-700"
               >
                 Tariff (₹ / kWh)
               </label>
@@ -1433,7 +1433,7 @@ export function HostConsoleView({
                 step="0.01"
                 value={pricePerKwh}
                 onChange={(e) => setPricePerKwh(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 font-mono text-sm text-slate-900"
+                className="mt-1 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 font-mono text-sm text-zinc-900"
               />
             </div>
 
@@ -1441,7 +1441,7 @@ export function HostConsoleView({
               <div>
                 <label
                   htmlFor="onboard-meter"
-                  className="block text-xs font-medium text-slate-700"
+                  className="block text-xs font-medium text-zinc-700"
                 >
                   MID Meter Serial Number
                 </label>
@@ -1450,7 +1450,7 @@ export function HostConsoleView({
                   type="text"
                   value={meterSerialNumber}
                   onChange={(e) => setMeterSerialNumber(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 font-mono text-sm text-slate-900"
+                  className="mt-1 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 font-mono text-sm text-zinc-900"
                 />
               </div>
             ) : (
@@ -1458,7 +1458,7 @@ export function HostConsoleView({
                 <div>
                   <label
                     htmlFor="onboard-partner"
-                    className="block text-xs font-medium text-slate-700"
+                    className="block text-xs font-medium text-zinc-700"
                   >
                     Partner Network
                   </label>
@@ -1466,7 +1466,7 @@ export function HostConsoleView({
                     id="onboard-partner"
                     value={partnerName}
                     onChange={(e) => setPartnerName(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900"
+                    className="mt-1 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900"
                   >
                     <option value="Ionity">Ionity</option>
                     <option value="ChargePoint">ChargePoint</option>
@@ -1476,7 +1476,7 @@ export function HostConsoleView({
                 <div>
                   <label
                     htmlFor="onboard-stationid"
-                    className="block text-xs font-medium text-slate-700"
+                    className="block text-xs font-medium text-zinc-700"
                   >
                     Partner Station ID
                   </label>
@@ -1485,7 +1485,7 @@ export function HostConsoleView({
                     type="text"
                     value={partnerStationId}
                     onChange={(e) => setPartnerStationId(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 font-mono text-sm text-slate-900"
+                    className="mt-1 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 font-mono text-sm text-zinc-900"
                   />
                 </div>
               </>
@@ -1494,7 +1494,7 @@ export function HostConsoleView({
             <div>
               <label
                 htmlFor="onboard-hours"
-                className="block text-xs font-medium text-slate-700"
+                className="block text-xs font-medium text-zinc-700"
               >
                 Availability Hours
               </label>
@@ -1503,14 +1503,14 @@ export function HostConsoleView({
                 type="text"
                 value={availabilityHours}
                 onChange={(e) => setAvailabilityHours(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900"
+                className="mt-1 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900"
               />
             </div>
 
             <div className="sm:col-span-2 lg:col-span-3">
               <label
                 htmlFor="onboard-desc"
-                className="block text-xs font-medium text-slate-700"
+                className="block text-xs font-medium text-zinc-700"
               >
                 Access Instructions & Equipment Notes
               </label>
@@ -1520,7 +1520,7 @@ export function HostConsoleView({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Covered private bay behind courtyard gate; ring bell #4 on arrival."
-                className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900"
+                className="mt-1 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-900"
               />
             </div>
           </div>

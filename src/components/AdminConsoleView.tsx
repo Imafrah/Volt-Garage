@@ -114,62 +114,62 @@ export function AdminConsoleView({
         aria-label="Platform key metrics"
         className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
       >
-        <div className="rounded-xl border border-slate-200 bg-white p-5">
-          <div className="text-xs font-medium text-slate-500">
+        <div className="rounded-xl border border-zinc-200 bg-white p-5">
+          <div className="text-xs font-medium text-zinc-500">
             Total Bookings
           </div>
-          <div className="mt-1 font-mono text-2xl font-bold tabular-nums text-slate-900">
+          <div className="mt-1 font-mono text-2xl font-bold tabular-nums text-zinc-900">
             {analytics.totalBookings}
           </div>
-          <div className="mt-1 text-xs text-slate-500 tabular-nums">
+          <div className="mt-1 text-xs text-zinc-500 tabular-nums">
             {analytics.activeSessions} active charging ·{' '}
             {analytics.completedSessions} settled
           </div>
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-5">
-          <div className="text-xs font-medium text-slate-500">
+        <div className="rounded-xl border border-zinc-200 bg-white p-5">
+          <div className="text-xs font-medium text-zinc-500">
             Gross Charging Volume
           </div>
-          <div className="mt-1 font-mono text-2xl font-bold tabular-nums text-slate-900">
+          <div className="mt-1 font-mono text-2xl font-bold tabular-nums text-zinc-900">
             ₹{analytics.grossVolumeInr.toFixed(2)}
           </div>
-          <div className="mt-1 text-xs text-slate-500 tabular-nums">
+          <div className="mt-1 text-xs text-zinc-500 tabular-nums">
             Host payouts: ₹{analytics.hostPayoutsInr.toFixed(2)}
           </div>
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-5">
-          <div className="text-xs font-medium text-slate-500">
+        <div className="rounded-xl border border-zinc-200 bg-white p-5">
+          <div className="text-xs font-medium text-zinc-500">
             Net Platform Commission
           </div>
           <div className="mt-1 font-mono text-2xl font-bold tabular-nums text-emerald-700">
             ₹{analytics.netCommissionInr.toFixed(2)}
           </div>
-          <div className="mt-1 text-xs text-slate-500">
+          <div className="mt-1 text-xs text-zinc-500">
             20% Private Host · 15% Partner
           </div>
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-5">
-          <div className="text-xs font-medium text-slate-500">
+        <div className="rounded-xl border border-zinc-200 bg-white p-5">
+          <div className="text-xs font-medium text-zinc-500">
             Session Completion Rate
           </div>
-          <div className="mt-1 font-mono text-2xl font-bold tabular-nums text-slate-900">
+          <div className="mt-1 font-mono text-2xl font-bold tabular-nums text-zinc-900">
             {analytics.completionRatePct.toFixed(1)}%
           </div>
-          <div className="mt-1 text-xs text-slate-500 tabular-nums">
+          <div className="mt-1 text-xs text-zinc-500 tabular-nums">
             {analytics.disputedSessions} open dispute(s)
           </div>
         </div>
       </section>
 
       {/* Admin Sub-Navigation & Demo Reset */}
-      <div className="flex flex-col justify-between gap-3 rounded-xl border border-slate-200 bg-white p-4 sm:flex-row sm:items-center">
+      <div className="flex flex-col justify-between gap-3 rounded-xl border border-zinc-200 bg-white p-4 sm:flex-row sm:items-center">
         <div
           role="tablist"
           aria-label="Admin sections"
-          className="flex flex-wrap items-center gap-1 rounded-lg bg-slate-100 p-1"
+          className="flex flex-wrap items-center gap-1 rounded-lg bg-zinc-100 p-1"
         >
           {(
             [
@@ -193,8 +193,8 @@ export function AdminConsoleView({
               onClick={() => setSubTab(tab.id)}
               className={`whitespace-nowrap shrink-0 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
                 subTab === tab.id
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-white text-zinc-900 shadow-xs'
+                  : 'text-zinc-600 hover:text-zinc-900'
               }`}
             >
               {tab.label}
@@ -205,7 +205,7 @@ export function AdminConsoleView({
         <button
           type="button"
           onClick={onResetDemo}
-          className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
+          className="inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 rounded-lg border border-zinc-200 bg-white px-3.5 py-2 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
         >
           <RotateCcw className="h-3.5 w-3.5" />
           Reset Seed Data
@@ -226,11 +226,11 @@ export function AdminConsoleView({
       {subTab === 'disputes' && (
         <div className="space-y-4">
           {disputedSessions.length === 0 ? (
-            <div className="rounded-xl border border-slate-200 bg-white p-8 text-center">
-              <p className="text-sm font-medium text-slate-900">
+            <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center">
+              <p className="text-sm font-medium text-zinc-900">
                 All meter verification disputes are resolved
               </p>
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs text-zinc-500">
                 Any session flagged for hardware power-ceiling anomalies or driver mismatch will appear here.
               </p>
             </div>
@@ -246,7 +246,7 @@ export function AdminConsoleView({
                   key={session.id}
                   className="rounded-xl border border-red-200 bg-white p-6"
                 >
-                  <div className="flex flex-col justify-between gap-4 border-b border-slate-200 pb-4 md:flex-row md:items-center">
+                  <div className="flex flex-col justify-between gap-4 border-b border-zinc-200 pb-4 md:flex-row md:items-center">
                     <div>
                       <div className="flex items-center gap-2 text-xs text-red-700">
                         <AlertTriangle className="h-4 w-4" />
@@ -256,38 +256,38 @@ export function AdminConsoleView({
                         <span aria-hidden="true">·</span>
                         <span className="font-mono">{session.id}</span>
                       </div>
-                      <h3 className="mt-1 text-base font-bold text-slate-900">
+                      <h3 className="mt-1 text-base font-bold text-zinc-900">
                         {session.chargingPointName} · Driver:{' '}
                         {session.driverName}
                       </h3>
                     </div>
 
-                    <div className="font-mono text-xs tabular-nums text-slate-700">
+                    <div className="font-mono text-xs tabular-nums text-zinc-700">
                       Reported: {session.energyDeliveredKwh.toFixed(2)} kWh (₹
                       {session.amount.toFixed(2)})
                     </div>
                   </div>
 
-                  <p className="mt-3 text-xs text-slate-700">
+                  <p className="mt-3 text-xs text-zinc-700">
                     {session.disputeReason}
                   </p>
 
-                  <div className="mt-4 grid grid-cols-1 gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4 text-xs sm:grid-cols-3">
+                  <div className="mt-4 grid grid-cols-1 gap-4 rounded-lg border border-zinc-200 bg-zinc-50 p-4 text-xs sm:grid-cols-3">
                     <div>
-                      <span className="text-slate-500">Start Reading</span>
-                      <div className="mt-0.5 font-mono font-semibold tabular-nums text-slate-900">
+                      <span className="text-zinc-500">Start Reading</span>
+                      <div className="mt-0.5 font-mono font-semibold tabular-nums text-zinc-900">
                         {session.meterReadingStartWh?.toLocaleString()} Wh
                       </div>
                     </div>
                     <div>
-                      <span className="text-slate-500">Reported End</span>
+                      <span className="text-zinc-500">Reported End</span>
                       <div className="mt-0.5 font-mono font-semibold tabular-nums text-red-700">
                         {session.meterReadingEndWh?.toLocaleString()} Wh
                       </div>
                     </div>
                     <div>
-                      <span className="text-slate-500">Tariff Rate</span>
-                      <div className="mt-0.5 font-mono font-semibold tabular-nums text-slate-900">
+                      <span className="text-zinc-500">Tariff Rate</span>
+                      <div className="mt-0.5 font-mono font-semibold tabular-nums text-zinc-900">
                         ₹{session.pricePerKwh.toFixed(2)} / kWh
                       </div>
                     </div>
@@ -298,7 +298,7 @@ export function AdminConsoleView({
                       <div>
                         <label
                           htmlFor={`adj-wh-${session.id}`}
-                          className="block text-xs font-medium text-slate-700"
+                          className="block text-xs font-medium text-zinc-700"
                         >
                           Verified End Reading (Wh)
                         </label>
@@ -312,7 +312,7 @@ export function AdminConsoleView({
                               [session.id]: e.target.value,
                             }))
                           }
-                          className="mt-1 w-40 rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-xs tabular-nums text-slate-900"
+                          className="mt-1 w-40 rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-xs tabular-nums text-zinc-900"
                         />
                       </div>
                       <button
@@ -353,14 +353,14 @@ export function AdminConsoleView({
       {subTab === 'reservations' && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900">
+            <h2 className="text-sm font-semibold text-zinc-900">
               Platform Reservations State Ledger
             </h2>
             <select
               aria-label="Filter reservations by status"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700"
+              className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700"
             >
               <option value="all">All Statuses</option>
               <option value="reserved">Reserved</option>
@@ -372,9 +372,9 @@ export function AdminConsoleView({
             </select>
           </div>
 
-          <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+          <div className="overflow-x-auto rounded-xl border border-zinc-200 bg-white">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-slate-200 bg-slate-50 text-slate-600">
+              <thead className="border-b border-zinc-200 bg-zinc-50 text-zinc-600">
                 <tr>
                   <th className="px-4 py-3 font-semibold">Reservation</th>
                   <th className="px-4 py-3 font-semibold">Driver</th>
@@ -386,25 +386,25 @@ export function AdminConsoleView({
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200">
+              <tbody className="divide-y divide-zinc-200">
                 {filteredReservations.map((r) => (
-                  <tr key={r.id} className="hover:bg-slate-50">
-                    <td className="px-4 py-2.5 font-mono text-slate-900">
+                  <tr key={r.id} className="hover:bg-zinc-50">
+                    <td className="px-4 py-2.5 font-mono text-zinc-900">
                       {r.id}
                     </td>
-                    <td className="px-4 py-2.5 text-slate-700">
+                    <td className="px-4 py-2.5 text-zinc-700">
                       {r.driverName}
                     </td>
-                    <td className="px-4 py-2.5 font-medium text-slate-900">
+                    <td className="px-4 py-2.5 font-medium text-zinc-900">
                       {r.chargingPointName}
                     </td>
-                    <td className="px-4 py-2.5 font-mono text-slate-600 tabular-nums">
+                    <td className="px-4 py-2.5 font-mono text-zinc-600 tabular-nums">
                       {r.connectorType} · {r.powerKw} kW
                     </td>
-                    <td className="px-4 py-2.5 font-medium text-slate-800">
+                    <td className="px-4 py-2.5 font-medium text-zinc-800">
                       {r.status}
                     </td>
-                    <td className="px-4 py-2.5 text-right font-mono tabular-nums text-slate-900">
+                    <td className="px-4 py-2.5 text-right font-mono tabular-nums text-zinc-900">
                       ₹{r.pricePerKwh.toFixed(2)}/kWh
                     </td>
                   </tr>
@@ -418,7 +418,7 @@ export function AdminConsoleView({
       {/* TAB 3: Partner Integrations & Live Telemetry Feed */}
       {subTab === 'partners' && (
         <div className="space-y-6">
-          <div className="divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white">
+          <div className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 bg-white">
             {partners.map((partner) => (
               <div
                 key={partner.id}
@@ -426,7 +426,7 @@ export function AdminConsoleView({
               >
                 <div className="space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-sm font-bold text-slate-900">
+                    <span className="text-sm font-bold text-zinc-900">
                       {partner.partnerName}
                     </span>
                     <span aria-hidden="true">·</span>
@@ -442,11 +442,11 @@ export function AdminConsoleView({
                         : 'Sync Error (Retry Needed)'}
                     </span>
                     <span aria-hidden="true">·</span>
-                    <span className="font-mono text-xs tabular-nums text-slate-600">
+                    <span className="font-mono text-xs tabular-nums text-zinc-600">
                       {(partner.commissionRate * 100).toFixed(0)}% commission
                     </span>
                   </div>
-                  <div className="font-mono text-xs text-slate-500">
+                  <div className="font-mono text-xs text-zinc-500">
                     {partner.apiEndpoint} · Every {partner.syncIntervalMinutes}m ·
                     Last sync:{' '}
                     {new Date(partner.lastSyncTime).toLocaleTimeString()}
@@ -454,7 +454,7 @@ export function AdminConsoleView({
                 </div>
 
                 <div className="flex items-center gap-4">
-                  <span className="font-mono text-xs tabular-nums text-slate-700">
+                  <span className="font-mono text-xs tabular-nums text-zinc-700">
                     {partner.syncedStationsCount} station(s)
                   </span>
                   <button
@@ -463,7 +463,7 @@ export function AdminConsoleView({
                     onClick={() =>
                       handlePartnerSync(partner.id, partner.partnerName)
                     }
-                    className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-50 disabled:opacity-60"
+                    className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-zinc-200 bg-white px-3.5 py-2 text-xs font-semibold text-zinc-800 hover:bg-zinc-50 disabled:opacity-60"
                   >
                     <RefreshCw className="h-3.5 w-3.5" />
                     Sync Now
@@ -475,9 +475,9 @@ export function AdminConsoleView({
 
           <section
             aria-label="Live OCPP and Smart Meter Telemetry Feed"
-            className="overflow-hidden rounded-xl border border-slate-200 bg-white"
+            className="overflow-hidden rounded-xl border border-zinc-200 bg-white"
           >
-            <div className="flex flex-col justify-between gap-3 border-b border-slate-200 p-5 sm:flex-row sm:items-center">
+            <div className="flex flex-col justify-between gap-3 border-b border-zinc-200 p-5 sm:flex-row sm:items-center">
               <div>
                 <div className="flex items-center gap-2 text-xs font-semibold text-emerald-700">
                   <Radio className="h-3.5 w-3.5" />
@@ -486,7 +486,7 @@ export function AdminConsoleView({
                     {telemetryHeartbeatEnabled ? 'Active (2s Heartbeat)' : 'Paused'}
                   </span>
                 </div>
-                <h3 className="mt-0.5 text-base font-bold text-slate-900">
+                <h3 className="mt-0.5 text-base font-bold text-zinc-900">
                   Live OCPP / Smart Meter Telemetry Feed
                 </h3>
               </div>
@@ -509,7 +509,7 @@ export function AdminConsoleView({
                       setBusyId(null);
                     }
                   }}
-                  className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 hover:bg-slate-50 disabled:opacity-60"
+                  className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-semibold text-zinc-800 hover:bg-zinc-50 disabled:opacity-60"
                 >
                   {telemetryHeartbeatEnabled ? (
                     <>
@@ -546,7 +546,7 @@ export function AdminConsoleView({
                         setBusyId(null);
                       }
                     }}
-                    className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 hover:bg-slate-50 disabled:opacity-60"
+                    className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-semibold text-zinc-800 hover:bg-zinc-50 disabled:opacity-60"
                   >
                     <Activity className="h-3.5 w-3.5 text-emerald-600" />
                     Send Test Pulse
@@ -556,13 +556,13 @@ export function AdminConsoleView({
             </div>
 
             {telemetryEvents.length === 0 ? (
-              <div className="p-6 text-center text-xs text-slate-500">
+              <div className="p-6 text-center text-xs text-zinc-500">
                 No telemetry events logged yet. Start a charging session or trigger an OCPP meter pulse.
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="border-b border-slate-200 bg-slate-50 text-slate-600">
+                  <thead className="border-b border-zinc-200 bg-zinc-50 text-zinc-600">
                     <tr>
                       <th className="px-4 py-3 font-semibold">Time</th>
                       <th className="px-4 py-3 font-semibold">Protocol · Event</th>
@@ -571,14 +571,14 @@ export function AdminConsoleView({
                       <th className="px-4 py-3 font-semibold">Summary</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-200">
+                  <tbody className="divide-y divide-zinc-200">
                     {telemetryEvents.map((ev) => (
-                      <tr key={ev.id} className="hover:bg-slate-50">
-                        <td className="px-4 py-2.5 font-mono text-slate-500 tabular-nums whitespace-nowrap">
+                      <tr key={ev.id} className="hover:bg-zinc-50">
+                        <td className="px-4 py-2.5 font-mono text-zinc-500 tabular-nums whitespace-nowrap">
                           {new Date(ev.timestamp).toLocaleTimeString()}
                         </td>
                         <td className="px-4 py-2.5 whitespace-nowrap">
-                          <span className="font-mono text-slate-600">
+                          <span className="font-mono text-zinc-600">
                             {ev.protocol}
                           </span>
                           <span aria-hidden="true"> · </span>
@@ -586,25 +586,25 @@ export function AdminConsoleView({
                             className={`font-semibold ${
                               ev.eventType === 'WalkInLoadDetected'
                                 ? 'text-amber-700'
-                                : 'text-slate-900'
+                                : 'text-zinc-900'
                             }`}
                           >
                             {ev.eventType}
                           </span>
                         </td>
-                        <td className="px-4 py-2.5 font-medium text-slate-900">
+                        <td className="px-4 py-2.5 font-medium text-zinc-900">
                           {ev.chargingPointName}{' '}
-                          <span className="font-mono text-slate-500">
+                          <span className="font-mono text-zinc-500">
                             ({ev.connectorId})
                           </span>
                         </td>
-                        <td className="px-4 py-2.5 font-mono tabular-nums text-slate-800 whitespace-nowrap">
+                        <td className="px-4 py-2.5 font-mono tabular-nums text-zinc-800 whitespace-nowrap">
                           {ev.powerKw.toFixed(1)} kW
                           {ev.meterWh !== undefined
                             ? ` · ${ev.meterWh.toLocaleString()} Wh`
                             : ''}
                         </td>
-                        <td className="px-4 py-2.5 text-slate-600">
+                        <td className="px-4 py-2.5 text-zinc-600">
                           {ev.summary}
                         </td>
                       </tr>
@@ -619,9 +619,9 @@ export function AdminConsoleView({
 
       {/* TAB 4: Payments Ledger */}
       {subTab === 'payments' && (
-        <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+        <div className="overflow-x-auto rounded-xl border border-zinc-200 bg-white">
           <table className="w-full text-left text-xs">
-            <thead className="border-b border-slate-200 bg-slate-50 text-slate-600">
+            <thead className="border-b border-zinc-200 bg-zinc-50 text-zinc-600">
               <tr>
                 <th className="px-4 py-3 font-semibold">Transaction ID</th>
                 <th className="px-4 py-3 font-semibold">Type</th>
@@ -630,22 +630,22 @@ export function AdminConsoleView({
                 <th className="px-4 py-3 text-right font-semibold">Amount</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200">
+            <tbody className="divide-y divide-zinc-200">
               {payments.map((pay) => (
-                <tr key={pay.id} className="hover:bg-slate-50">
-                  <td className="px-4 py-2.5 font-mono text-slate-900">
+                <tr key={pay.id} className="hover:bg-zinc-50">
+                  <td className="px-4 py-2.5 font-mono text-zinc-900">
                     {pay.stripeTransactionId}
                   </td>
-                  <td className="px-4 py-2.5 font-medium text-slate-700">
+                  <td className="px-4 py-2.5 font-medium text-zinc-700">
                     {pay.type}
                   </td>
-                  <td className="px-4 py-2.5 text-slate-600">
+                  <td className="px-4 py-2.5 text-zinc-600">
                     {pay.description}
                   </td>
-                  <td className="px-4 py-2.5 font-medium text-slate-800">
+                  <td className="px-4 py-2.5 font-medium text-zinc-800">
                     {pay.status}
                   </td>
-                  <td className="px-4 py-2.5 text-right font-mono font-semibold tabular-nums text-slate-900">
+                  <td className="px-4 py-2.5 text-right font-mono font-semibold tabular-nums text-zinc-900">
                     ₹{pay.amount.toFixed(2)}
                   </td>
                 </tr>

@@ -38,8 +38,8 @@ interface VehicleShowroom3DProps {
 const SHOWROOM_PAINTS = [
   { id: 'sapphire', label: 'Sapphire Metallic', hex: 0x1d4ed8, bgClass: 'bg-blue-700' },
   { id: 'emerald', label: 'Emerald Racing Green', hex: 0x047857, bgClass: 'bg-emerald-700' },
-  { id: 'obsidian', label: 'Obsidian Black', hex: 0x111827, bgClass: 'bg-slate-900' },
-  { id: 'frozen', label: 'Frozen Grey', hex: 0x64748b, bgClass: 'bg-slate-500' },
+  { id: 'obsidian', label: 'Obsidian Black', hex: 0x111827, bgClass: 'bg-zinc-900' },
+  { id: 'frozen', label: 'Frozen Grey', hex: 0x64748b, bgClass: 'bg-zinc-500' },
   { id: 'sunset', label: 'Sunset Crimson', hex: 0xbe123c, bgClass: 'bg-rose-700' },
   { id: 'white', label: 'Alpine Pearl White', hex: 0xf8fafc, bgClass: 'bg-white' },
 ];
@@ -629,23 +629,23 @@ export function VehicleShowroom3D({
   };
 
   return (
-    <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-white text-slate-900 shadow-sm">
+    <div className="relative overflow-hidden rounded-xl border border-zinc-200 bg-white text-zinc-900 shadow-sm">
       {/* Top Header & Vehicle Selector */}
-      <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/80 px-4 py-3">
+      <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 bg-zinc-50/80 px-4 py-3">
         <div className="flex items-center gap-2.5">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20">
             <Car className="h-4 w-4" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-display text-sm font-bold tracking-tight text-slate-900">
+              <span className="font-display text-sm font-bold tracking-tight text-zinc-900">
                 EV Virtual Garage &amp; Inspection
               </span>
               <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-600/20">
                 3D TWIN
               </span>
             </div>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-zinc-500">
               Interactive 360° vehicle inspection, paint customizer &amp; charging port simulation
             </p>
           </div>
@@ -653,7 +653,7 @@ export function VehicleShowroom3D({
 
         {/* Vehicle Selector Tabs */}
         {vehicles.length > 0 && (
-          <div className="flex items-center gap-1.5 rounded-lg bg-slate-100 p-1">
+          <div className="flex items-center gap-1.5 rounded-lg bg-zinc-100 p-1">
             {vehicles.map((v) => {
               const isSelected = (activeVehicle?.id ?? vehicles[0]?.id) === v.id;
               return (
@@ -663,8 +663,8 @@ export function VehicleShowroom3D({
                   onClick={() => onSelectVehicle?.(v.id)}
                   className={`rounded-md px-2.5 py-1 text-xs font-semibold transition-colors ${
                     isSelected
-                      ? 'bg-white text-slate-900 shadow-xs ring-1 ring-slate-200'
-                      : 'text-slate-600 hover:text-slate-900'
+                      ? 'bg-white text-zinc-900 shadow-xs ring-1 ring-zinc-200'
+                      : 'text-zinc-600 hover:text-zinc-900'
                   }`}
                 >
                   {v.make} {v.model}
@@ -686,30 +686,30 @@ export function VehicleShowroom3D({
         {/* Top-Left Vehicle Specs Card Overlay */}
         {activeVehicle && (
           <div className="pointer-events-none absolute top-4 left-4 z-10 hidden flex-col gap-2 sm:flex">
-            <div className="rounded-xl border border-slate-200 bg-white/95 p-3.5 shadow-md backdrop-blur-xs">
+            <div className="rounded-xl border border-zinc-200 bg-white/95 p-3.5 shadow-md backdrop-blur-xs">
               <div className="flex items-center justify-between gap-3">
-                <span className="font-semibold text-slate-900">
+                <span className="font-semibold text-zinc-900">
                   {activeVehicle.make} {activeVehicle.model} ({activeVehicle.year})
                 </span>
                 <span className="rounded bg-emerald-50 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-700 ring-1 ring-emerald-600/20">
                   {activeVehicle.connectorType.join(' / ')}
                 </span>
               </div>
-              <div className="mt-1.5 grid grid-cols-2 gap-x-4 gap-y-1 font-mono text-xs text-slate-600">
+              <div className="mt-1.5 grid grid-cols-2 gap-x-4 gap-y-1 font-mono text-xs text-zinc-600">
                 <div>
-                  <span className="text-slate-400">Plate: </span>
-                  <span className="text-slate-800 font-semibold">{activeVehicle.licensePlate}</span>
+                  <span className="text-zinc-400">Plate: </span>
+                  <span className="text-zinc-800 font-semibold">{activeVehicle.licensePlate}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400">Battery: </span>
-                  <span className="text-slate-800 font-semibold">{activeVehicle.batteryCapacity} kWh</span>
+                  <span className="text-zinc-400">Battery: </span>
+                  <span className="text-zinc-800 font-semibold">{activeVehicle.batteryCapacity} kWh</span>
                 </div>
                 <div>
-                  <span className="text-slate-400">Year: </span>
-                  <span className="text-slate-800 font-semibold">{activeVehicle.year}</span>
+                  <span className="text-zinc-400">Year: </span>
+                  <span className="text-zinc-800 font-semibold">{activeVehicle.year}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400">Est. Range: </span>
+                  <span className="text-zinc-400">Est. Range: </span>
                   <span className="text-emerald-700 font-semibold">{Math.round(activeVehicle.batteryCapacity * 5.6)} km</span>
                 </div>
               </div>
@@ -719,12 +719,12 @@ export function VehicleShowroom3D({
 
         {/* Top-Right Camera Angles & Controls */}
         <div className="absolute top-4 right-4 z-10 flex flex-col items-end gap-1.5">
-          <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white/95 p-1 shadow-sm backdrop-blur-xs">
+          <div className="flex items-center gap-1 rounded-lg border border-zinc-200 bg-white/95 p-1 shadow-sm backdrop-blur-xs">
             <button
               type="button"
               onClick={() => sceneActionsRef.current?.setCameraPreset('threeQuarter')}
               title="Camera: 3/4 Isometric"
-              className="rounded px-2 py-1 text-[11px] font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              className="rounded px-2 py-1 text-[11px] font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
             >
               3/4 Iso
             </button>
@@ -732,7 +732,7 @@ export function VehicleShowroom3D({
               type="button"
               onClick={() => sceneActionsRef.current?.setCameraPreset('side')}
               title="Camera: Side Profile"
-              className="rounded px-2 py-1 text-[11px] font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              className="rounded px-2 py-1 text-[11px] font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
             >
               Profile
             </button>
@@ -740,7 +740,7 @@ export function VehicleShowroom3D({
               type="button"
               onClick={() => sceneActionsRef.current?.setCameraPreset('port')}
               title="Camera: Charge Port Macro"
-              className="rounded px-2 py-1 text-[11px] font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              className="rounded px-2 py-1 text-[11px] font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
             >
               Inlet
             </button>
@@ -748,7 +748,7 @@ export function VehicleShowroom3D({
               type="button"
               onClick={() => sceneActionsRef.current?.setCameraPreset('top')}
               title="Camera: Aero Top-Down"
-              className="rounded px-2 py-1 text-[11px] font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              className="rounded px-2 py-1 text-[11px] font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
             >
               Top
             </button>
@@ -756,7 +756,7 @@ export function VehicleShowroom3D({
               type="button"
               onClick={() => sceneActionsRef.current?.resetCamera()}
               title="Reset Camera"
-              className="rounded p-1 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              className="rounded p-1 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
             >
               <RotateCcw className="h-3.5 w-3.5" />
             </button>
@@ -768,7 +768,7 @@ export function VehicleShowroom3D({
             className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-medium shadow-sm backdrop-blur-xs transition-colors ${
               autoRotate
                 ? 'border-emerald-600/30 bg-emerald-50 text-emerald-800'
-                : 'border-slate-200 bg-white/95 text-slate-700 hover:bg-slate-50 hover:text-slate-900'
+                : 'border-zinc-200 bg-white/95 text-zinc-700 hover:bg-zinc-50 hover:text-zinc-900'
             }`}
           >
             <Play className={`h-3 w-3 ${autoRotate ? 'text-emerald-600 animate-pulse' : ''}`} />
@@ -777,12 +777,12 @@ export function VehicleShowroom3D({
         </div>
 
         {/* Bottom Interactive Customizer Dock */}
-        <div className="relative z-10 border-t border-slate-100 bg-slate-50/90 px-4 py-3 backdrop-blur-xs">
+        <div className="relative z-10 border-t border-zinc-100 bg-zinc-50/90 px-4 py-3 backdrop-blur-xs">
           <div className="flex flex-wrap items-center justify-between gap-4">
             {/* Paint Palette Selection */}
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
-                <Palette className="h-3.5 w-3.5 text-slate-400" />
+              <div className="flex items-center gap-1.5 text-xs text-zinc-500 font-medium">
+                <Palette className="h-3.5 w-3.5 text-zinc-400" />
                 <span className="hidden sm:inline">Color:</span>
               </div>
               <div className="flex items-center gap-1.5">
@@ -810,7 +810,7 @@ export function VehicleShowroom3D({
                 className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all ${
                   lightsOn
                     ? 'border-sky-500 bg-sky-50 text-sky-800'
-                    : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                    : 'border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50'
                 }`}
               >
                 <Lightbulb className="h-3.5 w-3.5" />
@@ -823,7 +823,7 @@ export function VehicleShowroom3D({
                 className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all ${
                   portOpen
                     ? 'border-emerald-600 bg-emerald-50 text-emerald-800'
-                    : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                    : 'border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50'
                 }`}
               >
                 <Zap className="h-3.5 w-3.5" />
@@ -836,7 +836,7 @@ export function VehicleShowroom3D({
                 className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all ${
                   cableConnected
                     ? 'border-emerald-600 bg-emerald-50 text-emerald-800'
-                    : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                    : 'border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50'
                 }`}
               >
                 <BatteryCharging className="h-3.5 w-3.5" />
@@ -849,7 +849,7 @@ export function VehicleShowroom3D({
                 className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all ${
                   xrayBattery
                     ? 'border-amber-500 bg-amber-50 text-amber-800'
-                    : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                    : 'border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50'
                 }`}
               >
                 <Eye className="h-3.5 w-3.5" />
