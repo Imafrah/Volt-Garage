@@ -88,7 +88,7 @@ export function JudgeScenarioSelector({
         title="1-Click Pitch Scenarios for Hackathon Judges"
       >
         <Award className="h-3.5 w-3.5 text-emerald-600" />
-        <span className="hidden sm:inline">Prototye Scenarios</span>
+        <span className="hidden sm:inline">Prototype Scenarios</span>
         <span className="sm:hidden">Scenarios</span>
         <ChevronDown className="h-3 w-3 text-emerald-700" />
       </button>
