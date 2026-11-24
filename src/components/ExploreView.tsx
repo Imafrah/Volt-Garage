@@ -277,21 +277,21 @@ export function ExploreView({
       {/* Live Driver GPS & 10 km Booking Geofence Control */}
       <section
         aria-label="Driver live location and 10 km booking geofence"
-        className="rounded-xl border border-slate-200 bg-white p-4"
+        className="rounded-xl border border-zinc-200/90 bg-white p-4 shadow-xs"
       >
         <div className="flex flex-col justify-between gap-3 lg:flex-row lg:items-center">
           <div className="space-y-0.5">
-            <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-900">
-              <LocateFixed className="h-3.5 w-3.5 text-emerald-600" />
-              <span>Continuous Location Check · 9–10 km Booking Geofence</span>
-              <span aria-hidden="true">·</span>
-              <span className="font-mono font-normal text-slate-600 tabular-nums">
+            <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-zinc-900">
+              <LocateFixed className="h-3.5 w-3.5 text-zinc-600" />
+              <span>Location Anchor · 10 km Active Geofence</span>
+              <span aria-hidden="true" className="text-zinc-300">·</span>
+              <span className="font-mono font-normal text-zinc-600 tabular-nums">
                 {driver.defaultLocation.lat.toFixed(4)}°N,{' '}
                 {driver.defaultLocation.lon.toFixed(4)}°E
               </span>
             </div>
-            <p className="text-xs text-slate-500">
-              Reservations require being within {PROXIMITY_RADIUS_KM} km. Moving outside {PROXIMITY_RADIUS_KM} km automatically unreserves your hold so others can book.
+            <p className="text-xs text-zinc-500">
+              Reservations require proximity within {PROXIMITY_RADIUS_KM} km. Roaming outside automatically unreserves your hold to keep bays liquid.
               {activeDriverHolds.length > 0 && (
                 <span className="ml-1 font-medium text-emerald-700">
                   ({activeDriverHolds.length} active hold monitored)
@@ -316,7 +316,7 @@ export function ExploreView({
                   handleLocationUpdate(preset.location, preset.label);
                 }
               }}
-              className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-800 focus:border-emerald-600 focus:outline-none"
+              className="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs font-medium text-zinc-800 focus:border-zinc-400 focus:outline-none"
             >
               {selectedPresetId === 'custom' && (
                 <option value="custom">
@@ -335,9 +335,9 @@ export function ExploreView({
               type="button"
               disabled={locationBusy}
               onClick={handleBrowserGps}
-              className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+              className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-60"
             >
-              <LocateFixed className="h-3.5 w-3.5 text-emerald-600" />
+              <LocateFixed className="h-3.5 w-3.5 text-zinc-500" />
               Use Device GPS
             </button>
           </div>
@@ -347,7 +347,7 @@ export function ExploreView({
           <div
             role="alert"
             data-testid="geofence-auto-unreserve-alert"
-            className="mt-3 flex items-start gap-2 rounded-lg border border-amber-300 bg-amber-50 px-3.5 py-2.5 text-xs font-medium text-amber-950"
+            className="mt-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50/80 px-3.5 py-2.5 text-xs font-medium text-amber-900"
           >
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" />
             <span>{geofenceAlert}</span>
@@ -357,7 +357,7 @@ export function ExploreView({
       {/* Workspace Filter Toolbar */}
       <section
         aria-label="Charging station filters"
-        className="rounded-xl border border-slate-200 bg-white p-4"
+        className="rounded-xl border border-zinc-200/90 bg-white p-4 shadow-xs"
       >
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-1 flex-wrap items-center gap-3">

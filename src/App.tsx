@@ -333,26 +333,38 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      {/* Strict 3-Zone Top Bar Contract with Mobile Responsiveness */}
-      <header className="sticky top-0 z-30 border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-2.5 sm:gap-8 sm:px-6 sm:py-3">
-          <div className="flex items-center gap-3 sm:gap-6">
+    <div className="min-h-screen bg-zinc-50/50 text-zinc-900 font-sans">
+      {/* Precision Top Navigation Bar */}
+      <header className="sticky top-0 z-30 border-b border-zinc-200/80 bg-white/95 backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-2.5 sm:gap-6 sm:px-6 sm:py-3">
+          <div className="flex items-center gap-4 sm:gap-6">
             <a
               href="#explore"
               onClick={(e) => {
                 e.preventDefault();
                 setActiveView('explore');
               }}
-              className="font-display text-base font-bold tracking-tight text-slate-900 whitespace-nowrap shrink-0 sm:text-lg"
+              className="group flex items-center gap-2.5 text-zinc-900 whitespace-nowrap shrink-0"
             >
-              ImCharge
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-white shadow-xs transition-transform group-hover:scale-[1.02]">
+                <svg className="h-4 w-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg>
+              </div>
+              <div className="flex flex-col">
+                <span className="font-display text-sm font-bold tracking-tight text-zinc-900 sm:text-base">
+                  Volt Garage
+                </span>
+                <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
+                  ImCharge v2.4
+                </span>
+              </div>
             </a>
 
-            {/* Desktop / Tablet Nav */}
+            {/* Desktop Segmented Console Nav */}
             <nav
               aria-label="Primary workspace navigation"
-              className="hidden sm:flex items-center gap-4 md:gap-7"
+              className="hidden sm:flex items-center rounded-lg border border-zinc-200/80 bg-zinc-100/70 p-1 text-xs font-medium"
             >
               {navItems.map((item) => {
                 const isActive = activeView === item.id;
@@ -366,10 +378,10 @@ export default function App() {
                     }}
                     aria-current={isActive ? 'page' : undefined}
                     aria-label={item.label}
-                    className={`whitespace-nowrap shrink-0 border-b-2 py-1 text-xs font-medium transition-colors sm:text-sm ${
+                    className={`whitespace-nowrap shrink-0 rounded-md px-3.5 py-1.5 transition-[color,background-color,shadow] ${
                       isActive
-                        ? 'border-emerald-600 text-slate-900'
-                        : 'border-transparent text-slate-600 hover:text-slate-900'
+                        ? 'bg-white font-semibold text-zinc-900 shadow-xs'
+                        : 'text-zinc-600 hover:text-zinc-900'
                     }`}
                   >
                     <span>{item.label}</span>
@@ -379,16 +391,16 @@ export default function App() {
             </nav>
           </div>
 
-          {/* Action Buttons: Responsive for Phone and Desktop */}
+          {/* Action Buttons: Unified Palette and Proportions */}
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             <button
               type="button"
               onClick={handleResetDemo}
               title="Reset demo data to initial state"
               aria-label="Reset Demo Data"
-              className="whitespace-nowrap shrink-0 inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white p-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-50 sm:px-2.5 sm:py-2"
+              className="whitespace-nowrap shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
             >
-              <RotateCcw className="h-3.5 w-3.5 text-slate-500" />
+              <RotateCcw className="h-3.5 w-3.5 text-zinc-400" />
               <span className="hidden sm:inline">Reset</span>
             </button>
             <button
@@ -396,31 +408,31 @@ export default function App() {
               onClick={() => setRegistrationRole('driver')}
               title="Register as EV Vehicle Owner"
               aria-label="Register as EV Vehicle Owner"
-              className="whitespace-nowrap shrink-0 inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-800 transition-colors hover:bg-slate-50 sm:gap-1.5 sm:px-3 sm:py-2"
+              className="whitespace-nowrap shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-800 transition-colors hover:bg-zinc-50"
             >
-              <Car className="h-3.5 w-3.5 text-emerald-600" />
+              <Car className="h-3.5 w-3.5 text-zinc-500" />
               <span className="hidden md:inline">Register EV</span>
-              <span className="md:hidden text-[11px] font-medium">EV</span>
+              <span className="md:hidden text-[11px]">EV</span>
             </button>
             <button
               type="button"
               onClick={() => setRegistrationRole('host')}
               title="Register as Charging Host"
               aria-label="Register as Charging Host"
-              className="whitespace-nowrap shrink-0 inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-2.5 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-emerald-700 sm:gap-1.5 sm:px-3.5 sm:py-2"
+              className="whitespace-nowrap shrink-0 inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 px-3.5 py-1.5 text-xs font-medium text-white transition-colors hover:bg-zinc-800"
             >
-              <Home className="h-3.5 w-3.5 text-white" />
+              <Home className="h-3.5 w-3.5 text-zinc-300" />
               <span className="hidden md:inline">Register Host</span>
-              <span className="md:hidden text-[11px] font-medium">Host</span>
+              <span className="md:hidden text-[11px]">Host</span>
             </button>
           </div>
         </div>
       </header>
 
-      {/* Mobile Bottom Navigation Bar for Native-app Feel */}
+      {/* Mobile Bottom Navigation Bar */}
       <nav
         aria-label="Mobile bottom navigation"
-        className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around border-t border-slate-200 bg-white/95 px-2 py-1.5 backdrop-blur-md sm:hidden shadow-lg"
+        className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around border-t border-zinc-200/90 bg-white/95 px-2 py-1.5 backdrop-blur-md sm:hidden shadow-sm"
       >
         {navItems.map((item) => {
           const isActive = activeView === item.id;
@@ -436,11 +448,11 @@ export default function App() {
               aria-current={isActive ? 'page' : undefined}
               className={`flex flex-col items-center gap-0.5 rounded-lg px-3 py-1 text-[11px] font-medium transition-colors ${
                 isActive
-                  ? 'text-emerald-700 font-semibold'
-                  : 'text-slate-500 hover:text-slate-900'
+                  ? 'text-zinc-900 font-semibold'
+                  : 'text-zinc-500 hover:text-zinc-800'
               }`}
             >
-              <Icon className={`h-4 w-4 ${isActive ? 'text-emerald-600' : 'text-slate-400'}`} />
+              <Icon className={`h-4 w-4 ${isActive ? 'text-emerald-600' : 'text-zinc-400'}`} />
               <span>{item.mobileLabel}</span>
             </button>
           );
@@ -453,48 +465,56 @@ export default function App() {
             aria-label="Loading marketplace"
             className="space-y-6"
           >
-            <div className="h-14 animate-pulse rounded-xl border border-slate-200 bg-white" />
+            <div className="h-14 animate-pulse rounded-xl border border-zinc-200 bg-white" />
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-              <div className="h-96 animate-pulse rounded-xl border border-slate-200 bg-white lg:col-span-7" />
-              <div className="h-96 animate-pulse rounded-xl border border-slate-200 bg-white lg:col-span-5" />
+              <div className="h-96 animate-pulse rounded-xl border border-zinc-200 bg-white lg:col-span-7" />
+              <div className="h-96 animate-pulse rounded-xl border border-zinc-200 bg-white lg:col-span-5" />
             </div>
           </div>
         ) : loadError || !snapshot || !primaryDriver ? (
           <div
             role="alert"
-            className="rounded-xl border border-red-200 bg-white p-8 text-center"
+            className="mx-auto max-w-xl rounded-2xl border border-zinc-200/90 bg-white p-8 text-center shadow-xs"
           >
-            <h1 className="text-base font-bold text-slate-900">
-              Unable to connect to ImCharge API Gateway
-            </h1>
-            <p className="mt-1 text-xs text-slate-600">
-              {loadError || 'Marketplace data could not be loaded.'}
+            <div className="mx-auto mb-3.5 flex h-10 w-10 items-center justify-center rounded-full bg-zinc-100 text-zinc-500">
+              <RotateCcw className="h-5 w-5" />
+            </div>
+            <h2 className="text-base font-semibold text-zinc-900">
+              Connecting to ImCharge Gateway
+            </h2>
+            <p className="mx-auto mt-1.5 max-w-md text-xs leading-relaxed text-zinc-500">
+              {loadError?.includes('Unexpected token') || loadError?.includes('JSON')
+                ? 'The serverless backend instance is warming up on Vercel. This initial cold start typically takes 5–8 seconds.'
+                : loadError || 'Marketplace telemetry service is establishing a secure connection.'}
             </p>
-            <button
-              type="button"
-              onClick={() => {
-                setLoading(true);
-                fetchSnapshot();
-              }}
-              className="mt-4 rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white hover:bg-slate-800"
-            >
-              Retry Connection
-            </button>
+            <div className="mt-5 flex items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setLoading(true);
+                  fetchSnapshot();
+                }}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-zinc-800"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                Retry Gateway Connection
+              </button>
+            </div>
           </div>
         ) : (
           <div className="space-y-6">
             {/* Contextual Page Header */}
-            <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
+            <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end border-b border-zinc-200/80 pb-4">
               <div>
-                <h1 className="text-2xl font-bold tracking-tight text-slate-900 text-balance">
+                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 text-balance">
                   {activeView === 'explore' &&
-                    'Find & Reserve EV Charging Across Munich'}
+                    'Charging Network & Real-Time Availability'}
                   {activeView === 'trips' &&
-                    'Driver Trips, QR Check-In & Metered Billing'}
+                    'Active Reservations, QR Check-In & Metered Billing'}
                   {activeView === 'host' &&
-                    'Host Console & Smart Meter Verification'}
+                    'Host Infrastructure Console & Meter Verification'}
                 </h1>
-                <p className="mt-1 text-sm text-slate-600">
+                <p className="mt-1 text-xs sm:text-sm text-zinc-500 max-w-2xl">
                   {activeView === 'explore' &&
                     'Compare metered private wallboxes and partner DC hubs with 30-minute instant slot holds.'}
                   {activeView === 'trips' &&
@@ -503,14 +523,14 @@ export default function App() {
                     'Verify arriving drivers, record start/end smart meter readings (Wh), and settle 80% payouts.'}
                 </p>
               </div>
-              <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+              <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-500">
                 <span>Active EV Owner:</span>
                 {snapshot.drivers.length > 1 ? (
                   <select
                     aria-label="Select active EV Owner"
                     value={primaryDriver.uid}
                     onChange={(e) => setActiveDriverId(e.target.value)}
-                    className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-900"
+                    className="rounded-lg border border-zinc-200 bg-white px-2.5 py-1 text-xs font-medium text-zinc-900"
                   >
                     {snapshot.drivers.map((d) => (
                       <option key={d.uid} value={d.uid}>
@@ -519,14 +539,14 @@ export default function App() {
                     ))}
                   </select>
                 ) : (
-                  <span className="font-medium text-slate-900">
+                  <span className="font-medium text-zinc-900">
                     {primaryDriver.name}
                   </span>
                 )}
                 {primaryDriver.vehicles[0] && (
                   <>
                     <span aria-hidden="true">·</span>
-                    <span className="font-mono text-slate-700">
+                    <span className="font-mono text-zinc-700">
                       {primaryDriver.vehicles[0].make}{' '}
                       {primaryDriver.vehicles[0].model}
                     </span>
