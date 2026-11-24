@@ -16,6 +16,48 @@ export const HOLD_DURATION_MINUTES = 30;
 export const PROXIMITY_RADIUS_KM = 10;
 export const PRIVATE_HOST_COMMISSION_RATE = 0.2;
 export const COMPANY_STATION_COMMISSION_RATE = 0.15;
+export const DEFAULT_IDLE_GRACE_MINUTES = 15;
+export const DEFAULT_IDLE_RATE_PER_MINUTE = 2.5;
+
+export interface IdleFeeSummary {
+  graceMinutes: number;
+  minutesElapsed: number;
+  idleMinutesCharged: number;
+  idleRatePerMinute: number;
+  idleFee: number;
+  isOverstay: boolean;
+}
+
+export function calculateIdleOverstayFee(
+  completedAtIso: string,
+  nowOrUnpluggedIso: string = new Date().toISOString(),
+  graceMinutes: number = DEFAULT_IDLE_GRACE_MINUTES,
+  ratePerMinute: number = DEFAULT_IDLE_RATE_PER_MINUTE
+): IdleFeeSummary {
+  const completedMs = Date.parse(completedAtIso);
+  const endMs = Date.parse(nowOrUnpluggedIso);
+  if (isNaN(completedMs) || isNaN(endMs) || endMs <= completedMs) {
+    return {
+      graceMinutes,
+      minutesElapsed: 0,
+      idleMinutesCharged: 0,
+      idleRatePerMinute: ratePerMinute,
+      idleFee: 0,
+      isOverstay: false,
+    };
+  }
+  const minutesElapsed = Math.floor((endMs - completedMs) / 60000);
+  const idleMinutesCharged = Math.max(0, minutesElapsed - graceMinutes);
+  const idleFee = round2(idleMinutesCharged * ratePerMinute);
+  return {
+    graceMinutes,
+    minutesElapsed,
+    idleMinutesCharged,
+    idleRatePerMinute: ratePerMinute,
+    idleFee,
+    isOverstay: idleMinutesCharged > 0,
+  };
+}
 
 export function round2(value: number): number {
   return Math.round((value + Number.EPSILON) * 100) / 100;

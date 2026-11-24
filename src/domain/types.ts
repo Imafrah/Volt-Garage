@@ -144,6 +144,9 @@ export interface ChargingSession {
   amount: number;
   commission: number;
   hostPayout: number;
+  idleMinutes?: number;
+  idleFee?: number;
+  unpluggedAt?: string;
   status: SessionStatus;
   disputeReason?: string;
 }

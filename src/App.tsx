@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Car, Compass, Home, RotateCcw, UserPlus } from 'lucide-react';
+import { Car, Compass, Home, RotateCcw, Sparkles, UserPlus } from 'lucide-react';
 import { apiClient } from './api/client';
 import { DriverTripsView } from './components/DriverTripsView';
 import { ExploreView } from './components/ExploreView';
 import { HostConsoleView, type HostSubTab } from './components/HostConsoleView';
 import { VoltGarageHero } from './components/VoltGarageHero';
+import { GeminiVoltCopilotModal } from './components/GeminiVoltCopilotModal';
+import { JudgeScenarioSelector } from './components/JudgeScenarioSelector';
+import { OcppHardwareEmulatorDrawer } from './components/OcppHardwareEmulatorDrawer';
 import {
   RegistrationModal,
   type RegistrationRole,
@@ -15,6 +18,7 @@ import {
 } from './components/TelemetryStreamIndicator';
 import type {
   BackupConnectorSuggestion,
+  ChargingSession,
   ConnectorType,
   DriverRegistrationInput,
   GeoPoint,
@@ -37,6 +41,9 @@ export default function App() {
   const [activeHostId, setActiveHostId] = useState<string | null>(null);
   const [registrationRole, setRegistrationRole] =
     useState<RegistrationRole | null>(null);
+  const [isOcppDrawerOpen, setIsOcppDrawerOpen] = useState(false);
+  const [isCopilotOpen, setIsCopilotOpen] = useState(false);
+  const [isScenarioBusy, setIsScenarioBusy] = useState(false);
   const [sseStatus, setSseStatus] = useState<SseConnectionStatus>(() =>
     typeof navigator !== 'undefined' && !navigator.onLine
       ? 'reconnecting'
@@ -327,6 +334,132 @@ export default function App() {
     setActiveHostId(null);
   }
 
+  async function handleRunScenario(scenarioId: string) {
+    setIsScenarioBusy(true);
+    try {
+      if (scenarioId === 'residential_booking') {
+        const reset = await apiClient.resetDemo();
+        setSnapshot(reset);
+        const driver = reset.drivers[0];
+        const cp = reset.chargingPoints[0];
+        const conn = cp?.connectors[0];
+        if (driver && cp && conn) {
+          const res = await apiClient.createReservation({
+            driverId: driver.uid,
+            chargingPointId: cp.id,
+            connectorId: conn.id,
+            driverLocation: driver.defaultLocation,
+            enforceProximity: true,
+          });
+          setSnapshot(res.snapshot);
+          setActiveDriverId(driver.uid);
+          setActiveView('trips');
+        }
+      } else if (scenarioId === 'geofence_release') {
+        if (!snapshot) return;
+        const driver = snapshot.drivers[0];
+        if (driver) {
+          // Move driver to Munich Airport (~29 km away)
+          const res = await apiClient.updateDriverLocation(driver.uid, {
+            lat: 48.3537,
+            lon: 11.775,
+          });
+          setSnapshot(res.snapshot);
+          setActiveView('trips');
+        }
+      } else if (scenarioId === 'idle_overstay') {
+        const reset = await apiClient.resetDemo();
+        const cp = reset.chargingPoints[0];
+        const driver = reset.drivers[0];
+        if (cp && driver) {
+          const completedAt = new Date(Date.now() - 35 * 60 * 1000).toISOString();
+          const mockSession: ChargingSession = {
+            id: `sess-overstay-${Date.now().toString(36)}`,
+            reservationId: 'res-overstay-mock',
+            driverId: driver.uid,
+            driverName: driver.name,
+            hostId: cp.hostUid,
+            chargingPointId: cp.id,
+            chargingPointName: cp.name,
+            chargingPointType: cp.type,
+            connectorId: cp.connectors[0].id,
+            pricePerKwh: cp.pricePerKwh,
+            startTime: new Date(Date.now() - 95 * 60 * 1000).toISOString(),
+            endTime: completedAt,
+            energyDeliveredKwh: 24.5,
+            meterReadingStartWh: 120000,
+            meterReadingEndWh: 144500,
+            amount: 24.5 * cp.pricePerKwh + 50.0,
+            commission: 24.5 * cp.pricePerKwh * 0.2,
+            hostPayout: 24.5 * cp.pricePerKwh * 0.8 + 50.0,
+            idleMinutes: 20,
+            idleFee: 50.0,
+            unpluggedAt: new Date().toISOString(),
+            status: 'completed',
+          };
+          const mockRes: Reservation = {
+            id: 'res-overstay-mock',
+            driverId: driver.uid,
+            driverName: driver.name,
+            hostId: cp.hostUid,
+            chargingPointId: cp.id,
+            chargingPointName: cp.name,
+            chargingPointType: cp.type,
+            connectorId: cp.connectors[0].id,
+            connectorType: cp.connectors[0].type,
+            powerKw: cp.connectors[0].powerKw,
+            pricePerKwh: cp.pricePerKwh,
+            status: 'completed',
+            reservedAt: new Date(Date.now() - 100 * 60 * 1000).toISOString(),
+            expiresAt: new Date(Date.now() - 70 * 60 * 1000).toISOString(),
+            confirmedAt: new Date(Date.now() - 98 * 60 * 1000).toISOString(),
+            startedAt: new Date(Date.now() - 95 * 60 * 1000).toISOString(),
+            completedAt: completedAt,
+            qrCodeToken: 'OVERSTAY-DEMO',
+            distanceKm: 2.1,
+          };
+          setSnapshot({
+            ...reset,
+            reservations: [mockRes, ...reset.reservations],
+            sessions: [mockSession, ...reset.sessions],
+          });
+          setActiveDriverId(driver.uid);
+          setActiveView('trips');
+        }
+      } else if (scenarioId === 'hardware_fault') {
+        if (!snapshot) return;
+        const cp = snapshot.chargingPoints[0];
+        const conn = cp?.connectors[0];
+        if (cp && conn) {
+          setIsOcppDrawerOpen(true);
+          await handleSendOcppTelemetry({
+            chargingPointId: cp.id,
+            connectorId: conn.id,
+            eventType: 'WalkInLoadDetected',
+            status: 'occupied',
+            powerKw: 11.0,
+            meterWh: 16500,
+          });
+        }
+      }
+    } finally {
+      setIsScenarioBusy(false);
+    }
+  }
+
+  async function handleReserveRecommended(cpId: string, connId: string) {
+    if (!snapshot || !primaryDriver) return;
+    const res = await apiClient.createReservation({
+      driverId: primaryDriver.uid,
+      chargingPointId: cpId,
+      connectorId: connId,
+      driverLocation: primaryDriver.defaultLocation,
+      enforceProximity: true,
+    });
+    setSnapshot(res.snapshot);
+    setActiveView('trips');
+  }
+
   const navItems: { id: ActiveView; label: string; mobileLabel: string; icon: typeof Compass }[] = [
     { id: 'explore', label: 'Explore Map', mobileLabel: 'Map', icon: Compass },
     { id: 'trips', label: 'Driver Trips', mobileLabel: 'Trips', icon: Car },
@@ -392,6 +525,19 @@ export default function App() {
 
           {/* Action Buttons: Unified Palette and Proportions */}
           <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+            <JudgeScenarioSelector onRunScenario={handleRunScenario} isBusy={isScenarioBusy} />
+
+            <button
+              type="button"
+              onClick={() => setIsCopilotOpen(true)}
+              title="AI Route & Charging Matchmaker"
+              className="whitespace-nowrap shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-emerald-300 bg-emerald-50/50 px-2.5 py-1.5 text-xs font-semibold text-emerald-800 transition-colors hover:bg-emerald-100"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-emerald-600 animate-pulse" />
+              <span className="hidden sm:inline">Volt Copilot AI</span>
+              <span className="sm:hidden text-[11px]">AI Copilot</span>
+            </button>
+
             <button
               type="button"
               onClick={handleResetDemo}
@@ -647,6 +793,25 @@ export default function App() {
           onClose={() => setRegistrationRole(null)}
           onRegisterDriver={handleRegisterDriver}
           onRegisterHost={handleRegisterHost}
+        />
+      )}
+
+      {/* Gemini AI Volt Copilot Matchmaker */}
+      <GeminiVoltCopilotModal
+        driver={primaryDriver}
+        chargingPoints={snapshot?.chargingPoints ?? []}
+        isOpen={isCopilotOpen}
+        onClose={() => setIsCopilotOpen(false)}
+        onReserveRecommended={handleReserveRecommended}
+      />
+
+      {/* OCPP 2.0.1 Virtual Hardware Test Bench */}
+      {snapshot && (
+        <OcppHardwareEmulatorDrawer
+          chargingPoints={snapshot.chargingPoints}
+          isOpen={isOcppDrawerOpen}
+          onToggle={() => setIsOcppDrawerOpen((prev) => !prev)}
+          onSendTelemetry={handleSendOcppTelemetry}
         />
       )}
     </div>

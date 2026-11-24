@@ -1247,6 +1247,21 @@ export function DriverTripsView({
                     )}
                   </div>
 
+                  {/* Driveway Overstay / Idle Penalty Notice */}
+                  {session?.idleFee && session.idleFee > 0 ? (
+                    <div className="mt-3 flex items-center justify-between rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-amber-600 shrink-0" />
+                        <span>
+                          <strong>Driveway Overstay Fee:</strong> {session.idleMinutes ?? 20}m occupied past 15m grace window (₹2.50/min rate).
+                        </span>
+                      </div>
+                      <span className="font-mono font-bold text-amber-950">
+                        +₹{session.idleFee.toFixed(2)}
+                      </span>
+                    </div>
+                  ) : null}
+
                   {res.status === 'cancelled' && res.notes && (
                     <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-600">
                       {res.notes}
