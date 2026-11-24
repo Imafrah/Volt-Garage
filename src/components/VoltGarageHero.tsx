@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { ArrowRight, Compass, TrendingUp, Zap } from 'lucide-react';
+import { ArrowRight, Compass, Globe as GlobeIcon, TrendingUp, Zap } from 'lucide-react';
+import Globe from './originkit/ui/globe';
 
 interface VoltGarageHeroProps {
   onExploreClick: () => void;
@@ -10,6 +11,7 @@ interface VoltGarageHeroProps {
 export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const [chargerState, setChargerState] = useState<'available' | 'charging'>('available');
+  const [visualMode, setVisualMode] = useState<'globe' | 'pedestal'>('globe');
 
   useEffect(() => {
     const container = mountRef.current;
@@ -296,30 +298,108 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
           </div>
         </div>
 
-        {/* Right Column: Interactive 3D Charging Pedestal Visualizer */}
+        {/* Right Column: Interactive 3D Visualizer (Originkit Earth Globe / 3D Pedestal) */}
         <div className="lg:col-span-5 relative flex flex-col items-center justify-center">
+          {/* Visual Mode Switcher Pill */}
+          <div className="mb-2 flex items-center rounded-lg border border-zinc-800 bg-zinc-900/90 p-0.5 text-xs font-mono backdrop-blur-md">
+            <button
+              type="button"
+              onClick={() => setVisualMode('globe')}
+              className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1 transition-colors ${
+                visualMode === 'globe'
+                  ? 'bg-emerald-500 font-semibold text-zinc-950 shadow-xs'
+                  : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              <GlobeIcon className="h-3.5 w-3.5" />
+              <span>Earth Grid</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setVisualMode('pedestal')}
+              className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1 transition-colors ${
+                visualMode === 'pedestal'
+                  ? 'bg-emerald-500 font-semibold text-zinc-950 shadow-xs'
+                  : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              <Zap className="h-3.5 w-3.5" />
+              <span>3D Pedestal</span>
+            </button>
+          </div>
+
+          {/* Interactive Globe Container */}
+          {visualMode === 'globe' && (
+            <div className="h-[360px] sm:h-[440px] w-full flex items-center justify-center">
+              <Globe
+                fill="dots"
+                scale={7.8}
+                speed={1.6}
+                direction="left"
+                showGrid={true}
+                showOutline={true}
+                fillColor="#34d399"
+                oceanColor="#09090b"
+                outlineColor="#10b981"
+                graticuleColor="#27272a"
+                initialLatitude={20}
+                initialLongitude={30}
+                markerConfig={{
+                  markers: [
+                    { lat: 48.137, lng: 11.576 }, // Munich Metro Hub
+                    { lat: 12.9716, lng: 77.5946 }, // Bengaluru Hub (Darshan P2P Grid)
+                    { lat: 52.52, lng: 13.405 }, // Berlin
+                    { lat: 51.5074, lng: -0.1278 }, // London
+                    { lat: 37.7749, lng: -122.4194 }, // Silicon Valley
+                    { lat: 28.6139, lng: 77.209 }, // New Delhi
+                  ],
+                  color: "#34d399",
+                  size: 40,
+                }}
+              />
+            </div>
+          )}
+
+          {/* Interactive 3D Charging Pedestal */}
           <div
             ref={mountRef}
-            className="h-[360px] sm:h-[440px] w-full cursor-grab active:cursor-grabbing"
+            className={`h-[360px] sm:h-[440px] w-full cursor-grab active:cursor-grabbing ${
+              visualMode === 'pedestal' ? 'block' : 'hidden'
+            }`}
             title="Interactive 3D EV Pedestal — Move cursor to inspect"
           />
 
-          {/* Pedestal Interactive Floating Telemetry Pill */}
+          {/* Dynamic Interactive Telemetry Strip */}
           <div className="mt-2 flex items-center justify-between w-full max-w-xs rounded-lg border border-zinc-800 bg-zinc-900/90 px-3.5 py-2 text-xs font-mono backdrop-blur-md">
-            <div className="flex items-center gap-2">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-              </span>
-              <span className="text-zinc-400">PEDESTAL 01</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setChargerState((s) => (s === 'available' ? 'charging' : 'available'))}
-              className="text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 underline underline-offset-2"
-            >
-              {chargerState === 'available' ? 'Simulate Plug-In' : 'Simulate Unplug'}
-            </button>
+            {visualMode === 'globe' ? (
+              <>
+                <div className="flex items-center gap-2">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+                  </span>
+                  <span className="text-zinc-300 font-semibold">GLOBAL GRID LIVE</span>
+                </div>
+                <span className="text-emerald-400 font-mono">6 METRO HUBS</span>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center gap-2">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+                  </span>
+                  <span className="text-zinc-400">PEDESTAL 01</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setChargerState((s) => (s === 'available' ? 'charging' : 'available'))}
+                  className="text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 underline underline-offset-2"
+                >
+                  {chargerState === 'available' ? 'Simulate Plug-In' : 'Simulate Unplug'}
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
