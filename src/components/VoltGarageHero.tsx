@@ -1,123 +1,18 @@
-import { useState, useEffect } from 'react';
-import { ArrowRight, CheckCircle2, Clock, Compass, Cpu, ShieldCheck, TrendingUp, Zap } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowRight, CheckCircle2, Clock, Compass, ShieldCheck, Sparkles, TrendingUp, Zap } from 'lucide-react';
 import homeWallboxImg from '../assets/images/private_home_wallbox_1795443222640.jpg';
 import fastHubImg from '../assets/images/company_fast_hub_1795443225006.jpg';
+import { InteractiveChargingDock } from './InteractiveChargingDock';
 
 interface VoltGarageHeroProps {
   onExploreClick: () => void;
   onHostClick: () => void;
 }
 
-type ShowcaseMode = 'residential' | 'commercial' | 'schematic';
-
-function PowerCircuitSchematic({ isCharging }: { isCharging: boolean }) {
-  const [soc, setSoc] = useState(68);
-  const [energyDelivered, setEnergyDelivered] = useState(14.25);
-
-  useEffect(() => {
-    if (!isCharging) return;
-    const interval = setInterval(() => {
-      setEnergyDelivered((e) => Number((e + 0.01).toFixed(2)));
-      setSoc((s) => (s < 100 ? s + 1 : s));
-    }, 2500);
-    return () => clearInterval(interval);
-  }, [isCharging]);
-
-  return (
-    <div className="relative h-full w-full bg-[#0a0d14] text-white p-4 sm:p-5 flex flex-col justify-between font-mono select-none">
-      {/* Top Telemetry Header */}
-      <div className="flex items-center justify-between border-b border-white/10 pb-2.5 text-xs">
-        <div className="flex items-center gap-2">
-          <span className={`h-2 w-2 rounded-full ${isCharging ? 'bg-emerald-400 animate-pulse' : 'bg-zinc-500'}`} />
-          <span className="font-bold text-white tracking-wide">
-            {isCharging ? 'OCPP 2.0.1 TELEMETRY BUS · ACTIVE' : 'EVSE STANDBY · IDLE'}
-          </span>
-        </div>
-        <span className="text-zinc-400 text-[11px] hidden sm:inline">TX-9428 · Type-2 Mennekes</span>
-      </div>
-
-      {/* SVG Circuit Schematic */}
-      <div className="my-auto py-2">
-        <svg viewBox="0 0 540 180" className="w-full h-auto">
-          {/* Base Connection Bus Line */}
-          <path
-            d="M 80 90 L 210 90 L 330 90 L 450 90"
-            fill="none"
-            stroke="#1e293b"
-            strokeWidth="6"
-            strokeLinecap="round"
-          />
-          {/* Animated Pulsing Current Line */}
-          {isCharging && (
-            <path
-              d="M 80 90 L 210 90 L 330 90 L 450 90"
-              fill="none"
-              stroke="#10b981"
-              strokeWidth="4"
-              strokeLinecap="round"
-              strokeDasharray="12 8"
-              className="animate-pulse"
-            />
-          )}
-
-          {/* Node 1: Grid AC Supply */}
-          <g transform="translate(45, 90)">
-            <rect x="-38" y="-35" width="76" height="70" rx="8" fill="#131722" stroke="#334155" strokeWidth="1.5" />
-            <text x="0" y="-12" textAnchor="middle" fill="#94a3b8" fontSize="10" fontWeight="bold">GRID AC</text>
-            <text x="0" y="8" textAnchor="middle" fill="#f8fafc" fontSize="13" fontWeight="bold">230 V</text>
-            <text x="0" y="24" textAnchor="middle" fill="#64748b" fontSize="9">50 Hz · 1Φ</text>
-          </g>
-
-          {/* Node 2: Wallbox Smart Controller */}
-          <g transform="translate(210, 90)">
-            <rect x="-45" y="-40" width="90" height="80" rx="8" fill="#131722" stroke={isCharging ? '#10b981' : '#334155'} strokeWidth="1.5" />
-            <text x="0" y="-18" textAnchor="middle" fill="#10b981" fontSize="10" fontWeight="bold">WALLBOX</text>
-            <text x="0" y="4" textAnchor="middle" fill="#f8fafc" fontSize="14" fontWeight="bold">7.4 kW</text>
-            <text x="0" y="22" textAnchor="middle" fill="#94a3b8" fontSize="9">32A Metered</text>
-          </g>
-
-          {/* Node 3: Smart Interlock Cable */}
-          <g transform="translate(330, 90)">
-            <circle cx="0" cy="0" r="18" fill="#131722" stroke={isCharging ? '#34d399' : '#475569'} strokeWidth="1.5" />
-            <text x="0" y="3" textAnchor="middle" fill="#34d399" fontSize="9" fontWeight="bold">LOCK</text>
-            <text x="0" y="28" textAnchor="middle" fill="#64748b" fontSize="8">PWM Pilot</text>
-          </g>
-
-          {/* Node 4: EV Battery Pack */}
-          <g transform="translate(450, 90)">
-            <rect x="-48" y="-40" width="96" height="80" rx="8" fill="#131722" stroke={isCharging ? '#10b981' : '#334155'} strokeWidth="1.5" />
-            <text x="0" y="-18" textAnchor="middle" fill="#94a3b8" fontSize="10" fontWeight="bold">BATTERY</text>
-            <text x="0" y="5" textAnchor="middle" fill="#f8fafc" fontSize="15" fontWeight="bold">{soc}%</text>
-            <text x="0" y="22" textAnchor="middle" fill="#10b981" fontSize="9">78 kWh Pack</text>
-          </g>
-        </svg>
-      </div>
-
-      {/* Bottom Live Metrics Bar */}
-      <div className="grid grid-cols-4 gap-2 border-t border-white/10 pt-2.5 text-[11px] text-zinc-400">
-        <div>
-          <span className="block text-zinc-500 text-[10px]">CURRENT</span>
-          <span className="font-bold text-white tabular-nums">{isCharging ? '32.1 A' : '0.0 A'}</span>
-        </div>
-        <div>
-          <span className="block text-zinc-500 text-[10px]">VOLTAGE</span>
-          <span className="font-bold text-white tabular-nums">230.4 V</span>
-        </div>
-        <div>
-          <span className="block text-zinc-500 text-[10px]">DELIVERED</span>
-          <span className="font-bold text-emerald-400 tabular-nums">+{energyDelivered} kWh</span>
-        </div>
-        <div>
-          <span className="block text-zinc-500 text-[10px]">CELL TEMP</span>
-          <span className="font-bold text-white tabular-nums">28.5 °C</span>
-        </div>
-      </div>
-    </div>
-  );
-}
+type ShowcaseMode = 'dock' | 'residential' | 'commercial';
 
 export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroProps) {
-  const [showcaseMode, setShowcaseMode] = useState<ShowcaseMode>('residential');
+  const [showcaseMode, setShowcaseMode] = useState<ShowcaseMode>('dock');
   const [sessionSimActive, setSessionSimActive] = useState(true);
 
   return (
@@ -198,67 +93,68 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
             </div>
           </div>
 
-          {/* Right Column: Clean High-Craft Showcase Card */}
+          {/* Right Column: Originkit-Inspired Interactive Showcase Card */}
           <div className="lg:col-span-5">
             <div className="overflow-hidden rounded-2xl border border-zinc-200/90 bg-white p-2 sm:p-2.5 shadow-xl shadow-zinc-200/40">
 
-              {/* ── Top Tab Bar: Segmented Switcher ─────────────────── */}
-              <div className="flex items-center justify-between border-b border-zinc-100 bg-zinc-50/70 px-3 py-2 rounded-t-xl mb-2">
-                <div className="flex items-center gap-1 rounded-lg bg-zinc-200/60 p-0.5 text-xs font-medium">
+              {/* ── Top Tab Bar: Clean Responsive Switcher (No text overlap) ── */}
+              <div className="mb-2 flex items-center justify-between gap-2 border-b border-zinc-100 bg-zinc-50/70 px-2 py-1.5 rounded-t-xl">
+                <div className="flex items-center gap-1 rounded-lg bg-zinc-200/70 p-0.5 text-xs font-medium">
                   <button
                     type="button"
-                    onClick={() => setShowcaseMode('residential')}
-                    className={`inline-flex items-center gap-1.5 shrink-0 rounded-md px-3 py-1.5 transition-all ${
-                      showcaseMode === 'residential'
-                        ? 'bg-white font-semibold text-zinc-900 shadow-xs'
+                    onClick={() => setShowcaseMode('dock')}
+                    className={`inline-flex items-center gap-1.5 shrink-0 rounded-md px-2.5 py-1.5 transition-all ${
+                      showcaseMode === 'dock'
+                        ? 'bg-white font-bold text-zinc-900 shadow-xs'
                         : 'text-zinc-600 hover:text-zinc-900'
                     }`}
                   >
-                    <span>Residential Wallbox</span>
+                    <Zap className="h-3.5 w-3.5 text-emerald-600" />
+                    <span>Smart Dock</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowcaseMode('residential')}
+                    className={`shrink-0 rounded-md px-2.5 py-1.5 transition-all ${
+                      showcaseMode === 'residential'
+                        ? 'bg-white font-bold text-zinc-900 shadow-xs'
+                        : 'text-zinc-600 hover:text-zinc-900'
+                    }`}
+                  >
+                    <span>Driveway</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowcaseMode('commercial')}
-                    className={`shrink-0 rounded-md px-3 py-1.5 transition-all ${
+                    className={`shrink-0 rounded-md px-2.5 py-1.5 transition-all ${
                       showcaseMode === 'commercial'
-                        ? 'bg-white font-semibold text-zinc-900 shadow-xs'
+                        ? 'bg-white font-bold text-zinc-900 shadow-xs'
                         : 'text-zinc-600 hover:text-zinc-900'
                     }`}
                   >
-                    <span>Commercial Fast Hub</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowcaseMode('schematic')}
-                    className={`inline-flex items-center gap-1.5 shrink-0 rounded-md px-3 py-1.5 transition-all ${
-                      showcaseMode === 'schematic'
-                        ? 'bg-white font-semibold text-zinc-900 shadow-xs'
-                        : 'text-zinc-600 hover:text-zinc-900'
-                    }`}
-                  >
-                    <Cpu className="h-3 w-3 text-emerald-600" />
-                    <span>Power Circuit</span>
+                    <span>Fast Hub</span>
                   </button>
                 </div>
 
-                <div className="hidden sm:flex items-center gap-1.5">
+                {/* Right Status Badge */}
+                <div className="hidden sm:flex items-center gap-1.5 shrink-0 pr-1">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="font-mono text-[10px] font-semibold text-emerald-700 tracking-wider">
-                    {showcaseMode === 'residential' ? '3.3–22 kW AC' : showcaseMode === 'commercial' ? '50–150 kW DC' : 'OCPP BUS'}
+                  <span className="font-mono text-[10px] font-bold text-emerald-700 tracking-wider">
+                    {showcaseMode === 'dock' ? 'KINETIC GRID' : showcaseMode === 'residential' ? '3.3–22 kW' : '50–150 kW'}
                   </span>
                 </div>
               </div>
 
               {/* ── Main Viewport ───────────────────────────── */}
-              <div className="relative w-full overflow-hidden rounded-xl bg-zinc-950" style={{ aspectRatio: '16/10' }}>
-                {showcaseMode === 'schematic' ? (
-                  <PowerCircuitSchematic isCharging={sessionSimActive} />
+              <div className="relative w-full overflow-hidden rounded-xl bg-zinc-950" style={{ minHeight: '340px' }}>
+                {showcaseMode === 'dock' ? (
+                  <InteractiveChargingDock />
                 ) : (
                   <>
                     <img
                       src={showcaseMode === 'residential' ? homeWallboxImg : fastHubImg}
                       alt={showcaseMode === 'residential' ? 'Private residential home wallbox' : 'Commercial fast DC hub'}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-cover min-h-[340px]"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/30" />
 
@@ -302,31 +198,33 @@ export function VoltGarageHero({ onExploreClick, onHostClick }: VoltGarageHeroPr
                 )}
               </div>
 
-              {/* ── Bottom Control Strip ─────────────────────── */}
-              <div className="flex items-center justify-between border-t border-zinc-100 bg-zinc-50/80 px-3 py-2.5 rounded-b-xl mt-2">
-                <div className="flex items-center gap-2 font-mono text-xs">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-zinc-500 hidden sm:inline">OCPP 2.0.1</span>
-                  <span className="font-semibold text-zinc-900 tabular-nums">
-                    {sessionSimActive
-                      ? (showcaseMode === 'commercial' ? '400V · 125A · 50 kW' : '230V · 32A · 7.4 kW')
-                      : 'Standby · 230V Live'}
-                  </span>
-                </div>
+              {/* ── Bottom Control Strip (for photos mode) ──────── */}
+              {showcaseMode !== 'dock' && (
+                <div className="flex items-center justify-between border-t border-zinc-100 bg-zinc-50/80 px-3 py-2.5 rounded-b-xl mt-2">
+                  <div className="flex items-center gap-2 font-mono text-xs">
+                    <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-zinc-500 hidden sm:inline">OCPP 2.0.1</span>
+                    <span className="font-semibold text-zinc-900 tabular-nums">
+                      {sessionSimActive
+                        ? (showcaseMode === 'commercial' ? '400V · 125A · 50 kW' : '230V · 32A · 7.4 kW')
+                        : 'Standby · 230V Live'}
+                    </span>
+                  </div>
 
-                <button
-                  type="button"
-                  onClick={() => setSessionSimActive((prev) => !prev)}
-                  className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
-                    sessionSimActive
-                      ? 'bg-zinc-200 text-zinc-800 hover:bg-zinc-300'
-                      : 'bg-emerald-600 text-white hover:bg-emerald-500 shadow-xs'
-                  }`}
-                >
-                  <Zap className={`h-3.5 w-3.5 ${sessionSimActive ? 'text-zinc-500' : 'text-white'}`} />
-                  <span>{sessionSimActive ? 'Simulate Unplug' : 'Simulate Plug-In'}</span>
-                </button>
-              </div>
+                  <button
+                    type="button"
+                    onClick={() => setSessionSimActive((prev) => !prev)}
+                    className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                      sessionSimActive
+                        ? 'bg-zinc-200 text-zinc-800 hover:bg-zinc-300'
+                        : 'bg-emerald-600 text-white hover:bg-emerald-500 shadow-xs'
+                    }`}
+                  >
+                    <Zap className={`h-3.5 w-3.5 ${sessionSimActive ? 'text-zinc-500' : 'text-white'}`} />
+                    <span>{sessionSimActive ? 'Simulate Unplug' : 'Simulate Plug-In'}</span>
+                  </button>
+                </div>
+              )}
 
             </div>
           </div>
