@@ -1,159 +1,240 @@
-# Volt-Garage: EV Charging Marketplace & Digital Twin Platform
+# Volt Garage (ImCharge) — Decentralized P2P EV Charging Marketplace
 
-Volt-Garage (ImCharge) is an enterprise-grade electric vehicle charging marketplace and digital twin platform. It connects private residential and workplace charging hosts with EV drivers, integrating peer-to-peer wallbox sharing and commercial fast-charging hub operations into a unified platform.
+[![Deploy with Vercel](https://img.shields.io/badge/Deployed-Vercel-black?logo=vercel)](https://voltgarage.vercel.app/)
+[![React](https://img.shields.io/badge/React-19.0-blue?logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-7.0-3178C6?logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
+[![OCPP](https://img.shields.io/badge/Protocol-OCPP_2.0.1-emerald)](#)
+[![Gemini AI](https://img.shields.io/badge/AI-Gemini_2.5_Flash-orange?logo=google)](https://deepmind.google/technologies/gemini/)
 
-The system features real-time 3D WebGL digital twins for vehicle inspection, bay layout visualization, 3-phase smart meter telemetry simulation, and interactive city-scale grid mapping with automated geofenced booking enforcement.
-
----
-
-## Architectural Highlights
-
-### 1. Hybrid Marketplace Settlement Model
-* **Private Hosts (Peer-to-Peer)**: Hosts retain an 80% revenue split on delivered energy (kWh) verified via certified MID smart meter telemetry. The platform takes a 20% network operating fee.
-* **Commercial Stations (Partner Hubs)**: Synced via an OCPI-compatible gateway with a flat 15% platform commission and direct driver settlement.
-* **Meter Verification & Anomaly Detection**: Built-in anomaly detection flags impossible energy deltas, zero-draw holds, and earth leakage / ground current faults (E-004).
-
-### 2. Geofenced Instant Hold System
-* **30-Minute Reservation Hold**: Drivers can reserve a charging connector for up to 30 minutes before arrival.
-* **Continuous Proximity Geofencing**: To prevent slot hoarding, reservations require the vehicle to be within a 10 km geofence of the station. If a driver's live location exceeds 10 km, the platform automatically unreserves the slot.
-* **Mutual Fallback Allocation**: If a bay is reported blocked by an unauthorized vehicle, the engine immediately identifies and reserves the nearest available, compatible connector within 5 km.
-
-### 3. Interactive 3D WebGL Digital Twins
-* **Munich Metro City Grid (`CityMap3D`)**: Interactive 3D architectural city map featuring road networks, live EV navigation (keyboard or click-to-drive), search radius geofence visualization, and Day, Sunset, and Night lighting presets.
-* **EV Virtual Garage (`VehicleShowroom3D`)**: 360-degree orbit vehicle showroom with custom paint finish selector, matrix headlight toggles, motorized charge port flap animation, plug-in charging cable simulation, and X-ray battery chassis inspection.
-* **DIN-Rail Smart Meter (`SmartMeter3D`)**: Real-time 3-phase MID revenue meter with an interactive 4-mode OLED display (Import kWh, Phase V/A, Payout Accumulator, Eco Mix), circuit breaker trip simulation lever, and backlight toggles.
-* **Charging Bay Inspector (`ChargerBay3D`)**: Exploded-view technical assembly of commercial and residential chargers with live directional power-flow particle simulation.
-
-### 4. Fully Responsive Design
-* **Adaptive Mobile & Desktop UI**: Designed with clean European SaaS aesthetics (neutral slates, high-contrast typography, and accessible form controls).
-* **Native Mobile Navigation**: Compact sticky top bar and bottom tab bar on viewports under 640px, full-width thumb-friendly modal actions, and automated scroll targeting when selecting stations.
+> **Live Prototype:** [https://voltgarage.vercel.app/](https://voltgarage.vercel.app/)  
+> **Techthon 2026 Round 2 Submission** | **Team:** GoodCode | **College:** Mangalore Institute of Technology & Engineering (MITE), Dept. of Computer Science & Engineering.
 
 ---
 
-## Technical Stack
+## ⚡ Executive Summary
 
-* **Frontend Framework**: React 19, TypeScript
-* **Styling**: Tailwind CSS v4
-* **3D Graphics & Rendering**: Three.js (WebGL with software-renderer fallback detection and render scheduler)
-* **Icons & Animation**: Lucide React, Motion
-* **Backend & API**: Express, TypeScript, Server-Sent Events (SSE) for live telemetry streaming
-* **Build Tooling**: Vite 8, ESBuild, TSX
+**Volt Garage (ImCharge)** is a decentralized peer-to-peer (P2P) electric vehicle charging marketplace and digital twin ecosystem. It unlocks millions of idle residential and workplace wallboxes, converting private driveways into verified, income-generating charging hubs with **guaranteed 30-minute reservation holds**.
+
+By integrating **Gemini AI route & battery matchmaking**, **automated driveway overstay penalties**, and an **OCPP 2.0.1 virtual hardware test bench**, Volt Garage solves the four core barriers to urban EV adoption: charging deserts, range anxiety, driveway hogging, and broken public charger queues.
 
 ---
 
-## Directory Structure
+## 🏛️ System Architecture Diagram
+
+```mermaid
+flowchart TD
+    subgraph Clients["1. Presentation & Client Layer (React 19 + Tailwind v4)"]
+        UI_Hero["Smart Dock & Kinetic Grid\n(Mouse Spotlight + 3D Tilt)"]
+        UI_Map["Explore City Map\n(Haversine Distance Filter)"]
+        UI_Copilot["Volt Copilot AI Modal\n(Gemini Route Intelligence)"]
+        UI_Host["Host Console & Scheduler\n(7x12 Drag-Paint Calendar)"]
+        UI_Trips["Driver Trips Console\n(QR Check-In & Overstay Ledger)"]
+        UI_Ocpp["OCPP 2.0.1 Hardware Bench\n(Virtual Wallbox Drawer)"]
+        UI_Judge["Judge Pitch Scenarios\n(1-Click Multi-Party Runner)"]
+    end
+
+    subgraph Gateway["2. Edge API Gateway & Live Telemetry (Node.js 20 / Express)"]
+        API_REST["REST Gateway Endpoints\n(/api/v1/reservations, /payouts)"]
+        SSE_Stream["Server-Sent Events (SSE)\n(/api/v1/telemetry/stream)"]
+        QR_Auth["QR Cryptographic Token\nValidator & Handshake"]
+    end
+
+    subgraph Intelligence["3. Domain Engine & AI Intelligence"]
+        AI_Gemini["Gemini 2.5 Flash API\n(@google/genai Route Matchmaker)"]
+        Engine_Geo["Haversine Geofence Engine\n(10 km Proximity Auto-Release)"]
+        Engine_Hold["Atomic Hold Manager\n(30-Min Locked Reservation Window)"]
+        Engine_Idle["Driveway Overstay Engine\n(15m Grace + ₹2.50/min Idle Fee)"]
+        Engine_Ocpp["OCPP 2.0.1 / OCPI 2.2 Adapter\n(MeterValues & StatusNotification)"]
+    end
+
+    subgraph StateStore["4. State & Financial Settlement Ledger"]
+        Store_Memory["Reactive In-Memory Platform Snapshot\n(State Rebalancer)"]
+        Billing_Split["Automated Commission Calculator\n(80% Host / 20% Platform)"]
+        Payout_Ledger["Weekly Host Settlement Ledger\n(MID Smart Meter Wh Reconciliation)"]
+    end
+
+    subgraph PhysicalWorld["5. External Hardware & Actor Nodes"]
+        Actor_Driver["EV Drivers\n(Vehicles, Battery SoC & QR Codes)"]
+        Actor_Host["Private Hosts\n(Residential Wallboxes 3.3–22 kW)"]
+        Actor_Station["Commercial Hubs\n(DC Fast Terminals 50–150 kW)"]
+        Hardware_EVSE["Virtual / Physical EVSE\n(Alfen, Mennekes, ABB Wallboxes)"]
+    end
+
+    %% Client to Gateway
+    Clients -->|HTTP / JSON-RPC| API_REST
+    Gateway -->|Live Snapshot Push| Clients
+    SSE_Stream -->|Real-time Metrics| UI_Hero
+    SSE_Stream -->|Telemetry Stream| UI_Ocpp
+
+    %% Gateway to Engines
+    API_REST --> Engine_Geo
+    API_REST --> Engine_Hold
+    API_REST --> Engine_Idle
+    API_REST --> Engine_Ocpp
+    UI_Copilot -->|Battery Curve & Prompt| AI_Gemini
+    AI_Gemini -->|Optimal Host Recommendation| API_REST
+
+    %% Engine to Store
+    Engine_Geo --> Store_Memory
+    Engine_Hold --> Store_Memory
+    Engine_Idle --> Billing_Split
+    Engine_Ocpp --> Store_Memory
+    Billing_Split --> Payout_Ledger
+
+    %% Physical World to Actors
+    Actor_Driver --> Clients
+    Actor_Host --> Clients
+    Hardware_EVSE <-->|OCPP 2.0.1 JSON-RPC 2.0| Engine_Ocpp
+    Actor_Station --> Gateway
+```
+
+---
+
+## 🌟 Key Innovations & Breakthrough Features
+
+### 1. ⚡ Originkit-Inspired Interactive Smart Dock (`InteractiveChargingDock.tsx`)
+- **Reactive Kinetic Grid & 3D Tilt:** Mouse-tracking radial spotlight and perspective tilt (`rotateX`, `rotateY`) reacting fluidly to cursor movement.
+- **Dynamic Power Band Switcher:** Instant tactile toggle across **3.3 kW Eco**, **7.4 kW Wallbox**, **22 kW Rapid**, and **50 kW DC Fast**. Changing output dynamically shifts amperage (16A–125A), voltage, and electron flow particle speed.
+- **Tactile Cable Interlock:** 1-click magnetic plug/unplug simulation with animated high-voltage electron conduits and live battery SoC visualizer.
+
+### 2. ✨ Gemini AI "Volt Copilot" Matchmaker (`GeminiVoltCopilotModal.tsx`)
+- **Battery Curve & Trip Analysis:** Driver inputs vehicle model (Tata Nexon EV Max, MG ZS EV, Tesla Model 3), starting SoC (e.g. 18%), destination, and desired battery.
+- **Multi-Objective Optimization:** Evaluates power rating, dwell time, host schedule, and distance to produce an optimal charging stop with an automated backup station.
+- **1-Click Slot Booking:** Converts AI dispatch reasoning directly into a guaranteed 30-minute hold.
+
+### 3. ⏱️ Anti-Hogging Driveway Overstay Engine (`imchargeEngine.ts`)
+- **The Challenge:** Homeowners hesitate to list chargers because drivers leave cars parked for hours after charging ends.
+- **The Solution:** 15-minute free grace window upon charge completion.
+- **Automated Penalty:** **₹2.50/minute idle fee** automatically begins accumulating, billed to driver and credited to host earnings.
+
+### 4. 🔌 Virtual OCPP 2.0.1 Hardware Test Bench (`OcppHardwareEmulatorDrawer.tsx`)
+- **Protocol Emulation:** Solves the physical hardware constraint by simulating EVSE controller signals in software.
+- **Simulations:** Injects `StatusNotification` (Available, Plugged In, Fault), `MeterValues` (Wh accumulation, Voltage, Current, Board Temp), and `WalkInLoadDetected`.
+- **Live Terminal:** Displays raw OCPP 2.0.1 JSON-RPC 2.0 `CALL` and `CONF` frames in real time.
+
+### 5. 🔒 30-Minute Guaranteed Hold & 10 km Geofence
+- **Atomic Slot Lock:** Prevents double-booking and eliminates queue uncertainty.
+- **Active Proximity Geofencing:** If driver drifts beyond 10 km via Haversine calculation, the reservation is auto-released back to the network.
+
+### 6. 📅 Drag-Paint Host Availability Scheduler (`HostAvailabilityScheduler.tsx`)
+- **Visual Weekly Grid:** 7-day × 12-slot visual calendar. Hosts drag-paint exact hours when their private bay is open.
+- **Schedule Enforcement:** System automatically rejects reservations outside the host's designated windows.
+
+### 7. 🏆 1-Click "Judge Pitch Scenarios" Suite (`JudgeScenarioSelector.tsx`)
+Built specifically for 3-minute hackathon stage pitches:
+- **Scenario 1:** Core Workflow — Guaranteed 30-min hold + QR verification token.
+- **Scenario 2:** Proximity Engine — Moves driver to Airport (~29 km), triggering automatic geofence release.
+- **Scenario 3:** Host Protection — Renders a completed session with a ₹50 overstay fee.
+- **Scenario 4:** Hardware Protocol — Injects a simulated OCPP walk-in load to demonstrate automated state reconciliation.
+
+---
+
+## 📊 Economic & Settlement Model
+
+| Parameter | Private Residential Hosts | Commercial Fast Hubs |
+| :--- | :--- | :--- |
+| **Power Band** | 3.3 kW – 22 kW AC | 50 kW – 150 kW DC |
+| **Typical Tariff** | ₹18.00 / kWh | ₹26.50 / kWh |
+| **Platform Revenue Split** | **80% Host / 20% Volt Garage** | **15% Flat Commission** |
+| **Hold Guarantee** | 30-Minute Atomic Hold | 30-Minute Atomic Hold |
+| **Driveway Overstay Fee** | ₹2.50 / min (post 15m grace) | Dedicated Bay Tariff |
+| **Payout Cadence** | Weekly automated IBAN transfer | Direct B2B reconciliation |
+
+---
+
+## 🛠️ Technology Stack
+
+| Layer | Technologies |
+| :--- | :--- |
+| **Frontend Framework** | React 19, TypeScript 7, Vite 8 |
+| **Styling & Design System** | Tailwind CSS v4, Plus Jakarta Sans, JetBrains Mono |
+| **Motion & Micro-interactions** | Motion (Framer Motion v12), Originkit Kinetic Grid primitives |
+| **3D Digital Twins** | Three.js (r187) — CityMap3D, SmartMeter3D, ChargerBay3D |
+| **Generative AI** | Google Gemini 2.5 Flash (`@google/genai`) |
+| **Backend API** | Node.js 20, Express 4, Server-Sent Events (SSE) |
+| **Protocols Emulated** | OCPP 2.0.1 (JSON-RPC 2.0), OCPI 2.2 |
+| **Deployment & CI/CD** | Vercel Edge Network, GitHub Actions CI |
+
+---
+
+## 📂 Project Directory Structure
 
 ```text
+├── ImCharge_Techthon2026_Round2_GoodCode.pptx   # 10-Slide Round 2 Presentation Deck
 ├── data/
 │   └── imcharge-db.json          # Seed state for drivers, hosts, points, and sessions
 ├── src/
 │   ├── api/
-│   │   └── client.ts             # Gateway HTTP client and API abstractions
+│   │   └── client.ts             # REST client and SSE telemetry stream subscriber
 │   ├── components/
-│   │   ├── ChargerBay3D.tsx      # 3D technical exploded-view bay visualizer
-│   │   ├── CityMap.tsx           # 2D/3D composite city map view
-│   │   ├── CityMap3D.tsx         # Three.js Munich road network & EV navigation
-│   │   ├── DriverTripsView.tsx   # Driver trips, garage, and QR check-in console
-│   │   ├── ExploreView.tsx       # Station discovery, filtering, and instant booking
-│   │   ├── HostConsoleView.tsx   # Host revenue dashboard, queues, and meter tests
-│   │   ├── RegistrationModal.tsx # Driver and Host onboarding modal
-│   │   ├── SmartMeter3D.tsx      # 3D DIN-rail smart meter digital twin
-│   │   └── VehicleShowroom3D.tsx # 360-degree EV showroom and paint customizer
+│   │   ├── InteractiveChargingDock.tsx   # Originkit-inspired kinetic dock with power dial
+│   │   ├── GeminiVoltCopilotModal.tsx    # Gemini AI battery & route matchmaker
+│   │   ├── OcppHardwareEmulatorDrawer.tsx# Virtual OCPP 2.0.1 hardware test bench
+│   │   ├── JudgeScenarioSelector.tsx     # 1-click live demo pitch scenario runner
+│   │   ├── HostAvailabilityScheduler.tsx # 7-day x 12-slot weekly paint calendar
+│   │   ├── VoltGarageHero.tsx            # Clean elevated hero showcase
+│   │   ├── ChargerBay3D.tsx              # Three.js 3D charger bay exploded view
+│   │   ├── CityMap.tsx / CityMap3D.tsx   # 2D/3D composite city navigation
+│   │   ├── DriverTripsView.tsx           # Trips, QR tokens & overstay fee badges
+│   │   ├── HostConsoleView.tsx           # Host earnings queue & MID meter twin
+│   │   ├── SmartMeter3D.tsx              # DIN-rail 3-phase smart meter twin
+│   │   └── TelemetryStreamIndicator.tsx  # SSE connection health monitor
 │   ├── domain/
-│   │   ├── imchargeEngine.ts     # Domain validation, calculations, and geofencing
-│   │   ├── imchargeEngine.test.ts# Domain unit test suite
-│   │   └── types.ts              # Core platform TypeScript domain types
+│   │   ├── imchargeEngine.ts     # Haversine, geofencing, metered billing & idle fee math
+│   │   ├── imchargeEngine.test.ts# Automated unit test suite
+│   │   └── types.ts              # Strongly-typed domain interfaces
 │   ├── server/
-│   │   └── store.ts              # In-memory and persistent state store
-│   ├── three/
-│   │   ├── bayModel.ts           # 3D charger bay geometries
-│   │   ├── models.ts             # 3D vehicle meshes and materials
-│   │   ├── roadNetwork.ts        # Procedural road graph and coordinate projections
-│   │   └── webglUtils.ts         # Three.js renderer lifecycle and texture helpers
-│   ├── App.tsx                   # Main application workspace and routing
-│   └── main.tsx                  # Client entry point
-├── server.ts                     # Express application server and SSE broadcaster
-├── tsconfig.json                 # TypeScript compiler configuration
-└── vite.config.ts                # Vite build and asset pipeline configuration
+│   │   └── store.ts              # In-memory store with OCPP event ingestion
+│   ├── App.tsx                   # Main workspace layout, top header & navigation
+│   └── main.tsx                  # Client DOM bootstrap
+├── server.ts                     # Express server, SSE broadcaster & OCPP endpoints
+└── package.json                  # Dependencies & scripts
 ```
 
 ---
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 * Node.js version 20.0.0 or higher
-* npm, pnpm, or bun package manager
+* npm, pnpm, or bun
 
-### Installation
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Imafrah/Volt-Garage.git
-   cd Volt-Garage
-   ```
+### 1. Clone & Install
+```bash
+git clone https://github.com/Imafrah/Volt-Garage.git
+cd Volt-Garage
+npm install
+```
 
-2. Install project dependencies:
-   ```bash
-   npm install
-   ```
-
-### Running Locally
-To launch the full-stack environment (Vite frontend with Express API gateway and SSE telemetry broadcaster):
-
+### 2. Launch Local Dev Environment
 ```bash
 npm run dev
 ```
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-The application will be accessible at:
-```text
-http://localhost:5173
-```
-
----
-
-## Verification & Quality Assurance
-
-### Typecheck & Linting
-Run static type validation across all TypeScript modules:
-
+### 3. Verify Static Types & Build
 ```bash
+# Typecheck
 npm run lint
-```
 
-### Unit Tests
-Execute the domain test suite verifying geofence mathematics, reservation state transitions, meter anomaly checks, and revenue splits:
-
-```bash
-npx tsx src/domain/imchargeEngine.test.ts
-```
-
-### Production Build
-Compile client assets into optimized production bundles:
-
-```bash
+# Production bundle build
 npm run build
 ```
 
 ---
 
-## API Gateway Reference
+## 👥 Team & Submission Information
 
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/api/v1/snapshot` | Returns the complete platform state snapshot. |
-| `GET` | `/api/v1/telemetry/stream` | Server-Sent Events (SSE) real-time load and event stream. |
-| `POST` | `/api/v1/drivers/register` | Registers a new EV vehicle owner and associates vehicle specs. |
-| `POST` | `/api/v1/hosts/register` | Registers a charging host (private wallbox or commercial hub). |
-| `POST` | `/api/v1/reservations` | Creates a 30-minute instant hold on a compatible connector. |
-| `POST` | `/api/v1/reservations/:id/cancel` | Cancels an active reservation and releases the connector. |
-| `POST` | `/api/v1/sessions/start` | Initiates a metered charging session via QR token validation. |
-| `POST` | `/api/v1/sessions/:id/end` | Finalizes a charging session and calculates billing. |
-| `POST` | `/api/v1/hosts/:id/payouts` | Disburses settled host earnings for private charging bays. |
-| `POST` | `/api/v1/telemetry/simulate` | Injects OCPP 2.0.1 meter readings or status notifications. |
-| `POST` | `/api/v1/demo/reset` | Resets all seed data to the clean default Munich baseline. |
+* **Hackathon:** Visionet Techthon 2026 (Round 2)
+* **Team Name:** GoodCode
+* **Institution:** Mangalore Institute of Technology & Engineering (MITE)
+* **Department:** Computer Science & Engineering
+* **Team Representative:** Mohammed Afrah Usman
+* **Live Deployment:** [voltgarage.vercel.app](https://voltgarage.vercel.app/)
+* **Presentation Deck:** [ImCharge_Techthon2026_Round2_GoodCode.pptx](./ImCharge_Techthon2026_Round2_GoodCode.pptx)
 
 ---
 
-## License
-
-This project is licensed under the MIT License. See the LICENSE file for details.
+## 📄 License
+This project is licensed under the MIT License.
