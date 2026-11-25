@@ -1,9 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Car, Compass, Home, RotateCcw, Sparkles, UserPlus } from 'lucide-react';
+import { ErrorBoundary } from 'react-error-boundary';
+import { Toaster, toast } from 'sonner';
 import { apiClient } from './api/client';
 import { DriverTripsView } from './components/DriverTripsView';
+import { AppErrorFallback, SectionErrorFallback } from './components/ErrorFallback';
 import { ExploreView } from './components/ExploreView';
 import { HostConsoleView, type HostSubTab } from './components/HostConsoleView';
+import { HowItWorks } from './components/HowItWorks';
 import { VoltGarageHero } from './components/VoltGarageHero';
 import { GeminiVoltCopilotModal } from './components/GeminiVoltCopilotModal';
 import { JudgeScenarioSelector } from './components/JudgeScenarioSelector';
@@ -166,6 +170,7 @@ export default function App() {
     setActiveDriverId(res.driver.uid);
     setRegistrationRole(null);
     setActiveView('trips');
+    toast.success(`Registered ${res.driver.name} as EV driver`);
   }
 
   async function handleRegisterHost(payload: HostRegistrationInput) {
@@ -175,6 +180,7 @@ export default function App() {
     setRegistrationRole(null);
     setHostInitialTab('onboard');
     setActiveView('host');
+    toast.success(`Registered ${res.host.name} as charging host`);
   }
 
   async function handleReserve(
@@ -191,12 +197,14 @@ export default function App() {
       enforceProximity,
     });
     setSnapshot(res.snapshot);
+    toast.success('Bay reserved — 30-minute hold active');
   }
 
   async function handleAddVehicle(payload: Omit<Vehicle, 'id'>) {
     if (!primaryDriver) return;
     const res = await apiClient.addVehicle(primaryDriver.uid, payload);
     setSnapshot(res.snapshot);
+    toast.success(`Added ${payload.make} ${payload.model} to garage`);
   }
 
   async function handleUpdateDriverLocation(
@@ -205,17 +213,24 @@ export default function App() {
     if (!primaryDriver) return [];
     const res = await apiClient.updateDriverLocation(primaryDriver.uid, location);
     setSnapshot(res.snapshot);
+    if (res.autoReleasedReservations.length > 0) {
+      toast.warning(
+        `Outside 10 km geofence — auto-released ${res.autoReleasedReservations.length} hold(s)`
+      );
+    }
     return res.autoReleasedReservations;
   }
 
   async function handleConfirmReservation(resId: string, qrToken: string) {
     const res = await apiClient.confirmReservation(resId, qrToken);
     setSnapshot(res.snapshot);
+    toast.success('QR verified — driver arrival confirmed');
   }
 
   async function handleCancelReservation(resId: string) {
     const res = await apiClient.cancelReservation(resId);
     setSnapshot(res.snapshot);
+    toast.info('Reservation cancelled and bay released');
   }
 
   async function handleReportBlockedBay(
@@ -223,6 +238,13 @@ export default function App() {
   ): Promise<BackupConnectorSuggestion | null> {
     const res = await apiClient.reportBlockedBay(resId);
     setSnapshot(res.snapshot);
+    if (res.backupSuggestion) {
+      toast.warning(
+        `Bay flagged blocked · Backup available at ${res.backupSuggestion.point.name}`
+      );
+    } else {
+      toast.warning('Bay flagged blocked and hold released');
+    }
     return res.backupSuggestion;
   }
 
@@ -246,6 +268,13 @@ export default function App() {
       reason
     );
     setSnapshot(res.snapshot);
+    if (res.cancelledReservationIds.length > 0) {
+      toast.warning(
+        `Connector ${connectorId} marked ${status} · Auto-cancelled ${res.cancelledReservationIds.length} hold(s)`
+      );
+    } else {
+      toast.info(`Connector ${connectorId} marked ${status}`);
+    }
     return res.cancelledReservationIds;
   }
 
@@ -258,6 +287,7 @@ export default function App() {
       meterReadingStartWh,
     });
     setSnapshot(res.snapshot);
+    toast.success('Charging session started — metering live');
   }
 
   async function handleEndSession(
@@ -271,6 +301,11 @@ export default function App() {
   ) {
     const res = await apiClient.endSession(sessionId, payload);
     setSnapshot(res.snapshot);
+    if (payload.flagDispute) {
+      toast.warning('Session flagged for meter dispute review');
+    } else {
+      toast.success('Session completed — payout queued for host');
+    }
   }
 
   async function handleSubmitReview(payload: {
@@ -286,6 +321,7 @@ export default function App() {
       comment: payload.comment,
     });
     setSnapshot(res.snapshot);
+    toast.success('Host review submitted');
   }
 
   async function handleCreateChargingPoint(payload: {
@@ -306,16 +342,34 @@ export default function App() {
   }) {
     const res = await apiClient.createChargingPoint(payload);
     setSnapshot(res.snapshot);
+    toast.success(`Published "${payload.name}" to charging network`);
   }
 
   async function handleProcessPayouts(hostId: string) {
     const res = await apiClient.processHostPayouts(hostId);
     setSnapshot(res.snapshot);
+    toast.success('Pending payouts processed to host bank ledger');
   }
 
-  async function handleSendOcppTelemetry(payload: OcppTelemetryPayload) {
+  async function handleSendOcppTelemetry(
+    payload: OcppTelemetryPayload,
+    options?: { silent?: boolean }
+  ) {
     const res = await apiClient.sendOcppTelemetry(payload);
     setSnapshot(res.snapshot);
+    if (!options?.silent) {
+      if (payload.eventType === 'WalkInLoadDetected') {
+        toast.warning(
+          `OCPP Walk-in load detected (${payload.powerKw ?? 0} kW on ${payload.connectorId})`
+        );
+      } else if (res.cancelledReservationIds.length > 0) {
+        toast.warning(
+          `OCPP telemetry updated · Auto-cancelled ${res.cancelledReservationIds.length} hold(s)`
+        );
+      } else {
+        toast.success(`OCPP ${payload.eventType} ingested (${payload.connectorId})`);
+      }
+    }
     return {
       event: res.event,
       cancelledReservationIds: res.cancelledReservationIds,
@@ -325,6 +379,11 @@ export default function App() {
   async function handleToggleHeartbeat(enabled: boolean) {
     const res = await apiClient.setTelemetryHeartbeat(enabled);
     setSnapshot(res.snapshot);
+    toast.info(
+      enabled
+        ? 'OCPP SSE telemetry heartbeat resumed'
+        : 'OCPP SSE telemetry heartbeat paused'
+    );
   }
 
   async function handleResetDemo() {
@@ -332,6 +391,7 @@ export default function App() {
     setSnapshot(data);
     setActiveDriverId(data.drivers[0]?.uid ?? null);
     setActiveHostId(null);
+    toast.info('Demo state reset to defaults');
   }
 
   async function handleRunScenario(scenarioId: string) {
@@ -354,6 +414,7 @@ export default function App() {
           setSnapshot(res.snapshot);
           setActiveDriverId(driver.uid);
           setActiveView('trips');
+          toast.success('Scenario 1: Guaranteed 30-min hold locked & QR generated');
         }
       } else if (scenarioId === 'geofence_release') {
         if (!snapshot) return;
@@ -366,6 +427,11 @@ export default function App() {
           });
           setSnapshot(res.snapshot);
           setActiveView('trips');
+          toast.warning(
+            res.autoReleasedReservations.length > 0
+              ? 'Scenario 2: Exited 10 km geofence — hold auto-released'
+              : 'Scenario 2: Driver relocated to Airport (~29 km, outside 10 km geofence)'
+          );
         }
       } else if (scenarioId === 'idle_overstay') {
         const reset = await apiClient.resetDemo();
@@ -425,6 +491,9 @@ export default function App() {
           });
           setActiveDriverId(driver.uid);
           setActiveView('trips');
+          toast.warning(
+            'Scenario 3: Post-charge grace expired — ₹50.00 driveway idle fee billed'
+          );
         }
       } else if (scenarioId === 'hardware_fault') {
         if (!snapshot) return;
@@ -432,16 +501,24 @@ export default function App() {
         const conn = cp?.connectors[0];
         if (cp && conn) {
           setIsOcppDrawerOpen(true);
-          await handleSendOcppTelemetry({
-            chargingPointId: cp.id,
-            connectorId: conn.id,
-            eventType: 'WalkInLoadDetected',
-            status: 'occupied',
-            powerKw: 11.0,
-            meterWh: 16500,
-          });
+          await handleSendOcppTelemetry(
+            {
+              chargingPointId: cp.id,
+              connectorId: conn.id,
+              eventType: 'WalkInLoadDetected',
+              status: 'occupied',
+              powerKw: 11.0,
+              meterWh: 16500,
+            },
+            { silent: true }
+          );
+          toast.warning(
+            'Scenario 4: OCPP WalkInLoadDetected (11.0 kW) injected & bay locked'
+          );
         }
       }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Scenario execution failed');
     } finally {
       setIsScenarioBusy(false);
     }
@@ -458,6 +535,7 @@ export default function App() {
     });
     setSnapshot(res.snapshot);
     setActiveView('trips');
+    toast.success('Volt Copilot recommendation locked for 30 minutes');
   }
 
   const navItems: { id: ActiveView; label: string; mobileLabel: string; icon: typeof Compass }[] = [
@@ -467,6 +545,12 @@ export default function App() {
   ];
 
   return (
+    <ErrorBoundary
+      FallbackComponent={AppErrorFallback}
+      onReset={() => {
+        void fetchSnapshot();
+      }}
+    >
     <div className="min-h-screen bg-zinc-50/50 text-zinc-900 font-sans">
       {/* Precision Top Navigation Bar */}
       <header className="sticky top-0 z-30 border-b border-zinc-200/80 bg-white/95 backdrop-blur-md">
@@ -606,16 +690,19 @@ export default function App() {
 
       {/* Full-Bleed Edge-to-Edge Hero Banner (Explore View) */}
       {!loading && !loadError && snapshot && primaryDriver && activeView === 'explore' && (
-        <VoltGarageHero
-          onExploreClick={() => {
-            const el = document.getElementById('charger-search');
-            if (el) el.scrollIntoView({ behavior: 'smooth' });
-          }}
-          onHostClick={() => {
-            setHostInitialTab('onboard');
-            setActiveView('host');
-          }}
-        />
+        <ErrorBoundary FallbackComponent={SectionErrorFallback}>
+          <VoltGarageHero
+            onExploreClick={() => {
+              const el = document.getElementById('charger-search');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}
+            onHostClick={() => {
+              setHostInitialTab('onboard');
+              setActiveView('host');
+            }}
+          />
+          <HowItWorks />
+        </ErrorBoundary>
       )}
 
       <main className="mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-6 pb-20 sm:pb-6">
@@ -722,60 +809,66 @@ export default function App() {
             )}
 
             {activeView === 'explore' && (
-              <ExploreView
-                points={snapshot.chargingPoints}
-                reviews={snapshot.reviews}
-                reservations={snapshot.reservations}
-                driver={primaryDriver}
-                onReserve={handleReserve}
-                onUpdateDriverLocation={handleUpdateDriverLocation}
-                onGoToTrips={() => setActiveView('trips')}
-              />
+              <ErrorBoundary FallbackComponent={SectionErrorFallback} resetKeys={[activeView]}>
+                <ExploreView
+                  points={snapshot.chargingPoints}
+                  reviews={snapshot.reviews}
+                  reservations={snapshot.reservations}
+                  driver={primaryDriver}
+                  onReserve={handleReserve}
+                  onUpdateDriverLocation={handleUpdateDriverLocation}
+                  onGoToTrips={() => setActiveView('trips')}
+                />
+              </ErrorBoundary>
             )}
 
             {activeView === 'trips' && (
-              <DriverTripsView
-                driver={primaryDriver}
-                chargingPoints={snapshot.chargingPoints}
-                reservations={snapshot.reservations}
-                sessions={snapshot.sessions}
-                payments={snapshot.payments}
-                liveTelemetry={snapshot.liveTelemetry}
-                onAddVehicle={handleAddVehicle}
-                onConfirmReservation={handleConfirmReservation}
-                onCancelReservation={handleCancelReservation}
-                onReportBlockedBay={handleReportBlockedBay}
-                onReserveBackup={handleReserveBackup}
-                onStartSession={handleStartSession}
-                onEndSession={handleEndSession}
-                onSubmitReview={handleSubmitReview}
-                onExploreMap={() => setActiveView('explore')}
-                onOpenDriverRegistration={() => setRegistrationRole('driver')}
-              />
+              <ErrorBoundary FallbackComponent={SectionErrorFallback} resetKeys={[activeView]}>
+                <DriverTripsView
+                  driver={primaryDriver}
+                  chargingPoints={snapshot.chargingPoints}
+                  reservations={snapshot.reservations}
+                  sessions={snapshot.sessions}
+                  payments={snapshot.payments}
+                  liveTelemetry={snapshot.liveTelemetry}
+                  onAddVehicle={handleAddVehicle}
+                  onConfirmReservation={handleConfirmReservation}
+                  onCancelReservation={handleCancelReservation}
+                  onReportBlockedBay={handleReportBlockedBay}
+                  onReserveBackup={handleReserveBackup}
+                  onStartSession={handleStartSession}
+                  onEndSession={handleEndSession}
+                  onSubmitReview={handleSubmitReview}
+                  onExploreMap={() => setActiveView('explore')}
+                  onOpenDriverRegistration={() => setRegistrationRole('driver')}
+                />
+              </ErrorBoundary>
             )}
 
             {activeView === 'host' && (
-              <HostConsoleView
-                hosts={snapshot.hosts}
-                chargingPoints={snapshot.chargingPoints}
-                reservations={snapshot.reservations}
-                sessions={snapshot.sessions}
-                payments={snapshot.payments}
-                liveTelemetry={snapshot.liveTelemetry}
-                telemetryEvents={snapshot.telemetryEvents}
-                telemetryHeartbeatEnabled={snapshot.telemetryHeartbeatEnabled}
-                initialTab={hostInitialTab}
-                activeHostId={activeHostId}
-                onOpenHostRegistration={() => setRegistrationRole('host')}
-                onCreateChargingPoint={handleCreateChargingPoint}
-                onConfirmReservation={handleConfirmReservation}
-                onStartSession={handleStartSession}
-                onEndSession={handleEndSession}
-                onProcessPayouts={handleProcessPayouts}
-                onUpdateConnectorStatus={handleUpdateConnectorStatus}
-                onSendOcppTelemetry={handleSendOcppTelemetry}
-                onToggleHeartbeat={handleToggleHeartbeat}
-              />
+              <ErrorBoundary FallbackComponent={SectionErrorFallback} resetKeys={[activeView]}>
+                <HostConsoleView
+                  hosts={snapshot.hosts}
+                  chargingPoints={snapshot.chargingPoints}
+                  reservations={snapshot.reservations}
+                  sessions={snapshot.sessions}
+                  payments={snapshot.payments}
+                  liveTelemetry={snapshot.liveTelemetry}
+                  telemetryEvents={snapshot.telemetryEvents}
+                  telemetryHeartbeatEnabled={snapshot.telemetryHeartbeatEnabled}
+                  initialTab={hostInitialTab}
+                  activeHostId={activeHostId}
+                  onOpenHostRegistration={() => setRegistrationRole('host')}
+                  onCreateChargingPoint={handleCreateChargingPoint}
+                  onConfirmReservation={handleConfirmReservation}
+                  onStartSession={handleStartSession}
+                  onEndSession={handleEndSession}
+                  onProcessPayouts={handleProcessPayouts}
+                  onUpdateConnectorStatus={handleUpdateConnectorStatus}
+                  onSendOcppTelemetry={handleSendOcppTelemetry}
+                  onToggleHeartbeat={handleToggleHeartbeat}
+                />
+              </ErrorBoundary>
             )}
           </div>
         )}
@@ -797,23 +890,39 @@ export default function App() {
       )}
 
       {/* Gemini AI Volt Copilot Matchmaker */}
-      <GeminiVoltCopilotModal
-        driver={primaryDriver}
-        chargingPoints={snapshot?.chargingPoints ?? []}
-        isOpen={isCopilotOpen}
-        onClose={() => setIsCopilotOpen(false)}
-        onReserveRecommended={handleReserveRecommended}
-      />
+      <ErrorBoundary FallbackComponent={SectionErrorFallback} resetKeys={[isCopilotOpen]}>
+        <GeminiVoltCopilotModal
+          driver={primaryDriver}
+          chargingPoints={snapshot?.chargingPoints ?? []}
+          isOpen={isCopilotOpen}
+          onClose={() => setIsCopilotOpen(false)}
+          onReserveRecommended={handleReserveRecommended}
+        />
+      </ErrorBoundary>
 
       {/* OCPP 2.0.1 Virtual Hardware Test Bench */}
       {snapshot && (
-        <OcppHardwareEmulatorDrawer
-          chargingPoints={snapshot.chargingPoints}
-          isOpen={isOcppDrawerOpen}
-          onToggle={() => setIsOcppDrawerOpen((prev) => !prev)}
-          onSendTelemetry={handleSendOcppTelemetry}
-        />
+        <ErrorBoundary FallbackComponent={SectionErrorFallback} resetKeys={[isOcppDrawerOpen]}>
+          <OcppHardwareEmulatorDrawer
+            chargingPoints={snapshot.chargingPoints}
+            isOpen={isOcppDrawerOpen}
+            onToggle={() => setIsOcppDrawerOpen((prev) => !prev)}
+            onSendTelemetry={handleSendOcppTelemetry}
+          />
+        </ErrorBoundary>
       )}
+
+      <Toaster
+        position="top-right"
+        richColors
+        closeButton
+        offset={{ top: 68 }}
+        toastOptions={{
+          className: 'text-xs font-medium',
+          duration: 3500,
+        }}
+      />
     </div>
+    </ErrorBoundary>
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Activity,
   AlertTriangle,
@@ -31,6 +31,11 @@ import type {
 } from '../domain/types';
 import { SmartMeter3D } from './SmartMeter3D';
 import { HostAvailabilityScheduler } from './HostAvailabilityScheduler';
+import {
+  OnboardSkeleton,
+  PayoutsSkeleton,
+  QueueSkeleton,
+} from './HostConsoleSkeleton';
 
 export type HostSubTab = 'queue' | 'payouts' | 'onboard';
 
@@ -121,10 +126,33 @@ export function HostConsoleView({
 }: HostConsoleViewProps) {
   const [subTab, setSubTab] = useState<HostSubTab>(initialTab);
   const [selectedHostFilter, setSelectedHostFilter] = useState<string>('all');
+  const [isTabLoading, setIsTabLoading] = useState(false);
+  const tabTimerRef = useRef<number | null>(null);
+
+  function handleSwitchSubTab(nextTab: HostSubTab) {
+    if (nextTab === subTab) return;
+    if (tabTimerRef.current !== null) {
+      window.clearTimeout(tabTimerRef.current);
+    }
+    setSubTab(nextTab);
+    setIsTabLoading(true);
+    tabTimerRef.current = window.setTimeout(() => {
+      setIsTabLoading(false);
+      tabTimerRef.current = null;
+    }, 180);
+  }
 
   useEffect(() => {
     setSubTab(initialTab);
   }, [initialTab]);
+
+  useEffect(() => {
+    return () => {
+      if (tabTimerRef.current !== null) {
+        window.clearTimeout(tabTimerRef.current);
+      }
+    };
+  }, []);
 
   // Meter & QR state for Host queue
   const [qrInputs, setQrInputs] = useState<Record<string, string>>({});
@@ -321,7 +349,7 @@ export function HostConsoleView({
               type="button"
               role="tab"
               aria-selected={subTab === tab.id}
-              onClick={() => setSubTab(tab.id)}
+              onClick={() => handleSwitchSubTab(tab.id)}
               className={`whitespace-nowrap shrink-0 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors sm:px-3 ${
                 subTab === tab.id
                   ? 'bg-white text-zinc-900 shadow-xs'
@@ -408,7 +436,7 @@ export function HostConsoleView({
           {subTab !== 'payouts' && (
             <button
               type="button"
-              onClick={() => setSubTab('payouts')}
+              onClick={() => handleSwitchSubTab('payouts')}
               className="whitespace-nowrap shrink-0 rounded-lg border border-zinc-200 bg-white px-3.5 py-2 text-xs font-semibold text-zinc-800 transition-colors hover:bg-zinc-50"
             >
               Manage Payouts
@@ -418,7 +446,10 @@ export function HostConsoleView({
       </section>
 
       {/* TAB 1: Bookings & Meter Verification Queue */}
-      {subTab === 'queue' && (
+      {subTab === 'queue' &&
+        (isTabLoading || hosts.length === 0 ? (
+          <QueueSkeleton />
+        ) : (
         <div className="space-y-4">
           {queueError && (
             <div
@@ -767,10 +798,13 @@ export function HostConsoleView({
             </div>
           )}
         </div>
-      )}
+        ))}
 
       {/* TAB 2: My Chargers & Payouts */}
-      {subTab === 'payouts' && (
+      {subTab === 'payouts' &&
+        (isTabLoading || hosts.length === 0 ? (
+          <PayoutsSkeleton />
+        ) : (
         <div className="space-y-4">
           <div className="divide-y divide-zinc-200 overflow-hidden rounded-xl border border-zinc-200 bg-white">
             {payoutSummaries.map(
@@ -1192,10 +1226,13 @@ export function HostConsoleView({
             </div>
           </div>
         </div>
-      )}
+        ))}
 
       {/* TAB 3: Onboard New Charger */}
-      {subTab === 'onboard' && (
+      {subTab === 'onboard' &&
+        (isTabLoading ? (
+          <OnboardSkeleton />
+        ) : (
         <form
           onSubmit={handleOnboardSubmit}
           className="rounded-xl border border-zinc-200 bg-white p-6"
@@ -1542,7 +1579,7 @@ export function HostConsoleView({
             </button>
           </div>
         </form>
-      )}
+        ))}
     </div>
   );
 }

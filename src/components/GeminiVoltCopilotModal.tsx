@@ -60,6 +60,7 @@ export function GeminiVoltCopilotModal({
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [planResult, setPlanResult] = useState<SmartPlanResult | null>(null);
   const [isReserving, setIsReserving] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
@@ -71,62 +72,79 @@ export function GeminiVoltCopilotModal({
   async function handleRunOptimization() {
     setIsAnalyzing(true);
     setPlanResult(null);
+    setErrorMsg(null);
 
-    // Simulate smart AI optimization pass with a realistic calculation
-    await new Promise((resolve) => setTimeout(resolve, 750));
+    try {
+      // Simulate smart AI optimization pass with a realistic calculation
+      await new Promise((resolve) => setTimeout(resolve, 750));
 
-    const capacity = selectedVehicle.capacity;
-    const socDelta = Math.max(5, targetSoc - currentSoc);
-    const energyNeeded = round2((socDelta / 100) * capacity);
+      if (chargingPoints.length === 0) {
+        setErrorMsg('No charging stations available in current snapshot.');
+        return;
+      }
 
-    // Score all available points based on distance, rating, price, and matching connector
-    const scored = chargingPoints
-      .map((cp) => {
-        const dist = calculateDistanceKm(driverLocation, cp.location);
-        const matchingConn =
-          cp.connectors.find((c) => c.type === selectedVehicle.connector) ??
-          cp.connectors[0];
-        const power = matchingConn?.powerKw ?? 7.4;
-        const timeMinutes = Math.max(12, Math.round((energyNeeded / power) * 60));
-        const cost = round2(energyNeeded * cp.pricePerKwh);
+      const capacity = selectedVehicle.capacity;
+      const socDelta = Math.max(5, targetSoc - currentSoc);
+      const energyNeeded = round2((socDelta / 100) * capacity);
 
-        // Score formula: balance short distance, high power, verified host rating
-        const score = (cp.rating * 20) + (power * 2) - (dist * 3) - (cost * 0.1);
+      // Score all available points based on distance, rating, price, and matching connector
+      const scored = chargingPoints
+        .map((cp) => {
+          const dist = calculateDistanceKm(driverLocation, cp.location);
+          const matchingConn =
+            cp.connectors.find((c) => c.type === selectedVehicle.connector) ??
+            cp.connectors[0];
+          const power = matchingConn?.powerKw ?? 7.4;
+          const timeMinutes = Math.max(12, Math.round((energyNeeded / power) * 60));
+          const cost = round2(energyNeeded * cp.pricePerKwh);
 
-        return {
-          point: cp,
-          connectorId: matchingConn.id,
-          connectorType: matchingConn.type,
-          powerKw: power,
-          energyNeededKwh: energyNeeded,
-          chargeTimeMinutes: timeMinutes,
-          estimatedCost: cost,
-          distanceKm: dist,
-          score,
-        };
-      })
-      .sort((a, b) => b.score - a.score);
+          // Score formula: balance short distance, high power, verified host rating
+          const score = (cp.rating * 20) + (power * 2) - (dist * 3) - (cost * 0.1);
 
-    const best = scored[0];
-    const backup = scored[1];
+          return {
+            point: cp,
+            connectorId: matchingConn.id,
+            connectorType: matchingConn.type,
+            powerKw: power,
+            energyNeededKwh: energyNeeded,
+            chargeTimeMinutes: timeMinutes,
+            estimatedCost: cost,
+            distanceKm: dist,
+            score,
+          };
+        })
+        .sort((a, b) => b.score - a.score);
 
-    if (best) {
-      setPlanResult({
-        ...best,
-        backupPointName: backup?.point.name,
-        aiRationale: `Selected verified host ${best.point.hostName} (${best.point.name}) based on lowest congestion risk, ${best.powerKw} kW output matching your ${selectedVehicle.name}, and optimal ${best.chargeTimeMinutes}-min dwell window. 10 km geofence lock will hold your bay for 30 minutes.`,
-      });
+      const best = scored[0];
+      const backup = scored[1];
+
+      if (best) {
+        setPlanResult({
+          ...best,
+          backupPointName: backup?.point.name,
+          aiRationale: `Selected verified host ${best.point.hostName} (${best.point.name}) based on lowest congestion risk, ${best.powerKw} kW output matching your ${selectedVehicle.name}, and optimal ${best.chargeTimeMinutes}-min dwell window. 10 km geofence lock will hold your bay for 30 minutes.`,
+        });
+      }
+    } catch (err) {
+      setErrorMsg(
+        err instanceof Error ? err.message : 'Unable to compute charging route.'
+      );
+    } finally {
+      setIsAnalyzing(false);
     }
-
-    setIsAnalyzing(false);
   }
 
   async function handleBook() {
     if (!planResult) return;
     setIsReserving(true);
+    setErrorMsg(null);
     try {
       await onReserveRecommended(planResult.point.id, planResult.connectorId);
       onClose();
+    } catch (err) {
+      setErrorMsg(
+        err instanceof Error ? err.message : 'Unable to lock recommended bay.'
+      );
     } finally {
       setIsReserving(false);
     }
@@ -254,6 +272,17 @@ export function GeminiVoltCopilotModal({
           </button>
         </div>
 
+        {/* Error Banner */}
+        {errorMsg && (
+          <div
+            role="alert"
+            className="mt-4 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-900"
+          >
+            <AlertCircle className="h-4 w-4 shrink-0 text-red-600" />
+            <span>{errorMsg}</span>
+          </div>
+        )}
+
         {/* AI Result Card */}
         {planResult && (
           <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50/60 p-4 animate-slide-up">
@@ -301,12 +330,15 @@ export function GeminiVoltCopilotModal({
             </p>
 
             {planResult.backupPointName && (
-              <p className="mt-2 text-[10px] text-zinc-500">
-                🛡️ Fail-safe automated backup assigned:{' '}
-                <span className="font-semibold text-zinc-700">
-                  {planResult.backupPointName}
-                </span>{' '}
-                (auto-reroutes if primary bay blocked)
+              <p className="mt-2 flex items-center gap-1 text-[10px] text-zinc-500">
+                <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
+                <span>
+                  Fail-safe automated backup assigned:{' '}
+                  <span className="font-semibold text-zinc-700">
+                    {planResult.backupPointName}
+                  </span>{' '}
+                  (auto-reroutes if primary bay blocked)
+                </span>
               </p>
             )}
 
