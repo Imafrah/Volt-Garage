@@ -101,14 +101,15 @@ export function OcppHardwareEmulatorDrawer({
   async function handleSend(
     eventType: 'MeterValues' | 'StatusNotification' | 'WalkInLoadDetected',
     customStatus?: ConnectorStatus,
-    overridePower?: number
+    overridePower?: number,
+    overrideMeter?: number
   ) {
     if (!currentPoint || !currentConnector) return;
     setIsSubmitting(true);
     setStatusFeedback(null);
 
     const power = overridePower ?? simPowerKw;
-    const meter = simMeterWh;
+    const meter = overrideMeter ?? simMeterWh;
 
     const ocppFrame = [
       2,
@@ -285,8 +286,10 @@ export function OcppHardwareEmulatorDrawer({
                       type="button"
                       disabled={isSubmitting}
                       onClick={() => {
-                        setSimMeterWh((m) => m + Math.round(simPowerKw * 250));
-                        handleSend('MeterValues');
+                        const nextMeterWh =
+                          simMeterWh + Math.round(simPowerKw * 250);
+                        setSimMeterWh(nextMeterWh);
+                        handleSend('MeterValues', undefined, undefined, nextMeterWh);
                       }}
                       className="flex items-center gap-1 rounded bg-emerald-500 px-2.5 py-1 text-xs font-semibold text-zinc-950 transition-colors hover:bg-emerald-400"
                     >
