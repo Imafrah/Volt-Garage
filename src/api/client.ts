@@ -1,4 +1,5 @@
 import type {
+  AuthLoginInput,
   BackupConnectorSuggestion,
   ChargingPoint,
   ChargingSession,
@@ -17,23 +18,161 @@ import type {
   Vehicle,
 } from '../domain/types';
 
-async function requestJson<T>(url: string, options?: RequestInit): Promise<T> {
+const SNAPSHOT_CACHE_KEY = 'voltgarage_snapshot_v1';
+
+let cachedSnapshot: PlatformSnapshot | null = loadCachedSnapshot();
+
+function loadCachedSnapshot(): PlatformSnapshot | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.localStorage.getItem(SNAPSHOT_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as PlatformSnapshot;
+    if (parsed && Array.isArray(parsed.chargingPoints) && typeof parsed.revision === 'number') {
+      return parsed;
+    }
+  } catch {
+    // Ignore invalid storage entries
+  }
+  return null;
+}
+
+export function getCachedSnapshot(): PlatformSnapshot | null {
+  return cachedSnapshot;
+}
+
+export function setCachedSnapshot(snapshot: PlatformSnapshot | null): void {
+  cachedSnapshot = snapshot;
+  if (typeof window === 'undefined') return;
+  try {
+    if (!snapshot) {
+      window.localStorage.removeItem(SNAPSHOT_CACHE_KEY);
+    } else {
+      window.localStorage.setItem(SNAPSHOT_CACHE_KEY, JSON.stringify(snapshot));
+    }
+  } catch {
+    // Ignore storage quota / privacy mode errors
+  }
+}
+
+function buildCompactSyncState(snap: PlatformSnapshot): Partial<PlatformSnapshot> {
+  return {
+    drivers: snap.drivers,
+    hosts: snap.hosts,
+    chargingPoints: snap.chargingPoints,
+    reservations: snap.reservations,
+    sessions: snap.sessions,
+    payments: snap.payments,
+    reviews: snap.reviews,
+    partners: snap.partners,
+    liveTelemetry: snap.liveTelemetry,
+    telemetryEvents: snap.telemetryEvents,
+    telemetryHeartbeatEnabled: snap.telemetryHeartbeatEnabled,
+    revision: snap.revision,
+    resetEpoch: snap.resetEpoch,
+  };
+}
+
+async function requestJson<T>(
+  url: string,
+  options?: RequestInit,
+  syncOptions?: { skipSync?: boolean; isReset?: boolean }
+): Promise<T> {
+  let finalOptions: RequestInit | undefined = options;
+  const method = (options?.method || 'GET').toUpperCase();
+
+  if (
+    method === 'POST' &&
+    !syncOptions?.skipSync &&
+    !syncOptions?.isReset &&
+    cachedSnapshot &&
+    (cachedSnapshot.serverMode === 'serverless' || (cachedSnapshot.revision ?? 1) > 1)
+  ) {
+    let bodyObj: Record<string, unknown> = {};
+    if (typeof options?.body === 'string' && options.body.trim()) {
+      try {
+        bodyObj = JSON.parse(options.body) as Record<string, unknown>;
+      } catch {
+        bodyObj = {};
+      }
+    }
+    finalOptions = {
+      ...options,
+      body: JSON.stringify({
+        ...bodyObj,
+        _syncState: buildCompactSyncState(cachedSnapshot),
+      }),
+    };
+  }
+
   const res = await fetch(url, {
     headers: { 'Content-Type': 'application/json' },
-    ...options,
+    ...finalOptions,
   });
   const data = await res.json();
   if (!res.ok) {
     throw new Error(data?.error || `Request failed (${res.status})`);
   }
+
+  if (syncOptions?.isReset) {
+    setCachedSnapshot(data as PlatformSnapshot);
+  } else if (data && typeof data === 'object') {
+    if ('snapshot' in data && data.snapshot) {
+      setCachedSnapshot(data.snapshot as PlatformSnapshot);
+    } else if ('chargingPoints' in data && 'reservations' in data) {
+      setCachedSnapshot(data as PlatformSnapshot);
+    }
+  }
+
   return data as T;
 }
 
 export const apiClient = {
-  bootstrap: () => requestJson<PlatformSnapshot>('/api/v1/bootstrap'),
+  bootstrap: async (): Promise<PlatformSnapshot> => {
+    const serverSnap = await requestJson<PlatformSnapshot>(
+      '/api/v1/bootstrap',
+      undefined,
+      { skipSync: true }
+    );
+    const localSnap = cachedSnapshot;
+    const shouldRehydrateServerless =
+      serverSnap.serverMode === 'serverless' &&
+      localSnap &&
+      typeof localSnap.revision === 'number' &&
+      localSnap.revision > (serverSnap.revision ?? 1) &&
+      (localSnap.resetEpoch === serverSnap.resetEpoch || (serverSnap.revision ?? 1) <= 1);
+
+    if (shouldRehydrateServerless && localSnap) {
+      const synced = await requestJson<{ snapshot: PlatformSnapshot }>(
+        '/api/v1/state/sync',
+        {
+          method: 'POST',
+          body: JSON.stringify({ snapshot: buildCompactSyncState(localSnap) }),
+        },
+        { skipSync: true }
+      );
+      setCachedSnapshot(synced.snapshot);
+      return synced.snapshot;
+    }
+
+    setCachedSnapshot(serverSnap);
+    return serverSnap;
+  },
 
   resetDemo: () =>
-    requestJson<PlatformSnapshot>('/api/v1/demo/reset', { method: 'POST' }),
+    requestJson<PlatformSnapshot>(
+      '/api/v1/demo/reset',
+      { method: 'POST' },
+      { isReset: true }
+    ),
+
+  login: (payload: AuthLoginInput) =>
+    requestJson<{
+      role: 'driver' | 'host';
+      driver?: DriverProfile;
+      host?: HostProfile;
+      snapshot: PlatformSnapshot;
+    }>('/api/v1/auth/login', { method: 'POST', body: JSON.stringify(payload) }),
 
   registerDriver: (payload: DriverRegistrationInput) =>
     requestJson<{ driver: DriverProfile; snapshot: PlatformSnapshot }>(

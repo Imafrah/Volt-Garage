@@ -287,6 +287,12 @@ export interface OcppTelemetryPayload {
   status?: ConnectorStatus;
 }
 
+export interface AuthLoginInput {
+  role: 'driver' | 'host';
+  email: string;
+  password: string;
+}
+
 export interface PlatformSnapshot {
   drivers: DriverProfile[];
   hosts: HostProfile[];
@@ -300,4 +306,7 @@ export interface PlatformSnapshot {
   liveTelemetry: Record<string, LiveTelemetryReading>;
   telemetryEvents: TelemetryEventRecord[];
   telemetryHeartbeatEnabled: boolean;
+  revision?: number;
+  resetEpoch?: string;
+  serverMode?: 'stateful' | 'serverless';
 }

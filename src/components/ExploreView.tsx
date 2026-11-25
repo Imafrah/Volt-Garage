@@ -12,6 +12,7 @@ import {
   Star,
   Zap,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   PROXIMITY_RADIUS_KM,
   calculateDistanceKm,
@@ -215,10 +216,12 @@ export function ExploreView({
         });
       }
     } catch (err) {
+      const msg = (err as Error).message;
       setFeedback({
         kind: 'error',
-        text: (err as Error).message,
+        text: msg,
       });
+      toast.error(msg);
     } finally {
       setLocationBusy(false);
     }
@@ -226,10 +229,12 @@ export function ExploreView({
 
   async function handleBrowserGps() {
     if (!navigator.geolocation) {
+      const msg = 'Browser geolocation is unavailable. Use a Munich GPS preset instead.';
       setFeedback({
         kind: 'error',
-        text: 'Browser geolocation is unavailable. Use a Munich GPS preset instead.',
+        text: msg,
       });
+      toast.error(msg);
       return;
     }
     setLocationBusy(true);
@@ -242,10 +247,12 @@ export function ExploreView({
       },
       () => {
         setLocationBusy(false);
+        const msg = 'Location permission denied. Select a GPS preset to test the 10 km geofence.';
         setFeedback({
           kind: 'error',
-          text: 'Location permission denied. Select a GPS preset to test the 10 km geofence.',
+          text: msg,
         });
+        toast.error(msg);
       },
       { enableHighAccuracy: true, timeout: 5000 }
     );
@@ -261,16 +268,23 @@ export function ExploreView({
         text: `Slot held for 30 minutes (within ${PROXIMITY_RADIUS_KM} km geofence). QR token generated in Driver Trips.`,
       });
     } catch (err) {
+      const msg = (err as Error).message;
       setFeedback({
         kind: 'error',
-        text: (err as Error).message,
+        text: msg,
       });
+      toast.error(msg);
     } finally {
       setBusyConnectorId(null);
     }
   }
 
   const isSelectedOutOfRange = selectedDistance > PROXIMITY_RADIUS_KM;
+  const distanceFromMunichMetroKm = calculateDistanceKm(driver.defaultLocation, {
+    lat: 48.137154,
+    lon: 11.576124,
+  });
+  const isOutsideMunichDemoZone = distanceFromMunichMetroKm > 25;
 
   return (
     <div className="space-y-6">
@@ -353,6 +367,33 @@ export function ExploreView({
             <span>{geofenceAlert}</span>
           </div>
         )}
+
+        {isOutsideMunichDemoZone && (
+          <div
+            role="status"
+            className="mt-3 flex flex-col justify-between gap-2.5 rounded-lg border border-amber-200 bg-amber-50 px-3.5 py-2.5 text-xs text-amber-900 sm:flex-row sm:items-center"
+          >
+            <div className="flex items-start gap-2">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" />
+              <span>
+                Your GPS anchor is {distanceFromMunichMetroKm.toLocaleString()} km from the Munich demo grid, so local chargers are hidden by the {PROXIMITY_RADIUS_KM} km geofence.
+              </span>
+            </div>
+            <button
+              type="button"
+              disabled={locationBusy}
+              onClick={() =>
+                handleLocationUpdate(
+                  LOCATION_PRESETS[0].location,
+                  LOCATION_PRESETS[0].label
+                )
+              }
+              className="shrink-0 whitespace-nowrap rounded-lg bg-amber-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-800 disabled:opacity-60"
+            >
+              Return GPS to Munich Downtown
+            </button>
+          </div>
+        )}
       </section>
       {/* Workspace Filter Toolbar */}
       <section
@@ -366,7 +407,7 @@ export function ExploreView({
               <label htmlFor="charger-search" className="sr-only">
                 Search charging stations or addresses
               </label>
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -tranzinc-y-1/2 text-zinc-400" />
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
               <input
                 id="charger-search"
                 type="text"

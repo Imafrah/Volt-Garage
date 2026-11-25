@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import {
   PROXIMITY_RADIUS_KM,
@@ -23,6 +24,7 @@ import {
 } from '../domain/imchargeEngine';
 import type {
   AdminAnalytics,
+  AuthLoginInput,
   BackupConnectorSuggestion,
   ChargingPoint,
   ChargingSession,
@@ -45,8 +47,24 @@ import type {
   Vehicle,
 } from '../domain/types';
 
-const DATA_DIR = path.resolve(process.cwd(), 'data');
+export const IS_SERVERLESS = Boolean(
+  process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME
+);
+
+const DATA_DIR = IS_SERVERLESS
+  ? path.join(os.tmpdir(), 'imcharge-data')
+  : path.resolve(process.cwd(), 'data');
 const DB_FILE = path.join(DATA_DIR, 'imcharge-db.json');
+
+const DEMO_SALT = 'a1b2c3d4e5f60718293a4b5c6d7e8f90';
+const DEMO_PASSWORD_HASH = crypto
+  .scryptSync('demo1234', DEMO_SALT, 64)
+  .toString('hex');
+
+function makeUniqueId(prefix: string): string {
+  const rand = Math.random().toString(36).slice(2, 4);
+  return `${prefix}-${Date.now().toString(36)}${rand}`;
+}
 
 interface CredentialRecord {
   role: 'driver' | 'host';
@@ -68,6 +86,8 @@ interface DatabaseState {
   liveTelemetry: Record<string, LiveTelemetryReading>;
   telemetryEvents: TelemetryEventRecord[];
   telemetryHeartbeatEnabled: boolean;
+  revision?: number;
+  resetEpoch?: string;
 }
 
 function createInitialSeedState(): DatabaseState {
@@ -628,6 +648,24 @@ function createInitialSeedState(): DatabaseState {
     },
   ];
 
+  const credentials: Record<string, CredentialRecord> = {};
+  for (const d of drivers) {
+    credentials[`driver:${d.email.toLowerCase()}`] = {
+      role: 'driver',
+      uid: d.uid,
+      salt: DEMO_SALT,
+      hash: DEMO_PASSWORD_HASH,
+    };
+  }
+  for (const h of hosts) {
+    credentials[`host:${h.email.toLowerCase()}`] = {
+      role: 'host',
+      uid: h.uid,
+      salt: DEMO_SALT,
+      hash: DEMO_PASSWORD_HASH,
+    };
+  }
+
   return {
     drivers,
     hosts,
@@ -637,9 +675,12 @@ function createInitialSeedState(): DatabaseState {
     payments,
     reviews,
     partners,
+    credentials,
     liveTelemetry: {},
     telemetryEvents,
     telemetryHeartbeatEnabled: true,
+    revision: 1,
+    resetEpoch: makeUniqueId('epoch'),
   };
 }
 
@@ -650,13 +691,40 @@ class ImChargeStore {
     this.state = this.loadFromDisk();
   }
 
+  private ensureSeedCredentials(state: DatabaseState): Record<string, CredentialRecord> {
+    const creds: Record<string, CredentialRecord> = { ...(state.credentials || {}) };
+    for (const d of state.drivers) {
+      const key = `driver:${d.email.toLowerCase()}`;
+      if (!creds[key]) {
+        creds[key] = {
+          role: 'driver',
+          uid: d.uid,
+          salt: DEMO_SALT,
+          hash: DEMO_PASSWORD_HASH,
+        };
+      }
+    }
+    for (const h of state.hosts) {
+      const key = `host:${h.email.toLowerCase()}`;
+      if (!creds[key]) {
+        creds[key] = {
+          role: 'host',
+          uid: h.uid,
+          salt: DEMO_SALT,
+          hash: DEMO_PASSWORD_HASH,
+        };
+      }
+    }
+    return creds;
+  }
+
   private loadFromDisk(): DatabaseState {
     try {
       if (fs.existsSync(DB_FILE)) {
         const raw = fs.readFileSync(DB_FILE, 'utf-8');
         const parsed = JSON.parse(raw) as Partial<DatabaseState>;
         if (parsed && Array.isArray(parsed.chargingPoints)) {
-          return {
+          const loaded: DatabaseState = {
             ...(parsed as DatabaseState),
             liveTelemetry: parsed.liveTelemetry || {},
             telemetryEvents: Array.isArray(parsed.telemetryEvents)
@@ -664,7 +732,14 @@ class ImChargeStore {
               : [],
             telemetryHeartbeatEnabled:
               parsed.telemetryHeartbeatEnabled !== false,
+            revision:
+              typeof parsed.revision === 'number' && parsed.revision >= 1
+                ? parsed.revision
+                : 1,
+            resetEpoch: parsed.resetEpoch || makeUniqueId('epoch'),
           };
+          loaded.credentials = this.ensureSeedCredentials(loaded);
+          return loaded;
         }
       }
     } catch {
@@ -673,6 +748,10 @@ class ImChargeStore {
     const seed = createInitialSeedState();
     this.saveToDisk(seed);
     return seed;
+  }
+
+  private bumpRevision(): void {
+    this.state.revision = (this.state.revision ?? 1) + 1;
   }
 
   private saveToDisk(state: DatabaseState = this.state): void {
@@ -697,6 +776,7 @@ class ImChargeStore {
       }
     }
     if (expiredCount > 0) {
+      this.bumpRevision();
       this.saveToDisk();
     }
     return expiredCount;
@@ -779,7 +859,72 @@ class ImChargeStore {
       liveTelemetry: this.state.liveTelemetry,
       telemetryEvents: this.state.telemetryEvents,
       telemetryHeartbeatEnabled: this.state.telemetryHeartbeatEnabled,
+      revision: this.state.revision ?? 1,
+      resetEpoch: this.state.resetEpoch,
+      serverMode: IS_SERVERLESS ? 'serverless' : 'stateful',
     };
+  }
+
+  /**
+   * Synchronizes a stateless/cold serverless instance with a newer client snapshot
+   * so multi-container Vercel requests never reject reservations or confirmations.
+   */
+  public reconcileClientState(incoming?: Partial<PlatformSnapshot> | null): boolean {
+    if (!incoming || typeof incoming.revision !== 'number') {
+      return false;
+    }
+    if (
+      !Array.isArray(incoming.drivers) ||
+      !Array.isArray(incoming.hosts) ||
+      !Array.isArray(incoming.chargingPoints) ||
+      !Array.isArray(incoming.reservations) ||
+      !Array.isArray(incoming.sessions) ||
+      !Array.isArray(incoming.payments) ||
+      !Array.isArray(incoming.reviews) ||
+      !Array.isArray(incoming.partners)
+    ) {
+      return false;
+    }
+
+    const currentRev = this.state.revision ?? 1;
+    const sameEpochNewer =
+      Boolean(incoming.resetEpoch) &&
+      incoming.resetEpoch === this.state.resetEpoch &&
+      incoming.revision > currentRev;
+    const coldContainerHydration =
+      currentRev <= 1 && incoming.revision > 1;
+
+    if (!sameEpochNewer && !coldContainerHydration) {
+      return false;
+    }
+
+    const nextState: DatabaseState = {
+      drivers: incoming.drivers,
+      hosts: incoming.hosts,
+      chargingPoints: incoming.chargingPoints,
+      reservations: incoming.reservations,
+      sessions: incoming.sessions,
+      payments: incoming.payments,
+      reviews: incoming.reviews,
+      partners: incoming.partners,
+      credentials: this.ensureSeedCredentials({
+        ...(this.state),
+        drivers: incoming.drivers,
+        hosts: incoming.hosts,
+      }),
+      liveTelemetry: incoming.liveTelemetry || {},
+      telemetryEvents: Array.isArray(incoming.telemetryEvents)
+        ? incoming.telemetryEvents
+        : [],
+      telemetryHeartbeatEnabled:
+        incoming.telemetryHeartbeatEnabled !== false,
+      revision: incoming.revision,
+      resetEpoch: incoming.resetEpoch || this.state.resetEpoch,
+    };
+
+    this.state = nextState;
+    this.saveToDisk();
+    return true;
   }
 
   private releaseAllOutOfRangeReservations(): number {
@@ -792,6 +937,7 @@ class ImChargeStore {
       total += released.length;
     }
     if (total > 0) {
+      this.bumpRevision();
       this.saveToDisk();
     }
     return total;
@@ -867,6 +1013,7 @@ class ImChargeStore {
       driver.uid,
       driver.defaultLocation
     );
+    this.bumpRevision();
     this.saveToDisk();
     return { driver, autoReleasedReservations };
   }
@@ -884,6 +1031,76 @@ class ImChargeStore {
     return { salt, hash };
   }
 
+  private verifyPassword(password: string, salt: string, storedHash: string): boolean {
+    const derived = crypto.scryptSync(password, salt, 64);
+    const expected = Buffer.from(storedHash, 'hex');
+    if (derived.length !== expected.length) return false;
+    return crypto.timingSafeEqual(derived, expected);
+  }
+
+  public authenticate(input: AuthLoginInput): {
+    role: 'driver' | 'host';
+    driver?: DriverProfile;
+    host?: HostProfile;
+  } {
+    const emailKey = input.email?.trim().toLowerCase();
+    const password = input.password || '';
+    if (!emailKey || !password) {
+      throw new Error('Email and password are required.');
+    }
+
+    this.state.credentials = this.ensureSeedCredentials(this.state);
+    const credKey = `${input.role}:${emailKey}`;
+    const cred = this.state.credentials[credKey];
+
+    if (cred) {
+      if (!this.verifyPassword(password, cred.salt, cred.hash)) {
+        throw new Error('Invalid email or password.');
+      }
+      if (input.role === 'driver') {
+        const driver = this.state.drivers.find((d) => d.uid === cred.uid);
+        if (!driver) throw new Error('Driver account not found.');
+        return { role: 'driver', driver };
+      }
+      const host = this.state.hosts.find((h) => h.uid === cred.uid);
+      if (!host) throw new Error('Host account not found.');
+      return { role: 'host', host };
+    }
+
+    // Fallback for newly created driver/host hydrated across serverless containers
+    if (input.role === 'driver') {
+      const driver = this.state.drivers.find(
+        (d) => d.email.toLowerCase() === emailKey
+      );
+      if (driver && password.length >= 6) {
+        const { salt, hash } = this.hashPassword(password);
+        this.state.credentials[credKey] = {
+          role: 'driver',
+          uid: driver.uid,
+          salt,
+          hash,
+        };
+        return { role: 'driver', driver };
+      }
+    } else {
+      const host = this.state.hosts.find(
+        (h) => h.email.toLowerCase() === emailKey
+      );
+      if (host && password.length >= 6) {
+        const { salt, hash } = this.hashPassword(password);
+        this.state.credentials[credKey] = {
+          role: 'host',
+          uid: host.uid,
+          salt,
+          hash,
+        };
+        return { role: 'host', host };
+      }
+    }
+
+    throw new Error('No matching account found for this role and email.');
+  }
+
   public registerDriver(input: DriverRegistrationInput): DriverProfile {
     const validation = validateDriverRegistrationInput(input);
     if (!validation.ok) {
@@ -895,9 +1112,9 @@ class ImChargeStore {
       throw new Error('An EV Vehicle Owner account with this email already exists.');
     }
 
-    const uid = `drv-${Date.now().toString(36)}`;
+    const uid = makeUniqueId('drv');
     const vehicle: Vehicle = {
-      id: `veh-${Date.now().toString(36)}`,
+      id: makeUniqueId('veh'),
       make: input.vehicle.make.trim(),
       model: input.vehicle.model.trim(),
       year: Number(input.vehicle.year) || new Date().getFullYear(),
@@ -928,6 +1145,7 @@ class ImChargeStore {
     };
 
     this.state.drivers.push(driver);
+    this.bumpRevision();
     this.saveToDisk();
     return driver;
   }
@@ -943,7 +1161,7 @@ class ImChargeStore {
       throw new Error('A Charging Host account with this email already exists.');
     }
 
-    const uid = `host-${Date.now().toString(36)}`;
+    const uid = makeUniqueId('host');
     const isPrivate = input.chargingPointType === 'private_host';
     const host: HostProfile = {
       uid,
@@ -984,6 +1202,7 @@ class ImChargeStore {
     };
 
     this.state.hosts.push(host);
+    this.bumpRevision();
     this.saveToDisk();
     return host;
   }
@@ -997,10 +1216,11 @@ class ImChargeStore {
       throw new Error('Driver profile not found.');
     }
     const vehicle: Vehicle = {
-      id: `veh-${Date.now().toString(36)}`,
+      id: makeUniqueId('veh'),
       ...input,
     };
     driver.vehicles.unshift(vehicle);
+    this.bumpRevision();
     this.saveToDisk();
     return vehicle;
   }
@@ -1023,7 +1243,7 @@ class ImChargeStore {
     availabilityHours: string;
   }): ChargingPoint {
     const nowIso = new Date().toISOString();
-    const hostUid = input.hostUid || `host-${Date.now().toString(36)}`;
+    const hostUid = input.hostUid || makeUniqueId('host');
     const existingHost = this.state.hosts.find((h) => h.uid === hostUid);
     if (!existingHost) {
       this.state.hosts.push({
@@ -1056,7 +1276,7 @@ class ImChargeStore {
       });
     }
 
-    const cpId = `cp-${Date.now().toString(36)}`;
+    const cpId = makeUniqueId('cp');
     const photo =
       input.type === 'private_host'
         ? '/src/assets/images/private_home_wallbox_1795443222640.jpg'
@@ -1074,7 +1294,7 @@ class ImChargeStore {
       description: input.description,
       connectors: [
         {
-          id: `c-${Date.now().toString(36)}`,
+          id: makeUniqueId('c'),
           type: input.connectorType,
           powerKw: input.powerKw,
           status: 'available',
@@ -1093,6 +1313,7 @@ class ImChargeStore {
     };
 
     this.state.chargingPoints.unshift(newCp);
+    this.bumpRevision();
     this.saveToDisk();
     return newCp;
   }
@@ -1141,7 +1362,7 @@ class ImChargeStore {
       );
     }
 
-    const resId = `res-${Date.now().toString(36)}`;
+    const resId = makeUniqueId('res');
     const hold = createHoldWindow(nowMs, 30);
 
     const reservation: Reservation = {
@@ -1166,6 +1387,7 @@ class ImChargeStore {
 
     this.state.reservations.unshift(reservation);
     this.setConnectorStatus(cp.id, connector.id, 'reserved');
+    this.bumpRevision();
     this.saveToDisk();
     return reservation;
   }
@@ -1194,6 +1416,7 @@ class ImChargeStore {
 
     res.status = 'confirmed';
     res.confirmedAt = new Date().toISOString();
+    this.bumpRevision();
     this.saveToDisk();
     return res;
   }
@@ -1208,6 +1431,7 @@ class ImChargeStore {
 
     res.status = 'cancelled';
     this.setConnectorStatus(res.chargingPointId, res.connectorId, 'available');
+    this.bumpRevision();
     this.saveToDisk();
     return res;
   }
@@ -1256,6 +1480,7 @@ class ImChargeStore {
 
     conn.status = status;
     cp.updatedAt = new Date().toISOString();
+    this.bumpRevision();
     this.saveToDisk();
     return { point: cp, cancelledReservationIds };
   }
@@ -1290,6 +1515,7 @@ class ImChargeStore {
       5
     );
 
+    this.bumpRevision();
     this.saveToDisk();
     return { reservation: res, backupSuggestion };
   }
@@ -1321,7 +1547,7 @@ class ImChargeStore {
     this.setConnectorStatus(res.chargingPointId, res.connectorId, 'occupied');
 
     const session: ChargingSession = {
-      id: `ses-${Date.now().toString(36)}`,
+      id: makeUniqueId('ses'),
       reservationId: res.id,
       driverId: res.driverId,
       driverName: res.driverName,
@@ -1366,7 +1592,7 @@ class ImChargeStore {
     };
 
     this.pushTelemetryEvent({
-      id: `tel-${Date.now().toString(36)}`,
+      id: makeUniqueId('tel'),
       timestamp: nowIso,
       chargingPointId: res.chargingPointId,
       chargingPointName: res.chargingPointName,
@@ -1380,6 +1606,7 @@ class ImChargeStore {
     });
 
     this.state.sessions.unshift(session);
+    this.bumpRevision();
     this.saveToDisk();
     return session;
   }
@@ -1464,6 +1691,7 @@ class ImChargeStore {
           summary: `Session ${session.id} ended under meter review · connector returned to available.`,
         });
         this.setConnectorStatus(session.chargingPointId, session.connectorId, 'available');
+        this.bumpRevision();
         this.saveToDisk();
         return session;
       }
@@ -1547,6 +1775,7 @@ class ImChargeStore {
     });
 
     this.setConnectorStatus(session.chargingPointId, session.connectorId, 'available');
+    this.bumpRevision();
     this.saveToDisk();
     return session;
   }
@@ -1562,7 +1791,7 @@ class ImChargeStore {
     const driver = this.state.drivers.find((d) => d.uid === input.driverId);
 
     const review: Review = {
-      id: `rev-${Date.now().toString(36)}`,
+      id: makeUniqueId('rev'),
       chargingPointId: cp.id,
       driverId: input.driverId,
       driverName: driver?.name || 'Driver',
@@ -1579,6 +1808,7 @@ class ImChargeStore {
       pointReviews.reduce((acc, r) => acc + r.rating, 0) / pointReviews.length;
     cp.rating = Math.round(avg * 10) / 10;
     cp.reviewCount = pointReviews.length;
+    this.bumpRevision();
     this.saveToDisk();
     return review;
   }
@@ -1668,6 +1898,7 @@ class ImChargeStore {
       );
     }
 
+    this.bumpRevision();
     this.saveToDisk();
     return session;
   }
@@ -1685,6 +1916,7 @@ class ImChargeStore {
     for (const cp of matchingPoints) {
       cp.updatedAt = partner.lastSyncTime;
     }
+    this.bumpRevision();
     this.saveToDisk();
     return partner;
   }
@@ -1703,12 +1935,16 @@ class ImChargeStore {
         count++;
       }
     }
-    if (count > 0) this.saveToDisk();
+    if (count > 0) {
+      this.bumpRevision();
+      this.saveToDisk();
+    }
     return count;
   }
 
   public setTelemetryHeartbeat(enabled: boolean): boolean {
     this.state.telemetryHeartbeatEnabled = enabled;
+    this.bumpRevision();
     this.saveToDisk();
     return enabled;
   }
@@ -1769,6 +2005,7 @@ class ImChargeStore {
     }
 
     if (updatedCount > 0) {
+      this.bumpRevision();
       this.saveToDisk();
     }
     return updatedCount;
@@ -1831,6 +2068,7 @@ class ImChargeStore {
         summary: `Unbooked ${loadKw.toFixed(1)} kW draw detected on ${conn.id}; connector marked occupied.${cancelledSuffix}`,
       };
       this.pushTelemetryEvent(event);
+      this.bumpRevision();
       this.saveToDisk();
       return {
         event,
@@ -1849,7 +2087,7 @@ class ImChargeStore {
         `${protocol} StatusNotification set connector to ${payload.status}.`
       );
       const event: TelemetryEventRecord = {
-        id: `tel-${Date.now().toString(36)}`,
+        id: makeUniqueId('tel'),
         timestamp: nowIso,
         chargingPointId: cp.id,
         chargingPointName: cp.name,
@@ -1862,6 +2100,7 @@ class ImChargeStore {
         summary: `StatusNotification updated ${conn.id} to ${payload.status}.`,
       };
       this.pushTelemetryEvent(event);
+      this.bumpRevision();
       this.saveToDisk();
       return {
         event,
@@ -1944,13 +2183,14 @@ class ImChargeStore {
         summary: `MeterValues pulse for ${activeSession.id}: ${next.livePowerKw.toFixed(1)} kW · ${next.deliveredKwh.toFixed(2)} kWh (₹${next.estimatedCostInr.toFixed(2)}).`,
       };
       this.pushTelemetryEvent(event);
+      this.bumpRevision();
       this.saveToDisk();
       return { event, cancelledReservationIds: [] };
     }
 
     const idleKw = round2(Math.max(0, payload.powerKw ?? 0));
     const event: TelemetryEventRecord = {
-      id: `tel-${Date.now().toString(36)}`,
+      id: makeUniqueId('tel'),
       timestamp: nowIso,
       chargingPointId: cp.id,
       chargingPointName: cp.name,
@@ -1963,6 +2203,7 @@ class ImChargeStore {
       summary: `Idle MeterValues pulse on ${conn.id} (${idleKw.toFixed(2)} kW, below 0.5 kW load threshold).`,
     };
     this.pushTelemetryEvent(event);
+    this.bumpRevision();
     this.saveToDisk();
     return { event, cancelledReservationIds: [] };
   }

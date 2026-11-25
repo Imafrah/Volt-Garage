@@ -15,7 +15,11 @@ import {
   X,
   Zap,
 } from 'lucide-react';
-import { calculateDistanceKm, round2 } from '../domain/imchargeEngine';
+import {
+  PROXIMITY_RADIUS_KM,
+  calculateDistanceKm,
+  round2,
+} from '../domain/imchargeEngine';
 import type { ChargingPoint, ConnectorType, DriverProfile, GeoPoint } from '../domain/types';
 
 interface GeminiVoltCopilotModalProps {
@@ -87,19 +91,30 @@ export function GeminiVoltCopilotModal({
       const socDelta = Math.max(5, targetSoc - currentSoc);
       const energyNeeded = round2((socDelta / 100) * capacity);
 
-      // Score all available points based on distance, rating, price, and matching connector
-      const scored = chargingPoints
+      // Score eligible charging points within 10 km geofence with an available connector
+      const eligible = chargingPoints
         .map((cp) => {
           const dist = calculateDistanceKm(driverLocation, cp.location);
+          const availableConns = cp.connectors.filter(
+            (c) => c.status === 'available'
+          );
+          if (availableConns.length === 0 || dist > PROXIMITY_RADIUS_KM) {
+            return null;
+          }
           const matchingConn =
-            cp.connectors.find((c) => c.type === selectedVehicle.connector) ??
-            cp.connectors[0];
+            availableConns.find((c) => c.type === selectedVehicle.connector) ??
+            availableConns[0];
           const power = matchingConn?.powerKw ?? 7.4;
           const timeMinutes = Math.max(12, Math.round((energyNeeded / power) * 60));
           const cost = round2(energyNeeded * cp.pricePerKwh);
 
           // Score formula: balance short distance, high power, verified host rating
-          const score = (cp.rating * 20) + (power * 2) - (dist * 3) - (cost * 0.1);
+          const score =
+            (cp.rating * 20) +
+            (power * 2) -
+            (dist * 3) -
+            (cost * 0.1) +
+            (matchingConn.type === selectedVehicle.connector ? 25 : 0);
 
           return {
             point: cp,
@@ -113,18 +128,24 @@ export function GeminiVoltCopilotModal({
             score,
           };
         })
+        .filter((item): item is NonNullable<typeof item> => item !== null)
         .sort((a, b) => b.score - a.score);
 
-      const best = scored[0];
-      const backup = scored[1];
-
-      if (best) {
-        setPlanResult({
-          ...best,
-          backupPointName: backup?.point.name,
-          aiRationale: `Selected verified host ${best.point.hostName} (${best.point.name}) based on lowest congestion risk, ${best.powerKw} kW output matching your ${selectedVehicle.name}, and optimal ${best.chargeTimeMinutes}-min dwell window. 10 km geofence lock will hold your bay for 30 minutes.`,
-        });
+      if (eligible.length === 0) {
+        setErrorMsg(
+          `No available connectors found within the ${PROXIMITY_RADIUS_KM} km geofence from your current location. Reset your GPS preset to Munich Downtown or free a connector.`
+        );
+        return;
       }
+
+      const best = eligible[0];
+      const backup = eligible[1];
+
+      setPlanResult({
+        ...best,
+        backupPointName: backup?.point.name,
+        aiRationale: `Selected verified host ${best.point.hostName} (${best.point.name}) based on lowest congestion risk, ${best.powerKw} kW output matching your ${selectedVehicle.name}, and optimal ${best.chargeTimeMinutes}-min dwell window. 10 km geofence lock will hold your bay for 30 minutes.`,
+      });
     } catch (err) {
       setErrorMsg(
         err instanceof Error ? err.message : 'Unable to compute charging route.'

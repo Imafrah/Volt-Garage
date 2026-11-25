@@ -5,7 +5,7 @@
 import { build } from 'esbuild';
 
 await build({
-  entryPoints: ['api/server.ts'],
+  entryPoints: ['src/server/vercelApp.ts'],
   bundle: true,
   platform: 'node',
   target: 'node20',

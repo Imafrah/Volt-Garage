@@ -319,7 +319,7 @@ export function CityMap({
               onClick={() => onSelect(point.id)}
               style={{ left: `${leftPct}%`, top: `${topPct}%` }}
               aria-label={`Select ${point.name}, ₹${point.pricePerKwh.toFixed(2)} per kWh, ${availableCount} available`}
-              className={`absolute -tranzinc-x-1/2 -tranzinc-y-1/2 rounded-lg border px-2 py-1 font-mono text-[11px] font-semibold tabular-nums transition-transform focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 ${
+              className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-lg border px-2 py-1 font-mono text-[11px] font-semibold tabular-nums transition-transform focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 ${
                 isSelected
                   ? 'z-20 scale-105 border-zinc-900 bg-zinc-900 text-white shadow-md'
                   : availableCount > 0
