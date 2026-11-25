@@ -1,9 +1,10 @@
-// api/server.ts
+// src/server/createApp.ts
 import express from "express";
 
 // src/server/store.ts
 import crypto from "crypto";
 import fs from "fs";
+import os from "os";
 import path from "path";
 
 // src/domain/imchargeEngine.ts
@@ -306,8 +307,17 @@ function findOutOfRangeReservations(reservations, chargingPoints, driverId, driv
 }
 
 // src/server/store.ts
-var DATA_DIR = path.resolve(process.cwd(), "data");
+var IS_SERVERLESS = Boolean(
+  process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME
+);
+var DATA_DIR = IS_SERVERLESS ? path.join(os.tmpdir(), "imcharge-data") : path.resolve(process.cwd(), "data");
 var DB_FILE = path.join(DATA_DIR, "imcharge-db.json");
+var DEMO_SALT = "a1b2c3d4e5f60718293a4b5c6d7e8f90";
+var DEMO_PASSWORD_HASH = crypto.scryptSync("demo1234", DEMO_SALT, 64).toString("hex");
+function makeUniqueId(prefix) {
+  const rand = Math.random().toString(36).slice(2, 4);
+  return `${prefix}-${Date.now().toString(36)}${rand}`;
+}
 function createInitialSeedState() {
   const now = Date.now();
   const iso = (offsetMinutes) => new Date(now + offsetMinutes * 60 * 1e3).toISOString();
@@ -853,6 +863,23 @@ function createInitialSeedState() {
       summary: "OCPI 2.2 station status polling active (350 kW DC stall ready)."
     }
   ];
+  const credentials = {};
+  for (const d of drivers) {
+    credentials[`driver:${d.email.toLowerCase()}`] = {
+      role: "driver",
+      uid: d.uid,
+      salt: DEMO_SALT,
+      hash: DEMO_PASSWORD_HASH
+    };
+  }
+  for (const h of hosts) {
+    credentials[`host:${h.email.toLowerCase()}`] = {
+      role: "host",
+      uid: h.uid,
+      salt: DEMO_SALT,
+      hash: DEMO_PASSWORD_HASH
+    };
+  }
   return {
     drivers,
     hosts,
@@ -862,14 +889,43 @@ function createInitialSeedState() {
     payments,
     reviews,
     partners,
+    credentials,
     liveTelemetry: {},
     telemetryEvents,
-    telemetryHeartbeatEnabled: true
+    telemetryHeartbeatEnabled: true,
+    revision: 1,
+    resetEpoch: makeUniqueId("epoch")
   };
 }
 var ImChargeStore = class {
   constructor() {
     this.state = this.loadFromDisk();
+  }
+  ensureSeedCredentials(state) {
+    const creds = { ...state.credentials || {} };
+    for (const d of state.drivers) {
+      const key = `driver:${d.email.toLowerCase()}`;
+      if (!creds[key]) {
+        creds[key] = {
+          role: "driver",
+          uid: d.uid,
+          salt: DEMO_SALT,
+          hash: DEMO_PASSWORD_HASH
+        };
+      }
+    }
+    for (const h of state.hosts) {
+      const key = `host:${h.email.toLowerCase()}`;
+      if (!creds[key]) {
+        creds[key] = {
+          role: "host",
+          uid: h.uid,
+          salt: DEMO_SALT,
+          hash: DEMO_PASSWORD_HASH
+        };
+      }
+    }
+    return creds;
   }
   loadFromDisk() {
     try {
@@ -877,12 +933,16 @@ var ImChargeStore = class {
         const raw = fs.readFileSync(DB_FILE, "utf-8");
         const parsed = JSON.parse(raw);
         if (parsed && Array.isArray(parsed.chargingPoints)) {
-          return {
+          const loaded = {
             ...parsed,
             liveTelemetry: parsed.liveTelemetry || {},
             telemetryEvents: Array.isArray(parsed.telemetryEvents) ? parsed.telemetryEvents : [],
-            telemetryHeartbeatEnabled: parsed.telemetryHeartbeatEnabled !== false
+            telemetryHeartbeatEnabled: parsed.telemetryHeartbeatEnabled !== false,
+            revision: typeof parsed.revision === "number" && parsed.revision >= 1 ? parsed.revision : 1,
+            resetEpoch: parsed.resetEpoch || makeUniqueId("epoch")
           };
+          loaded.credentials = this.ensureSeedCredentials(loaded);
+          return loaded;
         }
       }
     } catch {
@@ -890,6 +950,9 @@ var ImChargeStore = class {
     const seed = createInitialSeedState();
     this.saveToDisk(seed);
     return seed;
+  }
+  bumpRevision() {
+    this.state.revision = (this.state.revision ?? 1) + 1;
   }
   saveToDisk(state = this.state) {
     try {
@@ -911,6 +974,7 @@ var ImChargeStore = class {
       }
     }
     if (expiredCount > 0) {
+      this.bumpRevision();
       this.saveToDisk();
     }
     return expiredCount;
@@ -976,8 +1040,52 @@ var ImChargeStore = class {
       analytics: this.getAnalytics(),
       liveTelemetry: this.state.liveTelemetry,
       telemetryEvents: this.state.telemetryEvents,
-      telemetryHeartbeatEnabled: this.state.telemetryHeartbeatEnabled
+      telemetryHeartbeatEnabled: this.state.telemetryHeartbeatEnabled,
+      revision: this.state.revision ?? 1,
+      resetEpoch: this.state.resetEpoch,
+      serverMode: IS_SERVERLESS ? "serverless" : "stateful"
     };
+  }
+  /**
+   * Synchronizes a stateless/cold serverless instance with a newer client snapshot
+   * so multi-container Vercel requests never reject reservations or confirmations.
+   */
+  reconcileClientState(incoming) {
+    if (!incoming || typeof incoming.revision !== "number") {
+      return false;
+    }
+    if (!Array.isArray(incoming.drivers) || !Array.isArray(incoming.hosts) || !Array.isArray(incoming.chargingPoints) || !Array.isArray(incoming.reservations) || !Array.isArray(incoming.sessions) || !Array.isArray(incoming.payments) || !Array.isArray(incoming.reviews) || !Array.isArray(incoming.partners)) {
+      return false;
+    }
+    const currentRev = this.state.revision ?? 1;
+    const sameEpochNewer = Boolean(incoming.resetEpoch) && incoming.resetEpoch === this.state.resetEpoch && incoming.revision > currentRev;
+    const coldContainerHydration = currentRev <= 1 && incoming.revision > 1;
+    if (!sameEpochNewer && !coldContainerHydration) {
+      return false;
+    }
+    const nextState = {
+      drivers: incoming.drivers,
+      hosts: incoming.hosts,
+      chargingPoints: incoming.chargingPoints,
+      reservations: incoming.reservations,
+      sessions: incoming.sessions,
+      payments: incoming.payments,
+      reviews: incoming.reviews,
+      partners: incoming.partners,
+      credentials: this.ensureSeedCredentials({
+        ...this.state,
+        drivers: incoming.drivers,
+        hosts: incoming.hosts
+      }),
+      liveTelemetry: incoming.liveTelemetry || {},
+      telemetryEvents: Array.isArray(incoming.telemetryEvents) ? incoming.telemetryEvents : [],
+      telemetryHeartbeatEnabled: incoming.telemetryHeartbeatEnabled !== false,
+      revision: incoming.revision,
+      resetEpoch: incoming.resetEpoch || this.state.resetEpoch
+    };
+    this.state = nextState;
+    this.saveToDisk();
+    return true;
   }
   releaseAllOutOfRangeReservations() {
     let total = 0;
@@ -989,6 +1097,7 @@ var ImChargeStore = class {
       total += released.length;
     }
     if (total > 0) {
+      this.bumpRevision();
       this.saveToDisk();
     }
     return total;
@@ -1042,6 +1151,7 @@ var ImChargeStore = class {
       driver.uid,
       driver.defaultLocation
     );
+    this.bumpRevision();
     this.saveToDisk();
     return { driver, autoReleasedReservations };
   }
@@ -1056,6 +1166,65 @@ var ImChargeStore = class {
     const hash = crypto.scryptSync(password, salt, 64).toString("hex");
     return { salt, hash };
   }
+  verifyPassword(password, salt, storedHash) {
+    const derived = crypto.scryptSync(password, salt, 64);
+    const expected = Buffer.from(storedHash, "hex");
+    if (derived.length !== expected.length) return false;
+    return crypto.timingSafeEqual(derived, expected);
+  }
+  authenticate(input) {
+    const emailKey = input.email?.trim().toLowerCase();
+    const password = input.password || "";
+    if (!emailKey || !password) {
+      throw new Error("Email and password are required.");
+    }
+    this.state.credentials = this.ensureSeedCredentials(this.state);
+    const credKey = `${input.role}:${emailKey}`;
+    const cred = this.state.credentials[credKey];
+    if (cred) {
+      if (!this.verifyPassword(password, cred.salt, cred.hash)) {
+        throw new Error("Invalid email or password.");
+      }
+      if (input.role === "driver") {
+        const driver = this.state.drivers.find((d) => d.uid === cred.uid);
+        if (!driver) throw new Error("Driver account not found.");
+        return { role: "driver", driver };
+      }
+      const host = this.state.hosts.find((h) => h.uid === cred.uid);
+      if (!host) throw new Error("Host account not found.");
+      return { role: "host", host };
+    }
+    if (input.role === "driver") {
+      const driver = this.state.drivers.find(
+        (d) => d.email.toLowerCase() === emailKey
+      );
+      if (driver && password.length >= 6) {
+        const { salt, hash } = this.hashPassword(password);
+        this.state.credentials[credKey] = {
+          role: "driver",
+          uid: driver.uid,
+          salt,
+          hash
+        };
+        return { role: "driver", driver };
+      }
+    } else {
+      const host = this.state.hosts.find(
+        (h) => h.email.toLowerCase() === emailKey
+      );
+      if (host && password.length >= 6) {
+        const { salt, hash } = this.hashPassword(password);
+        this.state.credentials[credKey] = {
+          role: "host",
+          uid: host.uid,
+          salt,
+          hash
+        };
+        return { role: "host", host };
+      }
+    }
+    throw new Error("No matching account found for this role and email.");
+  }
   registerDriver(input) {
     const validation = validateDriverRegistrationInput(input);
     if (!validation.ok) {
@@ -1065,9 +1234,9 @@ var ImChargeStore = class {
     if (this.state.drivers.some((d) => d.email.toLowerCase() === emailKey)) {
       throw new Error("An EV Vehicle Owner account with this email already exists.");
     }
-    const uid = `drv-${Date.now().toString(36)}`;
+    const uid = makeUniqueId("drv");
     const vehicle = {
-      id: `veh-${Date.now().toString(36)}`,
+      id: makeUniqueId("veh"),
       make: input.vehicle.make.trim(),
       model: input.vehicle.model.trim(),
       year: Number(input.vehicle.year) || (/* @__PURE__ */ new Date()).getFullYear(),
@@ -1095,6 +1264,7 @@ var ImChargeStore = class {
       hash
     };
     this.state.drivers.push(driver);
+    this.bumpRevision();
     this.saveToDisk();
     return driver;
   }
@@ -1107,7 +1277,7 @@ var ImChargeStore = class {
     if (this.state.hosts.some((h) => h.email.toLowerCase() === emailKey)) {
       throw new Error("A Charging Host account with this email already exists.");
     }
-    const uid = `host-${Date.now().toString(36)}`;
+    const uid = makeUniqueId("host");
     const isPrivate = input.chargingPointType === "private_host";
     const host = {
       uid,
@@ -1143,6 +1313,7 @@ var ImChargeStore = class {
       hash
     };
     this.state.hosts.push(host);
+    this.bumpRevision();
     this.saveToDisk();
     return host;
   }
@@ -1152,16 +1323,17 @@ var ImChargeStore = class {
       throw new Error("Driver profile not found.");
     }
     const vehicle = {
-      id: `veh-${Date.now().toString(36)}`,
+      id: makeUniqueId("veh"),
       ...input
     };
     driver.vehicles.unshift(vehicle);
+    this.bumpRevision();
     this.saveToDisk();
     return vehicle;
   }
   createChargingPoint(input) {
     const nowIso = (/* @__PURE__ */ new Date()).toISOString();
-    const hostUid = input.hostUid || `host-${Date.now().toString(36)}`;
+    const hostUid = input.hostUid || makeUniqueId("host");
     const existingHost = this.state.hosts.find((h) => h.uid === hostUid);
     if (!existingHost) {
       this.state.hosts.push({
@@ -1190,7 +1362,7 @@ var ImChargeStore = class {
         }
       });
     }
-    const cpId = `cp-${Date.now().toString(36)}`;
+    const cpId = makeUniqueId("cp");
     const photo = input.type === "private_host" ? "/src/assets/images/private_home_wallbox_1795443222640.jpg" : "/src/assets/images/company_fast_hub_1795443225006.jpg";
     const newCp = {
       id: cpId,
@@ -1204,7 +1376,7 @@ var ImChargeStore = class {
       description: input.description,
       connectors: [
         {
-          id: `c-${Date.now().toString(36)}`,
+          id: makeUniqueId("c"),
           type: input.connectorType,
           powerKw: input.powerKw,
           status: "available"
@@ -1222,6 +1394,7 @@ var ImChargeStore = class {
       updatedAt: nowIso
     };
     this.state.chargingPoints.unshift(newCp);
+    this.bumpRevision();
     this.saveToDisk();
     return newCp;
   }
@@ -1248,7 +1421,7 @@ var ImChargeStore = class {
         `Charging point is ${distanceKm} km away, outside the ${PROXIMITY_RADIUS_KM} km booking geofence.`
       );
     }
-    const resId = `res-${Date.now().toString(36)}`;
+    const resId = makeUniqueId("res");
     const hold = createHoldWindow(nowMs, 30);
     const reservation = {
       id: resId,
@@ -1271,6 +1444,7 @@ var ImChargeStore = class {
     };
     this.state.reservations.unshift(reservation);
     this.setConnectorStatus(cp.id, connector.id, "reserved");
+    this.bumpRevision();
     this.saveToDisk();
     return reservation;
   }
@@ -1294,6 +1468,7 @@ var ImChargeStore = class {
     }
     res.status = "confirmed";
     res.confirmedAt = (/* @__PURE__ */ new Date()).toISOString();
+    this.bumpRevision();
     this.saveToDisk();
     return res;
   }
@@ -1305,6 +1480,7 @@ var ImChargeStore = class {
     }
     res.status = "cancelled";
     this.setConnectorStatus(res.chargingPointId, res.connectorId, "available");
+    this.bumpRevision();
     this.saveToDisk();
     return res;
   }
@@ -1333,6 +1509,7 @@ var ImChargeStore = class {
     }
     conn.status = status;
     cp.updatedAt = (/* @__PURE__ */ new Date()).toISOString();
+    this.bumpRevision();
     this.saveToDisk();
     return { point: cp, cancelledReservationIds };
   }
@@ -1357,6 +1534,7 @@ var ImChargeStore = class {
       preferredConnectors,
       5
     );
+    this.bumpRevision();
     this.saveToDisk();
     return { reservation: res, backupSuggestion };
   }
@@ -1376,7 +1554,7 @@ var ImChargeStore = class {
     res.startedAt = nowIso;
     this.setConnectorStatus(res.chargingPointId, res.connectorId, "occupied");
     const session = {
-      id: `ses-${Date.now().toString(36)}`,
+      id: makeUniqueId("ses"),
       reservationId: res.id,
       driverId: res.driverId,
       driverName: res.driverName,
@@ -1411,7 +1589,7 @@ var ImChargeStore = class {
       lastUpdatedAt: nowIso
     };
     this.pushTelemetryEvent({
-      id: `tel-${Date.now().toString(36)}`,
+      id: makeUniqueId("tel"),
       timestamp: nowIso,
       chargingPointId: res.chargingPointId,
       chargingPointName: res.chargingPointName,
@@ -1424,6 +1602,7 @@ var ImChargeStore = class {
       summary: `Session ${session.id} started \xB7 delivering ${initialPowerKw.toFixed(1)} kW (${protocol}).`
     });
     this.state.sessions.unshift(session);
+    this.bumpRevision();
     this.saveToDisk();
     return session;
   }
@@ -1490,6 +1669,7 @@ var ImChargeStore = class {
           summary: `Session ${session.id} ended under meter review \xB7 connector returned to available.`
         });
         this.setConnectorStatus(session.chargingPointId, session.connectorId, "available");
+        this.bumpRevision();
         this.saveToDisk();
         return session;
       }
@@ -1567,6 +1747,7 @@ var ImChargeStore = class {
       summary: `Session ${session.id} settled (${session.energyDeliveredKwh.toFixed(2)} kWh) \xB7 connector available.`
     });
     this.setConnectorStatus(session.chargingPointId, session.connectorId, "available");
+    this.bumpRevision();
     this.saveToDisk();
     return session;
   }
@@ -1575,7 +1756,7 @@ var ImChargeStore = class {
     if (!cp) throw new Error("Charging point not found.");
     const driver = this.state.drivers.find((d) => d.uid === input.driverId);
     const review = {
-      id: `rev-${Date.now().toString(36)}`,
+      id: makeUniqueId("rev"),
       chargingPointId: cp.id,
       driverId: input.driverId,
       driverName: driver?.name || "Driver",
@@ -1590,6 +1771,7 @@ var ImChargeStore = class {
     const avg = pointReviews.reduce((acc, r) => acc + r.rating, 0) / pointReviews.length;
     cp.rating = Math.round(avg * 10) / 10;
     cp.reviewCount = pointReviews.length;
+    this.bumpRevision();
     this.saveToDisk();
     return review;
   }
@@ -1666,6 +1848,7 @@ var ImChargeStore = class {
         }
       );
     }
+    this.bumpRevision();
     this.saveToDisk();
     return session;
   }
@@ -1681,6 +1864,7 @@ var ImChargeStore = class {
     for (const cp of matchingPoints) {
       cp.updatedAt = partner.lastSyncTime;
     }
+    this.bumpRevision();
     this.saveToDisk();
     return partner;
   }
@@ -1694,11 +1878,15 @@ var ImChargeStore = class {
         count++;
       }
     }
-    if (count > 0) this.saveToDisk();
+    if (count > 0) {
+      this.bumpRevision();
+      this.saveToDisk();
+    }
     return count;
   }
   setTelemetryHeartbeat(enabled) {
     this.state.telemetryHeartbeatEnabled = enabled;
+    this.bumpRevision();
     this.saveToDisk();
     return enabled;
   }
@@ -1747,6 +1935,7 @@ var ImChargeStore = class {
       updatedCount++;
     }
     if (updatedCount > 0) {
+      this.bumpRevision();
       this.saveToDisk();
     }
     return updatedCount;
@@ -1790,6 +1979,7 @@ var ImChargeStore = class {
         summary: `Unbooked ${loadKw.toFixed(1)} kW draw detected on ${conn.id}; connector marked occupied.${cancelledSuffix}`
       };
       this.pushTelemetryEvent(event2);
+      this.bumpRevision();
       this.saveToDisk();
       return {
         event: event2,
@@ -1804,7 +1994,7 @@ var ImChargeStore = class {
         `${protocol} StatusNotification set connector to ${payload.status}.`
       );
       const event2 = {
-        id: `tel-${Date.now().toString(36)}`,
+        id: makeUniqueId("tel"),
         timestamp: nowIso,
         chargingPointId: cp.id,
         chargingPointName: cp.name,
@@ -1817,6 +2007,7 @@ var ImChargeStore = class {
         summary: `StatusNotification updated ${conn.id} to ${payload.status}.`
       };
       this.pushTelemetryEvent(event2);
+      this.bumpRevision();
       this.saveToDisk();
       return {
         event: event2,
@@ -1885,12 +2076,13 @@ var ImChargeStore = class {
         summary: `MeterValues pulse for ${activeSession.id}: ${next.livePowerKw.toFixed(1)} kW \xB7 ${next.deliveredKwh.toFixed(2)} kWh (\u20B9${next.estimatedCostInr.toFixed(2)}).`
       };
       this.pushTelemetryEvent(event2);
+      this.bumpRevision();
       this.saveToDisk();
       return { event: event2, cancelledReservationIds: [] };
     }
     const idleKw = round2(Math.max(0, payload.powerKw ?? 0));
     const event = {
-      id: `tel-${Date.now().toString(36)}`,
+      id: makeUniqueId("tel"),
       timestamp: nowIso,
       chargingPointId: cp.id,
       chargingPointName: cp.name,
@@ -1903,6 +2095,7 @@ var ImChargeStore = class {
       summary: `Idle MeterValues pulse on ${conn.id} (${idleKw.toFixed(2)} kW, below 0.5 kW load threshold).`
     };
     this.pushTelemetryEvent(event);
+    this.bumpRevision();
     this.saveToDisk();
     return { event, cancelledReservationIds: [] };
   }
@@ -1914,323 +2107,423 @@ var ImChargeStore = class {
 };
 var store = new ImChargeStore();
 
-// api/server.ts
-var app = express();
-app.use(express.json());
-var sseClients = /* @__PURE__ */ new Set();
-function broadcastSnapshot() {
-  if (sseClients.size === 0) return;
-  const payload = `event: snapshot
+// src/server/createApp.ts
+function createImChargeApp() {
+  const app2 = express();
+  app2.use(express.json({ limit: "1mb" }));
+  const sseClients = /* @__PURE__ */ new Set();
+  function broadcastSnapshot() {
+    if (sseClients.size === 0) return;
+    const payload = `event: snapshot
 data: ${JSON.stringify(store.getSnapshot())}
 
 `;
-  for (const client of sseClients) {
-    try {
-      client.write(payload);
-    } catch {
-      sseClients.delete(client);
+    for (const client of sseClients) {
+      try {
+        client.write(payload);
+      } catch {
+        sseClients.delete(client);
+      }
     }
   }
-}
-app.get("/api/health", (_req, res) => {
-  res.json({ ok: true, service: "imcharge-api-gateway" });
-});
-app.get("/api/v1/telemetry/stream", (req, res) => {
-  res.setHeader("Content-Type", "text/event-stream");
-  res.setHeader("Cache-Control", "no-cache");
-  res.setHeader("Connection", "keep-alive");
-  res.setHeader("X-Accel-Buffering", "no");
-  if (typeof res.flushHeaders === "function") {
-    res.flushHeaders();
-  }
-  sseClients.add(res);
-  res.write(`event: snapshot
+  app2.use("/api/v1", (req, _res, next) => {
+    if (req.method === "POST" && req.path !== "/demo/reset" && req.body && typeof req.body === "object" && "_syncState" in req.body) {
+      store.reconcileClientState(req.body._syncState);
+    }
+    next();
+  });
+  app2.get("/api/health", (_req, res) => {
+    res.json({
+      ok: true,
+      service: "imcharge-api-gateway",
+      mode: IS_SERVERLESS ? "serverless" : "stateful"
+    });
+  });
+  app2.post("/api/v1/state/sync", (req, res) => {
+    try {
+      const clientSnapshot = req.body?.snapshot ?? req.body?._syncState;
+      store.reconcileClientState(clientSnapshot);
+      res.json({ snapshot: store.getSnapshot() });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+  app2.get("/api/v1/telemetry/stream", (req, res) => {
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.setHeader("X-Accel-Buffering", "no");
+    if (typeof res.flushHeaders === "function") {
+      res.flushHeaders();
+    }
+    sseClients.add(res);
+    res.write(
+      `event: snapshot
 data: ${JSON.stringify(store.getSnapshot())}
 
-`);
-  const keepAlive = setInterval(() => {
-    try {
-      res.write(": ping\n\n");
-    } catch {
+`
+    );
+    const keepAlive = setInterval(() => {
+      try {
+        res.write(": ping\n\n");
+      } catch {
+        clearInterval(keepAlive);
+        sseClients.delete(res);
+      }
+    }, 15e3);
+    req.on("close", () => {
       clearInterval(keepAlive);
       sseClients.delete(res);
-    }
-  }, 15e3);
-  req.on("close", () => {
-    clearInterval(keepAlive);
-    sseClients.delete(res);
+    });
   });
-});
-app.post("/api/v1/telemetry/ocpp", (req, res) => {
-  try {
-    const { chargingPointId, connectorId, eventType, powerKw, meterWh, status } = req.body || {};
-    if (!chargingPointId || !connectorId || !eventType) {
-      res.status(400).json({ error: "chargingPointId, connectorId, and eventType are required." });
-      return;
+  app2.post("/api/v1/telemetry/ocpp", (req, res) => {
+    try {
+      const { chargingPointId, connectorId, eventType, powerKw, meterWh, status } = req.body || {};
+      if (!chargingPointId || !connectorId || !eventType) {
+        res.status(400).json({
+          error: "chargingPointId, connectorId, and eventType are required."
+        });
+        return;
+      }
+      if (eventType !== "MeterValues" && eventType !== "StatusNotification" && eventType !== "WalkInLoadDetected") {
+        res.status(400).json({ error: "Unsupported OCPP eventType." });
+        return;
+      }
+      const result = store.ingestOcppTelemetry({
+        chargingPointId: String(chargingPointId),
+        connectorId: String(connectorId),
+        eventType,
+        powerKw: powerKw !== void 0 ? Number(powerKw) : void 0,
+        meterWh: meterWh !== void 0 ? Number(meterWh) : void 0,
+        status
+      });
+      broadcastSnapshot();
+      res.json({
+        event: result.event,
+        cancelledReservationIds: result.cancelledReservationIds,
+        snapshot: store.getSnapshot()
+      });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
     }
-    if (eventType !== "MeterValues" && eventType !== "StatusNotification" && eventType !== "WalkInLoadDetected") {
-      res.status(400).json({ error: "Unsupported OCPP eventType." });
-      return;
+  });
+  app2.post("/api/v1/telemetry/heartbeat", (req, res) => {
+    try {
+      const enabled = store.setTelemetryHeartbeat(Boolean(req.body?.enabled));
+      broadcastSnapshot();
+      res.json({ enabled, snapshot: store.getSnapshot() });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
     }
-    const result = store.ingestOcppTelemetry({
-      chargingPointId: String(chargingPointId),
-      connectorId: String(connectorId),
-      eventType,
-      powerKw: powerKw !== void 0 ? Number(powerKw) : void 0,
-      meterWh: meterWh !== void 0 ? Number(meterWh) : void 0,
-      status
-    });
+  });
+  app2.get("/api/v1/bootstrap", (_req, res) => {
+    res.json(store.getSnapshot());
+  });
+  app2.post("/api/v1/demo/reset", (_req, res) => {
+    const snap = store.resetDemoData();
     broadcastSnapshot();
-    res.json({ event: result.event, cancelledReservationIds: result.cancelledReservationIds, snapshot: store.getSnapshot() });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-app.post("/api/v1/telemetry/heartbeat", (req, res) => {
-  try {
-    const enabled = store.setTelemetryHeartbeat(Boolean(req.body?.enabled));
-    broadcastSnapshot();
-    res.json({ enabled, snapshot: store.getSnapshot() });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-app.get("/api/v1/bootstrap", (_req, res) => {
-  res.json(store.getSnapshot());
-});
-app.post("/api/v1/demo/reset", (_req, res) => {
-  const snap = store.resetDemoData();
-  broadcastSnapshot();
-  res.json(snap);
-});
-app.post("/api/v1/drivers/register", (req, res) => {
-  try {
-    const driver = store.registerDriver(req.body || {});
-    broadcastSnapshot();
-    res.status(201).json({ driver, snapshot: store.getSnapshot() });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-app.post("/api/v1/hosts/register", (req, res) => {
-  try {
-    const host = store.registerHost(req.body || {});
-    broadcastSnapshot();
-    res.status(201).json({ host, snapshot: store.getSnapshot() });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-app.post("/api/v1/drivers/:driverId/vehicles", (req, res) => {
-  try {
-    const { make, model, year, licensePlate, batteryCapacity, connectorType } = req.body || {};
-    if (!make || !model || !licensePlate || !Array.isArray(connectorType) || connectorType.length === 0) {
-      res.status(400).json({ error: "Vehicle make, model, licensePlate, and connectorType are required." });
-      return;
+    res.json(snap);
+  });
+  app2.post("/api/v1/auth/login", (req, res) => {
+    try {
+      const { role, email, password } = req.body || {};
+      if (role !== "driver" && role !== "host" || !email || !password) {
+        res.status(400).json({
+          error: "Role, email address, and password are required."
+        });
+        return;
+      }
+      const result = store.authenticate({
+        role,
+        email: String(email),
+        password: String(password)
+      });
+      res.json({
+        role: result.role,
+        driver: result.driver,
+        host: result.host,
+        snapshot: store.getSnapshot()
+      });
+    } catch (err) {
+      res.status(401).json({ error: err.message });
     }
-    const vehicle = store.addVehicle(req.params.driverId, {
-      make: String(make),
-      model: String(model),
-      year: Number(year) || 2024,
-      licensePlate: String(licensePlate),
-      batteryCapacity: Number(batteryCapacity) || 75,
-      connectorType
-    });
-    broadcastSnapshot();
-    res.status(201).json({ vehicle, snapshot: store.getSnapshot() });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-app.post("/api/v1/drivers/:driverId/location", (req, res) => {
-  try {
-    const { lat, lon } = req.body || {};
-    if (lat === void 0 || lon === void 0) {
-      res.status(400).json({ error: "lat and lon are required." });
-      return;
+  });
+  app2.post("/api/v1/drivers/register", (req, res) => {
+    try {
+      const driver = store.registerDriver(req.body || {});
+      broadcastSnapshot();
+      res.status(201).json({ driver, snapshot: store.getSnapshot() });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
     }
-    const result = store.updateDriverLocation(req.params.driverId, { lat: Number(lat), lon: Number(lon) });
-    broadcastSnapshot();
-    res.json({ driver: result.driver, autoReleasedReservations: result.autoReleasedReservations, snapshot: store.getSnapshot() });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-app.get("/api/v1/charging-points", (_req, res) => {
-  res.json({ chargingPoints: store.getSnapshot().chargingPoints });
-});
-app.post("/api/v1/charging-points", (req, res) => {
-  try {
-    const body = req.body || {};
-    if (!body.name || !body.address || !body.hostName || !body.connectorType) {
-      res.status(400).json({ error: "Name, address, host name, and connector type are required." });
-      return;
+  });
+  app2.post("/api/v1/hosts/register", (req, res) => {
+    try {
+      const host = store.registerHost(req.body || {});
+      broadcastSnapshot();
+      res.status(201).json({ host, snapshot: store.getSnapshot() });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
     }
-    const cp = store.createChargingPoint({
-      hostUid: body.hostUid,
-      hostName: String(body.hostName),
-      type: body.type === "existing_station" ? "existing_station" : "private_host",
-      partnerName: body.partnerName,
-      partnerStationId: body.partnerStationId,
-      name: String(body.name),
-      address: String(body.address),
-      description: String(body.description || "Verified ImCharge charging bay."),
-      lat: Number(body.lat) || 48.1415,
-      lon: Number(body.lon) || 11.5712,
-      pricePerKwh: Number(body.pricePerKwh) || 18,
-      connectorType: body.connectorType,
-      powerKw: Number(body.powerKw) || 22,
-      meterSerialNumber: body.meterSerialNumber,
-      availabilityHours: String(body.availabilityHours || "07:00 \u2013 22:00 daily")
-    });
-    broadcastSnapshot();
-    res.status(201).json({ chargingPoint: cp, snapshot: store.getSnapshot() });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-app.post("/api/v1/reservations", (req, res) => {
-  try {
-    const { driverId, chargingPointId, connectorId, driverLocation, enforceProximity, notes } = req.body || {};
-    if (!driverId || !chargingPointId || !connectorId) {
-      res.status(400).json({ error: "driverId, chargingPointId, and connectorId are required." });
-      return;
+  });
+  app2.post("/api/v1/drivers/:driverId/vehicles", (req, res) => {
+    try {
+      const { make, model, year, licensePlate, batteryCapacity, connectorType } = req.body || {};
+      if (!make || !model || !licensePlate || !Array.isArray(connectorType) || connectorType.length === 0) {
+        res.status(400).json({ error: "Vehicle make, model, licensePlate, and connectorType are required." });
+        return;
+      }
+      const vehicle = store.addVehicle(req.params.driverId, {
+        make: String(make),
+        model: String(model),
+        year: Number(year) || 2024,
+        licensePlate: String(licensePlate),
+        batteryCapacity: Number(batteryCapacity) || 75,
+        connectorType
+      });
+      broadcastSnapshot();
+      res.status(201).json({ vehicle, snapshot: store.getSnapshot() });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
     }
-    const reservation = store.createReservation({ driverId, chargingPointId, connectorId, driverLocation, enforceProximity, notes });
-    broadcastSnapshot();
-    res.status(201).json({ reservation, snapshot: store.getSnapshot() });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-app.post("/api/v1/reservations/:resId/confirm", (req, res) => {
-  try {
-    const { qrToken } = req.body || {};
-    if (!qrToken) {
-      res.status(400).json({ error: "QR token or connector ID is required." });
-      return;
+  });
+  app2.post("/api/v1/drivers/:driverId/location", (req, res) => {
+    try {
+      const { lat, lon } = req.body || {};
+      if (lat === void 0 || lon === void 0) {
+        res.status(400).json({ error: "lat and lon are required." });
+        return;
+      }
+      const result = store.updateDriverLocation(req.params.driverId, {
+        lat: Number(lat),
+        lon: Number(lon)
+      });
+      broadcastSnapshot();
+      res.json({
+        driver: result.driver,
+        autoReleasedReservations: result.autoReleasedReservations,
+        snapshot: store.getSnapshot()
+      });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
     }
-    const reservation = store.confirmReservation(req.params.resId, String(qrToken));
-    broadcastSnapshot();
-    res.json({ reservation, snapshot: store.getSnapshot() });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-app.post("/api/v1/reservations/:resId/cancel", (req, res) => {
-  try {
-    const reservation = store.cancelReservation(req.params.resId);
-    broadcastSnapshot();
-    res.json({ reservation, snapshot: store.getSnapshot() });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-app.post("/api/v1/charging-sessions", (req, res) => {
-  try {
-    const { reservationId, meterReadingStartWh } = req.body || {};
-    if (!reservationId) {
-      res.status(400).json({ error: "reservationId is required." });
-      return;
+  });
+  app2.get("/api/v1/charging-points", (_req, res) => {
+    res.json({ chargingPoints: store.getSnapshot().chargingPoints });
+  });
+  app2.post("/api/v1/charging-points", (req, res) => {
+    try {
+      const body = req.body || {};
+      if (!body.name || !body.address || !body.hostName || !body.connectorType) {
+        res.status(400).json({
+          error: "Name, address, host name, and connector type are required."
+        });
+        return;
+      }
+      const cp = store.createChargingPoint({
+        hostUid: body.hostUid,
+        hostName: String(body.hostName),
+        type: body.type === "existing_station" ? "existing_station" : "private_host",
+        partnerName: body.partnerName,
+        partnerStationId: body.partnerStationId,
+        name: String(body.name),
+        address: String(body.address),
+        description: String(body.description || "Verified ImCharge charging bay."),
+        lat: Number(body.lat) || 48.1415,
+        lon: Number(body.lon) || 11.5712,
+        pricePerKwh: Number(body.pricePerKwh) || 18,
+        connectorType: body.connectorType,
+        powerKw: Number(body.powerKw) || 22,
+        meterSerialNumber: body.meterSerialNumber,
+        availabilityHours: String(body.availabilityHours || "07:00 \u2013 22:00 daily")
+      });
+      broadcastSnapshot();
+      res.status(201).json({ chargingPoint: cp, snapshot: store.getSnapshot() });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
     }
-    const session = store.startChargingSession({
-      reservationId,
-      meterReadingStartWh: meterReadingStartWh !== void 0 ? Number(meterReadingStartWh) : void 0
-    });
-    broadcastSnapshot();
-    res.status(201).json({ session, snapshot: store.getSnapshot() });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-app.post("/api/v1/charging-sessions/:sessionId/end", (req, res) => {
-  try {
-    const { meterReadingEndWh, partnerEnergyKwh, flagDispute, disputeReason } = req.body || {};
-    const session = store.endChargingSession(req.params.sessionId, {
-      meterReadingEndWh: meterReadingEndWh !== void 0 ? Number(meterReadingEndWh) : void 0,
-      partnerEnergyKwh: partnerEnergyKwh !== void 0 ? Number(partnerEnergyKwh) : void 0,
-      flagDispute: Boolean(flagDispute),
-      disputeReason
-    });
-    broadcastSnapshot();
-    res.json({ session, snapshot: store.getSnapshot() });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-app.post("/api/v1/charging-points/:pointId/connectors/:connectorId/status", (req, res) => {
-  try {
-    const { status, reason } = req.body || {};
-    if (status !== "available" && status !== "occupied" && status !== "maintenance") {
-      res.status(400).json({ error: 'status must be "available", "occupied", or "maintenance".' });
-      return;
+  });
+  app2.post("/api/v1/reservations", (req, res) => {
+    try {
+      const { driverId, chargingPointId, connectorId, driverLocation, enforceProximity, notes } = req.body || {};
+      if (!driverId || !chargingPointId || !connectorId) {
+        res.status(400).json({
+          error: "driverId, chargingPointId, and connectorId are required."
+        });
+        return;
+      }
+      const reservation = store.createReservation({
+        driverId,
+        chargingPointId,
+        connectorId,
+        driverLocation,
+        enforceProximity,
+        notes
+      });
+      broadcastSnapshot();
+      res.status(201).json({ reservation, snapshot: store.getSnapshot() });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
     }
-    const result = store.updateConnectorStatus(req.params.pointId, req.params.connectorId, status, reason);
-    broadcastSnapshot();
-    res.json({ point: result.point, cancelledReservationIds: result.cancelledReservationIds, snapshot: store.getSnapshot() });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-app.post("/api/v1/reservations/:resId/report-blocked", (req, res) => {
-  try {
-    const result = store.reportBlockedBay(req.params.resId);
-    broadcastSnapshot();
-    res.json({ reservation: result.reservation, backupSuggestion: result.backupSuggestion, snapshot: store.getSnapshot() });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-app.post("/api/v1/reviews", (req, res) => {
-  try {
-    const { chargingPointId, driverId, rating, comment } = req.body || {};
-    if (!chargingPointId || !driverId || !rating || !comment) {
-      res.status(400).json({ error: "chargingPointId, driverId, rating, and comment are required." });
-      return;
+  });
+  app2.post("/api/v1/reservations/:resId/confirm", (req, res) => {
+    try {
+      const { qrToken } = req.body || {};
+      if (!qrToken) {
+        res.status(400).json({ error: "QR token or connector ID is required." });
+        return;
+      }
+      const reservation = store.confirmReservation(req.params.resId, String(qrToken));
+      broadcastSnapshot();
+      res.json({ reservation, snapshot: store.getSnapshot() });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
     }
-    const review = store.addReview({ chargingPointId, driverId, rating: Number(rating), comment: String(comment) });
-    broadcastSnapshot();
-    res.status(201).json({ review, snapshot: store.getSnapshot() });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-app.post("/api/v1/admin/disputes/:sessionId/resolve", (req, res) => {
-  try {
-    const { action, adjustedMeterEndWh } = req.body || {};
-    if (action !== "approve_adjusted" && action !== "refund") {
-      res.status(400).json({ error: "Invalid resolution action." });
-      return;
+  });
+  app2.post("/api/v1/reservations/:resId/cancel", (req, res) => {
+    try {
+      const reservation = store.cancelReservation(req.params.resId);
+      broadcastSnapshot();
+      res.json({ reservation, snapshot: store.getSnapshot() });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
     }
-    const session = store.resolveDispute(req.params.sessionId, {
-      action,
-      adjustedMeterEndWh: adjustedMeterEndWh !== void 0 ? Number(adjustedMeterEndWh) : void 0
-    });
-    broadcastSnapshot();
-    res.json({ session, snapshot: store.getSnapshot() });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-app.post("/api/v1/admin/partners/:partnerId/sync", (req, res) => {
-  try {
-    const partner = store.syncPartner(req.params.partnerId);
-    broadcastSnapshot();
-    res.json({ partner, snapshot: store.getSnapshot() });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-app.post("/api/v1/hosts/:hostId/payouts/process", (req, res) => {
-  try {
-    const processedCount = store.processHostPayouts(req.params.hostId);
-    broadcastSnapshot();
-    res.json({ processedCount, snapshot: store.getSnapshot() });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-var server_default = app;
+  });
+  app2.post("/api/v1/charging-sessions", (req, res) => {
+    try {
+      const { reservationId, meterReadingStartWh } = req.body || {};
+      if (!reservationId) {
+        res.status(400).json({ error: "reservationId is required." });
+        return;
+      }
+      const session = store.startChargingSession({
+        reservationId,
+        meterReadingStartWh: meterReadingStartWh !== void 0 ? Number(meterReadingStartWh) : void 0
+      });
+      broadcastSnapshot();
+      res.status(201).json({ session, snapshot: store.getSnapshot() });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+  app2.post("/api/v1/charging-sessions/:sessionId/end", (req, res) => {
+    try {
+      const { meterReadingEndWh, partnerEnergyKwh, flagDispute, disputeReason } = req.body || {};
+      const session = store.endChargingSession(req.params.sessionId, {
+        meterReadingEndWh: meterReadingEndWh !== void 0 ? Number(meterReadingEndWh) : void 0,
+        partnerEnergyKwh: partnerEnergyKwh !== void 0 ? Number(partnerEnergyKwh) : void 0,
+        flagDispute: Boolean(flagDispute),
+        disputeReason
+      });
+      broadcastSnapshot();
+      res.json({ session, snapshot: store.getSnapshot() });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+  app2.post(
+    "/api/v1/charging-points/:pointId/connectors/:connectorId/status",
+    (req, res) => {
+      try {
+        const { status, reason } = req.body || {};
+        if (status !== "available" && status !== "occupied" && status !== "maintenance") {
+          res.status(400).json({
+            error: 'status must be "available", "occupied", or "maintenance".'
+          });
+          return;
+        }
+        const result = store.updateConnectorStatus(
+          req.params.pointId,
+          req.params.connectorId,
+          status,
+          reason
+        );
+        broadcastSnapshot();
+        res.json({
+          point: result.point,
+          cancelledReservationIds: result.cancelledReservationIds,
+          snapshot: store.getSnapshot()
+        });
+      } catch (err) {
+        res.status(400).json({ error: err.message });
+      }
+    }
+  );
+  app2.post("/api/v1/reservations/:resId/report-blocked", (req, res) => {
+    try {
+      const result = store.reportBlockedBay(req.params.resId);
+      broadcastSnapshot();
+      res.json({
+        reservation: result.reservation,
+        backupSuggestion: result.backupSuggestion,
+        snapshot: store.getSnapshot()
+      });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+  app2.post("/api/v1/reviews", (req, res) => {
+    try {
+      const { chargingPointId, driverId, rating, comment } = req.body || {};
+      if (!chargingPointId || !driverId || !rating || !comment) {
+        res.status(400).json({
+          error: "chargingPointId, driverId, rating, and comment are required."
+        });
+        return;
+      }
+      const review = store.addReview({
+        chargingPointId,
+        driverId,
+        rating: Number(rating),
+        comment: String(comment)
+      });
+      broadcastSnapshot();
+      res.status(201).json({ review, snapshot: store.getSnapshot() });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+  app2.post("/api/v1/admin/disputes/:sessionId/resolve", (req, res) => {
+    try {
+      const { action, adjustedMeterEndWh } = req.body || {};
+      if (action !== "approve_adjusted" && action !== "refund") {
+        res.status(400).json({ error: "Invalid resolution action." });
+        return;
+      }
+      const session = store.resolveDispute(req.params.sessionId, {
+        action,
+        adjustedMeterEndWh: adjustedMeterEndWh !== void 0 ? Number(adjustedMeterEndWh) : void 0
+      });
+      broadcastSnapshot();
+      res.json({ session, snapshot: store.getSnapshot() });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+  app2.post("/api/v1/admin/partners/:partnerId/sync", (req, res) => {
+    try {
+      const partner = store.syncPartner(req.params.partnerId);
+      broadcastSnapshot();
+      res.json({ partner, snapshot: store.getSnapshot() });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+  app2.post("/api/v1/hosts/:hostId/payouts/process", (req, res) => {
+    try {
+      const processedCount = store.processHostPayouts(req.params.hostId);
+      broadcastSnapshot();
+      res.json({ processedCount, snapshot: store.getSnapshot() });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  });
+  return { app: app2, broadcastSnapshot };
+}
+
+// src/server/vercelApp.ts
+var { app } = createImChargeApp();
+var vercelApp_default = app;
 export {
-  server_default as default
+  vercelApp_default as default
 };
